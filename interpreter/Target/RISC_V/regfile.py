@@ -34,5 +34,4 @@ class XRegs(RegFile):
 @serves("Program Counter")
 class ProgramCounter(RegFile):
     def register(self, reg) -> object:
-        return PC(reg.name, self.rf.reg_size.lanes_base,
-                  rf_name=self.rf.name)
+        return PC(reg.name, self.rf.reg_size.lanes_base, rf_name=self.rf.name)
