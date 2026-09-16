@@ -75,8 +75,7 @@ class Register(Operand):
 
 
 class PC:
-    def __init__(self, name: str, width: int,
-                 rf_name: Optional[str] = None):
+    def __init__(self, name: str, width: int, rf_name: Optional[str] = None):
         self.name: str = name
         self.width: int = width
         self.rf_name: Optional[str] = rf_name

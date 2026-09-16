@@ -86,9 +86,7 @@ class CodeBuilder(IBuilder, metaclass=BuilderMeta):
         self.mach_inst: Variable = (
             mach_inst if mach_inst is not None else IConfig.mach_inst
         )
-        self.params: List[Variable] = (
-            params if params is not None else [self.mach_inst]
-        )
+        self.params: List[Variable] = params if params is not None else [self.mach_inst]
         self.nodes: List[object] = []
         self._vars: Dict[str, Variable] = {}
 
@@ -121,9 +119,7 @@ class CodeBuilder(IBuilder, metaclass=BuilderMeta):
             var = builder.variable(out, self.stmt.outputs_types[0])
             idx = int(self.stmt.specifier)
             if idx >= len(builder.params):
-                raise ValueError(
-                    f"input {idx} is not bound to a parameter"
-                )
+                raise ValueError(f"input {idx} is not bound to a parameter")
             builder.nodes.append(InputAssign(var, builder.params[idx]))
 
     @serves(StmtConst.kind)
@@ -268,16 +264,12 @@ class SemanticBuilder(CodeBuilder):
     @serves(CondEnv.kind)
     class CondEnv(StmtHandler):
         def build(self) -> None:
-            raise NotImplementedError(
-                "'cond_env' statement is not supported yet"
-            )
+            raise NotImplementedError("'cond_env' statement is not supported yet")
 
     @serves(StmtDynConst.kind)
     class DynConst(StmtHandler):
         def build(self) -> None:
-            raise NotImplementedError(
-                "'dyn_const' statement is not supported yet"
-            )
+            raise NotImplementedError("'dyn_const' statement is not supported yet")
 
 
 class ConstraintBuilder(CodeBuilder):

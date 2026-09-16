@@ -23,9 +23,7 @@ class Driver:
 
         self.attributes = self.process_attributes()
 
-        self.interfaces = InterfacesRegistry.from_arch(
-            self.arch, self.attributes
-        )
+        self.interfaces = InterfacesRegistry.from_arch(self.arch, self.attributes)
 
         self.snippet_funcs = self.process_snippets()
 

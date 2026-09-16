@@ -14,10 +14,7 @@ from lib.types import OperandType
 
 
 def _letter_params(widths: List[int], offset: int = 0) -> List[Variable]:
-    return [
-        Variable(chr(ord("a") + offset + i), w)
-        for i, w in enumerate(widths)
-    ]
+    return [Variable(chr(ord("a") + offset + i), w) for i, w in enumerate(widths)]
 
 
 @dataclass
@@ -33,8 +30,9 @@ class Func:
         if body_fn is None:
             raise ValueError(f"No C++ body defined for operation {op.name}")
         name = op.semantic_func or op.name
-        return cls(name, OperandType.gen(op.outputs[0]),
-                   _letter_params(op.inputs), body_fn(op))
+        return cls(
+            name, OperandType.gen(op.outputs[0]), _letter_params(op.inputs), body_fn(op)
+        )
 
     @classmethod
     def from_env(cls, env) -> "Func":
@@ -45,20 +43,18 @@ class Func:
     def from_snippet(cls, snippet, index: ArchIndex) -> "Func":
         mach_inst = IConfig.mach_inst
         input_stmts = [
-            stmt for stmt in snippet.seq.stmts
+            stmt
+            for stmt in snippet.seq.stmts
             if stmt.kind == StmtInput.kind and int(stmt.specifier) != 0
         ]
         params = [mach_inst] + _letter_params(
             [stmt.outputs_types[0] for stmt in input_stmts]
         )
 
-        nodes = ConstraintBuilder(
-            index, params=params
-        ).build(snippet.seq)
+        nodes = ConstraintBuilder(index, params=params).build(snippet.seq)
         body = render_nodes(nodes)
         ret_node = next(n for n in nodes if isinstance(n, Return))
-        return cls(snippet.name, OperandType.gen(ret_node.value.width),
-                   params, body)
+        return cls(snippet.name, OperandType.gen(ret_node.value.width), params, body)
 
     def __call__(self, args: List[str]) -> str:
         return f"{self.name}({', '.join(args)})"

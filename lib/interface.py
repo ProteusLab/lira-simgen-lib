@@ -75,9 +75,9 @@ class InterfacesRegistry:
         self._map: Dict[str, Interface] = {}
 
     @classmethod
-    def from_arch(cls, arch: Arch,
-                  objects: Optional[Dict[str, object]] = None
-                  ) -> "InterfacesRegistry":
+    def from_arch(
+        cls, arch: Arch, objects: Optional[Dict[str, object]] = None
+    ) -> "InterfacesRegistry":
         reg = cls()
         for func in arch.environment_functions:
             attributes = (

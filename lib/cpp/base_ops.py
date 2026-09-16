@@ -87,9 +87,7 @@ Xor._cpp_body = lambda self: _render("binary_op.jinja", token="^")
 
 Lsl._cpp_body = lambda self: _render("shift.jinja", op="<<")
 Lsr._cpp_body = lambda self: _render("shift.jinja", op=">>")
-Asr._cpp_body = lambda self: _render(
-    "asr.jinja", t=_in_type(self), ts=_signed(self)
-)
+Asr._cpp_body = lambda self: _render("asr.jinja", t=_in_type(self), ts=_signed(self))
 Eq._cpp_body = lambda self: _render("cmp_unsigned.jinja", token="==")
 Ne._cpp_body = lambda self: _render("cmp_unsigned.jinja", token="!=")
 Slt._cpp_body = lambda self: _render("cmp_signed.jinja", token="<", t=_signed(self))
