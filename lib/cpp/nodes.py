@@ -1,7 +1,7 @@
 # lira-simgen-lib/lib/cpp/nodes.py
 
 from .. import nodes
-from . import base_ops  # noqa: F401  # activate the operation bodies
+from . import base_ops
 from .func import Func
 
 

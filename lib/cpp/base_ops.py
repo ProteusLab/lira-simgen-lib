@@ -1,10 +1,4 @@
 # lira-simgen-lib/lib/cpp/base_ops.py
-# C++ bodies of the arch-independent LIRA base operations, mixed into
-# the operation classes at import time (the op -> Func conversion
-# lives in lib/cpp/func.py; the bodies are rendered from the
-# lib/cpp/templates/*.jinja templates). Arch-specific operations
-# (e.g. the RISC-V shift masking) are attached by the target layers.
-# Importing this module activates the bodies.
 
 from lira.arch import Operation
 from lira.ir_ops import (
@@ -90,8 +84,7 @@ Mul._cpp_body = lambda self: _render("binary_op.jinja", token="*")
 And._cpp_body = lambda self: _render("binary_op.jinja", token="&")
 Orr._cpp_body = lambda self: _render("binary_op.jinja", token="|")
 Xor._cpp_body = lambda self: _render("binary_op.jinja", token="^")
-# Arch-independent shift bodies (no shift-amount masking); target
-# layers override them with their arch semantics.
+
 Lsl._cpp_body = lambda self: _render("shift.jinja", op="<<")
 Lsr._cpp_body = lambda self: _render("shift.jinja", op=">>")
 Asr._cpp_body = lambda self: _render(
@@ -136,7 +129,7 @@ if __name__ == "__main__":
     from lib.cpp.func import Func
 
     ap = argparse.ArgumentParser(
-        description="Generate base_ops.hh/base_ops.cc from a LIRA arch"
+        description="Generate base_ops.hh/base_ops.cc from LIRA IR"
     )
     ap.add_argument("--ir-path", required=True, type=Path)
     ap.add_argument("--out-dir", required=True, type=Path)

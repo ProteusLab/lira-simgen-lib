@@ -61,7 +61,6 @@ class Func:
                    params, body)
 
     def __call__(self, args: List[str]) -> str:
-        """Emit a call expression of this function."""
         return f"{self.name}({', '.join(args)})"
 
     @property
