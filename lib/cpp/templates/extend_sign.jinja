@@ -1,0 +1,10 @@
+{%- if iw == 1 -%}
+  return a;
+{%- else -%}
+  {{ t }} val = a & ((({{ t }})1 << {{ iw }}) - 1);
+  {{ t }} sign = (val >> ({{ iw }} - 1)) & 1;
+  if (sign)
+    return val | (~((({{ t }})1 << {{ iw }}) - 1));
+  else
+    return val;
+{%- endif -%}
