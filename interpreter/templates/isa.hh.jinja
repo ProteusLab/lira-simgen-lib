@@ -35,7 +35,7 @@ namespace prot::isa {
   inline constexpr std::size_t getILen(Opcode opc) {
     switch (opc) {
 {%- for inst in insts %}
-    case Opcode::k{{ inst.name }}: return {{ ilens[inst.name] }};
+    case Opcode::k{{ inst.name }}: return {{ inst.ilen }};
 {%- endfor %}
     default: return 4;
     }

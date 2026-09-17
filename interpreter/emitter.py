@@ -2,9 +2,8 @@
 
 from typing import Dict, List, Set, Tuple
 
-import lib.cpp.nodes  # noqa: F401  # activate the C++ node rendering
-import lib.cpp.base_ops  # noqa: F401  # activate the operation bodies
-import interpreter.Target.RISC_V.base_ops  # noqa: F401  # target shifts
+import lib.cpp.base_ops
+import interpreter.Target.RISC_V.base_ops
 
 from lib.cpp.func import Func
 from lib.instruction import Instruction
@@ -32,12 +31,10 @@ class InterpEmitter:
     def isa(self, insts: List[Instruction]) -> str:
         terminators = _terminators(insts)
         num_operands = max((len(inst.regs) for inst in insts), default=0)
-        ilens = {inst.name: inst.lira_insn.encoding.encoded_size // 8 for inst in insts}
         return self.cfg.templates.render(
             self.cfg.isa_hh_jinja,
             insts=insts,
             terminators=terminators,
-            ilens=ilens,
             num_operands=num_operands,
         )
 

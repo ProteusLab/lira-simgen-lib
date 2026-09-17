@@ -73,7 +73,6 @@ set(INTERP_GENERATOR_DEPS
   ${CMAKE_SOURCE_DIR}/lib/operand.py
   ${CMAKE_SOURCE_DIR}/lib/regfile.py
   ${CMAKE_SOURCE_DIR}/lib/types.py
-  ${CMAKE_SOURCE_DIR}/lib/cpp/nodes.py
   ${CMAKE_SOURCE_DIR}/lib/cpp/base_ops.py
   ${CMAKE_SOURCE_DIR}/lib/cpp/func.py
   ${CMAKE_SOURCE_DIR}/lib/cpp/templates.py
