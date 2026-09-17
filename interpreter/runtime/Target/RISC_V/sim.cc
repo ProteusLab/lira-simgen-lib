@@ -1,7 +1,7 @@
-#include "elf_loader.hh"
 #include "hart.hh"
 #include "memory.hh"
 #include "naive_interpreter.hh"
+#include "riscv_elf_loader.hh"
 
 #include <CLI/CLI.hpp>
 #include <fmt/core.h>
@@ -11,13 +11,18 @@
 #include <filesystem>
 #include <memory>
 
+namespace {
+// RISC-V ABI: x2 is the stack pointer.
+constexpr std::size_t kSPRegister = 2;
+constexpr prot::isa::Addr kDefaultStack = 0x7fffffff;
+} // namespace
+
 int main(int argc, const char *argv[]) try {
   std::filesystem::path elfPath;
-  constexpr prot::isa::Addr kDefaultStack = 0x7fffffff;
   prot::isa::Addr stackTop = kDefaultStack;
   bool propagateExit = false;
 
-  CLI::App app{"Generated LIRA simulator (naive interpreter)"};
+  CLI::App app{"Generated LIRA simulator (interpreter)"};
 
   app.add_option("elf", elfPath, "Path to executable ELF file")
       ->required()
@@ -28,7 +33,7 @@ int main(int argc, const char *argv[]) try {
   CLI11_PARSE(app, argc, argv);
 
   auto hart = [&] {
-    prot::elf_loader::ElfLoader loader{elfPath};
+    prot::elf_loader::RiscvElfLoader loader{elfPath};
 
     std::unique_ptr<prot::engine::ExecEngine> engine =
         std::make_unique<prot::engine::Interpreter>();
@@ -36,7 +41,7 @@ int main(int argc, const char *argv[]) try {
     prot::hart::Hart hart{prot::memory::makePlain(4ULL << 30U),
                           std::move(engine)};
     hart.load(loader);
-    hart.setSP(stackTop);
+    hart.setRegister(kSPRegister, stackTop);
     return hart;
   }();
 

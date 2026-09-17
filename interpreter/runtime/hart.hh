@@ -19,7 +19,7 @@ class Hart {
 public:
   Hart(std::unique_ptr<Memory> mem, std::unique_ptr<ExecEngine> engine);
 
-  void setSP(uint32_t addr);
+  void setRegister(uint32_t index, uint32_t value);
 
   void load(const ElfLoader &loader);
 

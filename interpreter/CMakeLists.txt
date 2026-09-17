@@ -60,11 +60,11 @@ set(INTERP_GENERATOR_DEPS
   ${INTERPRETER_SOURCE_DIR}/templates/cpu_state.hh.jinja
   ${INTERPRETER_SOURCE_DIR}/templates/cpu_state.cc.jinja
   ${INTERPRETER_SOURCE_DIR}/Target/__init__.py
-  ${INTERPRETER_SOURCE_DIR}/Target/RISC_V/__init__.py
-  ${INTERPRETER_SOURCE_DIR}/Target/RISC_V/regfile.py
-  ${INTERPRETER_SOURCE_DIR}/Target/RISC_V/interface.py
-  ${INTERPRETER_SOURCE_DIR}/Target/RISC_V/base_ops.py
-  ${INTERPRETER_SOURCE_DIR}/Target/RISC_V/templates.py
+  ${INTERPRETER_SOURCE_DIR}/Target/${ARCH_TARGET}/__init__.py
+  ${INTERPRETER_SOURCE_DIR}/Target/${ARCH_TARGET}/regfile.py
+  ${INTERPRETER_SOURCE_DIR}/Target/${ARCH_TARGET}/interface.py
+  ${INTERPRETER_SOURCE_DIR}/Target/${ARCH_TARGET}/base_ops.py
+  ${INTERPRETER_SOURCE_DIR}/Target/${ARCH_TARGET}/templates.py
   ${CMAKE_SOURCE_DIR}/lib/builders.py
   ${CMAKE_SOURCE_DIR}/lib/driver.py
   ${CMAKE_SOURCE_DIR}/lib/instruction.py
@@ -83,7 +83,7 @@ file(GLOB LIB_CPP_TEMPLATES "${CMAKE_SOURCE_DIR}/lib/cpp/templates/*.jinja")
 list(APPEND INTERP_GENERATOR_DEPS ${LIB_CPP_TEMPLATES})
 
 file(GLOB INTERP_TARGET_TEMPLATES
-     "${INTERPRETER_SOURCE_DIR}/Target/RISC_V/templates/*.jinja")
+     "${INTERPRETER_SOURCE_DIR}/Target/${ARCH_TARGET}/templates/*.jinja")
 list(APPEND INTERP_GENERATOR_DEPS ${INTERP_TARGET_TEMPLATES})
 
 add_custom_command(
@@ -113,8 +113,9 @@ add_executable(sim-interp
   ${INTERP_RUNTIME_DIR}/memory.cc
   ${INTERP_RUNTIME_DIR}/elf_loader.cc
   ${INTERP_OUT_DIR}/cpu_state.cc
-  ${INTERP_RUNTIME_DIR}/Target/RISC_V/cpu_state_ext.cc
-  ${INTERP_RUNTIME_DIR}/sim.cc
+  ${INTERP_RUNTIME_DIR}/Target/${ARCH_TARGET}/cpu_state_ext.cc
+  ${INTERP_RUNTIME_DIR}/Target/${ARCH_TARGET}/riscv_elf_loader.cc
+  ${INTERP_RUNTIME_DIR}/Target/${ARCH_TARGET}/sim.cc
 )
 set_target_properties(sim-interp PROPERTIES
   OUTPUT_NAME interpreter

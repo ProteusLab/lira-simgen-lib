@@ -12,7 +12,7 @@ ElfLoader::~ElfLoader() = default;
 
 void ElfLoader::validate() const {
   if (m_elf->get_type() != ELFIO::ET_EXEC) {
-    throw std::invalid_argument{"Invalud ELF type"};
+    throw std::invalid_argument{"Invalid ELF type"};
   }
 
   if (m_elf->get_encoding() != ELFIO::ELFDATA2LSB) {
@@ -22,16 +22,12 @@ void ElfLoader::validate() const {
   if (m_elf->get_class() != ELFIO::ELFCLASS32) {
     throw std::invalid_argument{"Invalid ELF class"};
   }
-
-  if (m_elf->get_machine() != ELFIO::EM_RISCV) {
-    throw std::invalid_argument{"Invalid machine"};
-  }
 }
 
 ElfLoader::ElfLoader(std::istream &stream)
     : m_elf(std::make_unique<ELFIO::elfio>()) {
   if (!m_elf->load(stream)) {
-    throw std::invalid_argument{"1"};
+    throw std::invalid_argument{"Could not load elf from stream."};
   }
   validate();
 }

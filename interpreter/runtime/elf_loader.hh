@@ -31,10 +31,10 @@ public:
   void loadMemory(memory::Memory &mem) const;
   [[nodiscard]] isa::Addr getEntryPoint() const;
 
-  ~ElfLoader();
+  virtual ~ElfLoader();
 
-private:
-  void validate() const;
+protected:
+  virtual void validate() const;
 
   std::unique_ptr<ELFIO::elfio> m_elf;
 };

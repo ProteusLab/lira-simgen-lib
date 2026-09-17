@@ -14,13 +14,13 @@ from lib.driver import Driver
 
 from interpreter.config import SimpleInterpConfig
 
-import interpreter.Target.RISC_V.interface  # noqa: F401  # registers the env interfaces
-import interpreter.Target.RISC_V.regfile  # noqa: F401  # registers the RF models
+import interpreter.Target.RISC_V.interface
+import interpreter.Target.RISC_V.regfile
 
 
 def main() -> None:
     ap = argparse.ArgumentParser(description="C++ interpreter generator")
-    ap.add_argument("--ir-path", required=True, type=Path, help="Path to lira.yaml")
+    ap.add_argument("--ir-path", required=True, type=Path, help="Path to LIRA IR")
     ap.add_argument(
         "--out-dir",
         required=True,
