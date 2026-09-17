@@ -3,7 +3,6 @@
 from typing import Optional
 
 from lira.arch import Snippet
-from lira.arch_utils import ArchIndex
 
 from lib.regfile import IRegFile
 from lib.types import OperandType
@@ -39,25 +38,18 @@ class Constant(Variable):
         return f"{self.type} {self.name} = {self.value};"
 
 
-class Operand(Variable):
-    def __init__(self, name: str, width: int, index: ArchIndex, snippet: Snippet):
-        super().__init__(name, width)
-        self.index: ArchIndex = index
-        self.snippet: Snippet = snippet
-
-
-class Register(Operand):
+class Register(Variable):
     def __init__(
         self,
         name: str,
         width: int,
-        index: ArchIndex,
         snippet: Snippet,
         src_pos: Optional[int] = None,
         dst_pos: Optional[int] = None,
         rf: Optional[IRegFile] = None,
     ):
-        super().__init__(name, width, index, snippet)
+        super().__init__(name, width)
+        self.snippet: Snippet = snippet
         self.src_pos: Optional[int] = src_pos
         self.dst_pos: Optional[int] = dst_pos
         self.rf: Optional[IRegFile] = rf

@@ -6,7 +6,7 @@ from typing import List
 from lira.arch_utils import ArchIndex
 from lira.ir_std import StmtInput
 
-from lib.builders import ConstraintBuilder
+from lib.builders import CodeBuilder
 from lib.config import IConfig
 from lib.nodes import Return, render_nodes
 from lib.operand import Variable
@@ -51,7 +51,7 @@ class Func:
             [stmt.outputs_types[0] for stmt in input_stmts]
         )
 
-        nodes = ConstraintBuilder(index, params=params).build(snippet.seq)
+        nodes = CodeBuilder(index, params=params).build(snippet.seq)
         body = render_nodes(nodes)
         ret_node = next(n for n in nodes if isinstance(n, Return))
         return cls(snippet.name, OperandType.gen(ret_node.value.width), params, body)

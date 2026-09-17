@@ -63,14 +63,12 @@ class Driver:
             insts.append(
                 Instruction(
                     i,
-                    insn.name.upper(),
-                    insn.encoding.constraint_decode,
                     body,
                     sem.regs,
                     len(sem.read_operands),
                     len(sem.write_operands),
                     sem.has_mem,
-                    lira_insn=insn,
+                    insn=insn,
                 )
             )
         return insts

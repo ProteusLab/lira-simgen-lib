@@ -21,9 +21,8 @@ from lira.ir_std import (
 from lib.config import IConfig
 from lib.nodes import (
     EnvExec,
-    InputAssign,
-    MemberAssign,
-    OpAssign,
+    Input,
+    Op,
     ReadMem,
     ReadReg,
     Return,
@@ -31,7 +30,7 @@ from lib.nodes import (
 )
 
 
-from lib.operand import Constant, Operand, Register, Variable
+from lib.operand import Constant, Register, Variable
 
 
 class IBuilder(ABC):
@@ -112,7 +111,7 @@ class CodeBuilder(IBuilder, metaclass=BuilderMeta):
         return self._vars[name]
 
     @serves(StmtInput.kind)
-    class Input(StmtHandler):
+    class InputHandler(StmtHandler):
         def build(self) -> None:
             builder = self.builder
             out = self.stmt.outputs[0]
@@ -120,7 +119,7 @@ class CodeBuilder(IBuilder, metaclass=BuilderMeta):
             idx = int(self.stmt.specifier)
             if idx >= len(builder.params):
                 raise ValueError(f"input {idx} is not bound to a parameter")
-            builder.nodes.append(InputAssign(var, builder.params[idx]))
+            builder.nodes.append(Input(var, builder.params[idx]))
 
     @serves(StmtConst.kind)
     class Const(StmtHandler):
@@ -132,14 +131,21 @@ class CodeBuilder(IBuilder, metaclass=BuilderMeta):
             builder.nodes.append(const)
 
     @serves(StmtOp.kind)
-    class Op(StmtHandler):
+    class OpHandler(StmtHandler):
         def build(self) -> None:
             builder = self.builder
             out = self.stmt.outputs[0]
             var = builder.variable(out, self.stmt.outputs_types[0])
             inputs = [builder.resolve_var(a) for a in self.stmt.inputs]
             op = builder.index.op[self.stmt.specifier]
-            builder.nodes.append(OpAssign(var, op, inputs))
+            builder.nodes.append(Op(var, op, inputs))
+
+    @serves(StmtOutput.kind)
+    class Output(StmtHandler):
+        def build(self) -> None:
+            builder = self.builder
+            val = builder.resolve_var(self.stmt.inputs[0])
+            builder.nodes.append(Return(val))
 
 
 class SemanticBuilder(CodeBuilder):
@@ -192,7 +198,6 @@ class SemanticBuilder(CodeBuilder):
             reg = Register(
                 operand,
                 self.insn.operand_sizes[idx],
-                self.index,
                 self.index.snippet[snip_name],
                 src_pos,
                 dst_pos,
@@ -270,38 +275,3 @@ class SemanticBuilder(CodeBuilder):
     class DynConst(StmtHandler):
         def build(self) -> None:
             raise NotImplementedError("'dyn_const' statement is not supported yet")
-
-
-class ConstraintBuilder(CodeBuilder):
-    def __init__(
-        self,
-        index: ArchIndex,
-        mach_inst: Optional[Variable] = None,
-        params: Optional[List[Variable]] = None,
-    ):
-        super().__init__(index, mach_inst, params)
-
-    @serves(StmtOutput.kind)
-    class Output(StmtHandler):
-        def build(self) -> None:
-            builder = self.builder
-            val = builder.resolve_var(self.stmt.inputs[0])
-            builder.nodes.append(Return(val))
-
-
-class DecodeBuilder(CodeBuilder):
-    def __init__(
-        self,
-        index: ArchIndex,
-        operand: Operand,
-        mach_inst: Optional[Variable] = None,
-    ):
-        super().__init__(index, mach_inst)
-        self.operand: Operand = operand
-
-    @serves(StmtOutput.kind)
-    class Output(StmtHandler):
-        def build(self) -> None:
-            builder = self.builder
-            val = builder.resolve_var(self.stmt.inputs[0])
-            builder.nodes.append(MemberAssign(builder.operand, val))
