@@ -1,0 +1,16 @@
+{%- if width == 8 -%}
+  unsigned cnt = 0;
+  while (a) {
+    cnt += a & 1;
+    a >>= 1;
+  }
+  return cnt;
+{%- elif width == 16 -%}
+  return popcnt_8(a & 0xFF) + popcnt_8((a >> 8) & 0xFF);
+{%- elif width == 32 -%}
+  return popcnt_16(a & 0xFFFF) + popcnt_16((a >> 16) & 0xFFFF);
+{%- elif width == 64 -%}
+  return popcnt_32(a & 0xFFFFFFFF) + popcnt_32((a >> 32) & 0xFFFFFFFF);
+{%- elif width == 128 -%}
+  return popcnt_64((uint64_t)a) + popcnt_64((uint64_t)(a >> 64));
+{%- endif -%}

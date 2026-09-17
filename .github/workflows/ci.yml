@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  format:
+    name: Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install formatters
+        run: pip install black==25.1.0 clang-format==18.1.8
+      - name: Check Python formatting (black)
+        run: black --check lib interpreter
+      - name: Check C++ formatting (clang-format)
+        run: |
+          find interpreter/runtime \( -name '*.cc' -o -name '*.hh' \) \
+            -print0 | xargs -0 clang-format --dry-run --Werror
+
+  build:
+    name: Build (${{ matrix.arch }}, ${{ matrix.build_type }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [RISC_V]
+        build_type: [Release, Debug]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Configure
+        run: >-
+          cmake -S . -B build
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -DARCH_TARGET=${{ matrix.arch }}
+      - name: Install the generator dependencies
+        run: >-
+          pip install jinja2 ./build/_deps/lira-src/python
+      - name: Build
+        run: cmake --build build --target build-interp -j$(nproc)
