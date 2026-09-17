@@ -71,9 +71,6 @@ class RegFile(IRegFile):
 
 
 def serves(name: str):
-    """Mark the register-file model class as serving the given IR
-    register file name (registers it in RegFileRegistry.registry)."""
-
     def decorator(model_cls):
         RegFileRegistry.registry[name] = model_cls
         return model_cls
