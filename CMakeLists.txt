@@ -17,7 +17,8 @@ CPMAddPackage(
 # the LIRA IR inputs.
 set(ARCH_TARGET "RISC_V" CACHE STRING "Target architecture (data directory)")
 
-install(FILES data/${ARCH_TARGET}/RV32I.yaml
+file(GLOB ARCH_TARGET_IR data/${ARCH_TARGET}/*.yaml)
+install(FILES ${ARCH_TARGET_IR}
         DESTINATION share/lira-simgen-lib/${ARCH_TARGET})
 
 add_subdirectory(interpreter)

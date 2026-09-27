@@ -28,6 +28,8 @@ from lira.ir_ops import (
     RemS,
     RemU,
     Reverse,
+    Rol,
+    Ror,
     Select,
     Sge,
     Sgt,
@@ -100,6 +102,12 @@ Ugt._cpp_body = lambda self: _render("cmp_unsigned.jinja", token=">")
 Uge._cpp_body = lambda self: _render("cmp_unsigned.jinja", token=">=")
 DivU._cpp_body = lambda self: _render("div_u.jinja")
 DivS._cpp_body = lambda self: _render("div_s.jinja", t=_in_type(self), ts=_signed(self))
+Ror._cpp_body = lambda self: _render(
+    "rotate.jinja", width=self.inputs[0], op=">>", rop="<<"
+)
+Rol._cpp_body = lambda self: _render(
+    "rotate.jinja", width=self.inputs[0], op="<<", rop=">>"
+)
 RemU._cpp_body = lambda self: _render("rem_u.jinja")
 RemS._cpp_body = lambda self: _render("rem_s.jinja", t=_in_type(self), ts=_signed(self))
 Select._cpp_body = lambda self: _render("select.jinja")

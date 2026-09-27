@@ -3,7 +3,6 @@
 from typing import Dict, List, Set, Tuple
 
 import lib.cpp.base_ops
-import interpreter.Target.RISC_V.base_ops
 
 from lib.cpp.func import Func
 from lib.instruction import Instruction
@@ -36,6 +35,7 @@ class InterpEmitter:
             insts=insts,
             terminators=terminators,
             num_operands=num_operands,
+            addr_type=self.cfg.target.addr_type,
         )
 
     def decoder(self, index, insts: List[Instruction]) -> Tuple[str, str]:
@@ -71,13 +71,17 @@ class InterpEmitter:
         )
         return (
             self.cfg.templates.render(
-                self.cfg.cpu_state_hh_jinja, rf_code=rf_code, decls=decls
+                self.cfg.cpu_state_hh_jinja,
+                rf_code=rf_code,
+                decls=decls,
+                members=self.cfg.target.cpu_members,
             ),
             self.cfg.templates.render(self.cfg.cpu_state_cc_jinja, defs=defs),
         )
 
     def base_ops(self, operations) -> Tuple[str, str]:
-        funcs = [Func.from_op(op) for op in operations]
+        # snippet-defined operations are emitted with the snippets
+        funcs = [Func.from_op(op) for op in operations if not op.semantic_func]
 
         decls = "\n".join(f.declaration for f in funcs)
         defs = "\n".join(f.definition for f in funcs)

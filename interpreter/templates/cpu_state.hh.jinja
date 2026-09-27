@@ -4,6 +4,7 @@
 #define GENERATED_RISCV_CPUSTATE_HH_INCLUDED
 
 #include "isa.hh"
+#include "memory.hh"
 
 #include <array>
 #include <concepts>
@@ -17,6 +18,9 @@ namespace prot::state {
 class CPU final {
 public:
 {{ rf_code }}
+  // Set when the executed instruction wrote the PC
+  bool m_pcWritten{false};
+{{ members }}
   // Instruction count
   std::size_t m_icount{0};
 

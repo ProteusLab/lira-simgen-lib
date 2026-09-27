@@ -19,7 +19,9 @@ void ElfLoader::validate() const {
     throw std::invalid_argument{"Invalid ELF encoding"};
   }
 
-  if (m_elf->get_class() != ELFIO::ELFCLASS32) {
+  constexpr auto kClass =
+      sizeof(isa::Addr) == 8 ? ELFIO::ELFCLASS64 : ELFIO::ELFCLASS32;
+  if (m_elf->get_class() != kClass) {
     throw std::invalid_argument{"Invalid ELF class"};
   }
 }

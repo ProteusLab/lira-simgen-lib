@@ -8,7 +8,7 @@ using namespace prot::isa;
 
 std::optional<Instruction> decode(const Word machInst) {
   Instruction insn{};
-{%- for inst in insts %}{{ "\n" }}{%- if not loop.first %}{{ "\n" }}{%- endif %}  if ({{ inst.constraint_decode }}(machInst)) {
+{%- for inst in insts %}{{ "\n" }}{%- if not loop.first %}{{ "\n" }}{%- endif %}  if ((machInst & {{ '%#010x' % inst.const_mask }}U) == {{ '%#010x' % inst.const_value }}U{% if inst.constraint_decode %} && {{ inst.constraint_decode }}(machInst){% endif %}) {
 {%- for operand in inst.regs %}
     insn.operand{{ loop.index0 }} = {{ operand.snippet.name }}(machInst);
 {%- endfor %}

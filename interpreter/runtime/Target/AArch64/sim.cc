@@ -1,7 +1,7 @@
+#include "aarch64_elf_loader.hh"
 #include "hart.hh"
 #include "memory.hh"
 #include "naive_interpreter.hh"
-#include "riscv_elf_loader.hh"
 
 #include <CLI/CLI.hpp>
 #include <fmt/core.h>
@@ -12,28 +12,30 @@
 #include <memory>
 
 namespace {
-// RISC-V ABI: x2 is the stack pointer.
-constexpr std::size_t kSPRegister = 2;
-constexpr prot::isa::Addr kDefaultStack = 0x7fffffff;
+// Index 31 of the X register file is SP.
+constexpr std::size_t kSPRegister = 31;
+constexpr prot::isa::Addr kDefaultStack = 0xfff00000;
 } // namespace
 
 int main(int argc, const char *argv[]) try {
   std::filesystem::path elfPath;
   prot::isa::Addr stackTop = kDefaultStack;
   bool propagateExit = false;
+  bool quiet = false;
 
-  CLI::App app{"Generated LIRA simulator (interpreter)"};
+  CLI::App app{"Generated LIRA AArch64 simulator (interpreter)"};
 
   app.add_option("elf", elfPath, "Path to executable ELF file")
       ->required()
       ->check(CLI::ExistingFile);
   app.add_flag("--propagate-exit", propagateExit,
                "Propagate exit code from guest to host");
+  app.add_flag("-q,--quiet", quiet, "Do not print statistics");
 
   CLI11_PARSE(app, argc, argv);
 
   auto hart = [&] {
-    prot::elf_loader::RiscvElfLoader loader{elfPath};
+    prot::elf_loader::Aarch64ElfLoader loader{elfPath};
 
     std::unique_ptr<prot::engine::ExecEngine> engine =
         std::make_unique<prot::engine::Interpreter>();
@@ -41,7 +43,7 @@ int main(int argc, const char *argv[]) try {
     prot::hart::Hart hart{prot::memory::makePlain(4ULL << 30U),
                           std::move(engine)};
     hart.load(loader);
-    hart.cpu().setXRegs(kSPRegister, stackTop);
+    hart.cpu().setX(kSPRegister, stackTop);
     return hart;
   }();
 
@@ -50,10 +52,12 @@ int main(int argc, const char *argv[]) try {
   auto end = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double> duration = end - start;
 
-  fmt::println("icount: {}", hart.getIcount());
-  fmt::println("time: {} s", duration.count());
-  fmt::println("MIPS: {:.2f}",
-               hart.getIcount() / (duration.count() * 1'000'000));
+  if (!quiet) {
+    fmt::println(std::cerr, "icount: {}", hart.getIcount());
+    fmt::println(std::cerr, "time: {} s", duration.count());
+    fmt::println(std::cerr, "MIPS: {:.2f}",
+                 hart.getIcount() / (duration.count() * 1'000'000));
+  }
 
   return propagateExit ? hart.getExitCode() : EXIT_SUCCESS;
 } catch (const std::exception &ex) {

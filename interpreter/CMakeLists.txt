@@ -27,6 +27,11 @@ set(INTERP_OUT_DIR "${CMAKE_BINARY_DIR}/interpreter"
     CACHE PATH "Directory for the generated interpreter sources")
 
 set(INTERPRETER_SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}")
+set(INTERP_RUNTIME_DIR "${INTERPRETER_SOURCE_DIR}/runtime")
+set(INTERP_TARGET_DIR "${INTERPRETER_SOURCE_DIR}/Target/${ARCH_TARGET}")
+
+# Target description: sets TARGET_IR, TARGET_RUNTIME_SOURCES and TARGET_SIM_MAIN
+include(${INTERP_TARGET_DIR}/target.cmake)
 
 set(INTERP_GENERATED
   ${INTERP_OUT_DIR}/isa.hh
@@ -42,49 +47,17 @@ set(INTERP_GENERATED
   ${INTERP_OUT_DIR}/naive_interpreter.cc
 )
 
-set(INTERP_GENERATOR_DEPS
-  ${INTERPRETER_SOURCE_DIR}/main.py
-  ${INTERPRETER_SOURCE_DIR}/config.py
-  ${INTERPRETER_SOURCE_DIR}/emitter.py
-  ${INTERPRETER_SOURCE_DIR}/interface.py
-  ${INTERPRETER_SOURCE_DIR}/templates.py
-  ${INTERPRETER_SOURCE_DIR}/templates/isa.hh.jinja
-  ${INTERPRETER_SOURCE_DIR}/templates/decoder.hh.jinja
-  ${INTERPRETER_SOURCE_DIR}/templates/decoder.cc.jinja
-  ${INTERPRETER_SOURCE_DIR}/templates/naive_interpreter.hh.jinja
-  ${INTERPRETER_SOURCE_DIR}/templates/naive_interpreter.cc.jinja
-  ${INTERPRETER_SOURCE_DIR}/templates/snippets.hh.jinja
-  ${INTERPRETER_SOURCE_DIR}/templates/snippets.cc.jinja
-  ${INTERPRETER_SOURCE_DIR}/templates/base_ops.hh.jinja
-  ${INTERPRETER_SOURCE_DIR}/templates/base_ops.cc.jinja
-  ${INTERPRETER_SOURCE_DIR}/templates/cpu_state.hh.jinja
-  ${INTERPRETER_SOURCE_DIR}/templates/cpu_state.cc.jinja
-  ${INTERPRETER_SOURCE_DIR}/Target/__init__.py
-  ${INTERPRETER_SOURCE_DIR}/Target/${ARCH_TARGET}/__init__.py
-  ${INTERPRETER_SOURCE_DIR}/Target/${ARCH_TARGET}/regfile.py
-  ${INTERPRETER_SOURCE_DIR}/Target/${ARCH_TARGET}/interface.py
-  ${INTERPRETER_SOURCE_DIR}/Target/${ARCH_TARGET}/base_ops.py
-  ${INTERPRETER_SOURCE_DIR}/Target/${ARCH_TARGET}/templates.py
-  ${CMAKE_SOURCE_DIR}/lib/builders.py
-  ${CMAKE_SOURCE_DIR}/lib/driver.py
-  ${CMAKE_SOURCE_DIR}/lib/instruction.py
-  ${CMAKE_SOURCE_DIR}/lib/interface.py
-  ${CMAKE_SOURCE_DIR}/lib/nodes.py
-  ${CMAKE_SOURCE_DIR}/lib/operand.py
-  ${CMAKE_SOURCE_DIR}/lib/regfile.py
-  ${CMAKE_SOURCE_DIR}/lib/types.py
-  ${CMAKE_SOURCE_DIR}/lib/cpp/base_ops.py
-  ${CMAKE_SOURCE_DIR}/lib/cpp/func.py
-  ${CMAKE_SOURCE_DIR}/lib/cpp/templates.py
-  ${CMAKE_SOURCE_DIR}/data/${ARCH_TARGET}/RV32I.yaml
+file(GLOB INTERP_GENERATOR_DEPS
+  ${INTERPRETER_SOURCE_DIR}/*.py
+  ${INTERPRETER_SOURCE_DIR}/templates/*.jinja
+  ${INTERPRETER_SOURCE_DIR}/Target/*.py
+  ${INTERP_TARGET_DIR}/*.py
+  ${INTERP_TARGET_DIR}/templates/*.jinja
+  ${CMAKE_SOURCE_DIR}/lib/*.py
+  ${CMAKE_SOURCE_DIR}/lib/cpp/*.py
+  ${CMAKE_SOURCE_DIR}/lib/cpp/templates/*.jinja
 )
-
-file(GLOB LIB_CPP_TEMPLATES "${CMAKE_SOURCE_DIR}/lib/cpp/templates/*.jinja")
-list(APPEND INTERP_GENERATOR_DEPS ${LIB_CPP_TEMPLATES})
-
-file(GLOB INTERP_TARGET_TEMPLATES
-     "${INTERPRETER_SOURCE_DIR}/Target/${ARCH_TARGET}/templates/*.jinja")
-list(APPEND INTERP_GENERATOR_DEPS ${INTERP_TARGET_TEMPLATES})
+list(APPEND INTERP_GENERATOR_DEPS ${TARGET_IR})
 
 add_custom_command(
   OUTPUT ${INTERP_GENERATED}
@@ -94,39 +67,45 @@ add_custom_command(
           "PYTHONPATH=${CMAKE_SOURCE_DIR}"
           ${Python3_EXECUTABLE}
           ${INTERPRETER_SOURCE_DIR}/main.py
-          --ir-path ${CMAKE_SOURCE_DIR}/data/${ARCH_TARGET}/RV32I.yaml
+          --ir-path ${TARGET_IR}
           --out-dir ${INTERP_OUT_DIR}
+          --target ${ARCH_TARGET}
   COMMENT "Generating LIRA interpreter sources"
 )
 
 add_custom_target(gen-interp DEPENDS ${INTERP_GENERATED})
 
-set(INTERP_RUNTIME_DIR "${INTERPRETER_SOURCE_DIR}/runtime")
-
-add_executable(sim-interp
+# Generated interpreter + generic and target runtime (everything but main)
+add_library(interp-core OBJECT
   ${INTERP_OUT_DIR}/decoder.cc
   ${INTERP_OUT_DIR}/snippets.cc
   ${INTERP_OUT_DIR}/base_ops.cc
   ${INTERP_OUT_DIR}/naive_interpreter.cc
+  ${INTERP_OUT_DIR}/cpu_state.cc
   ${INTERP_RUNTIME_DIR}/base_exec_engine.cc
   ${INTERP_RUNTIME_DIR}/hart.cc
   ${INTERP_RUNTIME_DIR}/memory.cc
   ${INTERP_RUNTIME_DIR}/elf_loader.cc
-  ${INTERP_OUT_DIR}/cpu_state.cc
-  ${INTERP_RUNTIME_DIR}/Target/${ARCH_TARGET}/cpu_state_ext.cc
-  ${INTERP_RUNTIME_DIR}/Target/${ARCH_TARGET}/riscv_elf_loader.cc
-  ${INTERP_RUNTIME_DIR}/Target/${ARCH_TARGET}/sim.cc
+  ${TARGET_RUNTIME_SOURCES}
 )
+set_target_properties(interp-core PROPERTIES POSITION_INDEPENDENT_CODE ON)
+target_include_directories(interp-core PUBLIC
+  ${INTERP_OUT_DIR}
+  ${INTERP_RUNTIME_DIR}
+  ${INTERP_RUNTIME_DIR}/Target/${ARCH_TARGET}
+)
+target_link_libraries(interp-core PUBLIC elfio CLI11 fmt)
+target_compile_features(interp-core PUBLIC cxx_std_20)
+
+add_executable(sim-interp ${TARGET_SIM_MAIN})
 set_target_properties(sim-interp PROPERTIES
   OUTPUT_NAME interpreter
   RUNTIME_OUTPUT_DIRECTORY "${INTERP_OUT_DIR}")
-
-target_include_directories(sim-interp PRIVATE
-  ${INTERP_OUT_DIR}
-  ${INTERP_RUNTIME_DIR}
-)
-
-target_link_libraries(sim-interp PRIVATE elfio CLI11 fmt)
-target_compile_features(sim-interp PRIVATE cxx_std_20)
+target_link_libraries(sim-interp PRIVATE interp-core)
 
 add_custom_target(build-interp DEPENDS sim-interp)
+
+# Optional target-specific extras (e.g. test libraries)
+if(EXISTS ${INTERP_TARGET_DIR}/extra.cmake)
+  include(${INTERP_TARGET_DIR}/extra.cmake)
+endif()

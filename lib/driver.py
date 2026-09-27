@@ -25,19 +25,17 @@ class Driver:
 
         self.interfaces = InterfacesRegistry.from_arch(self.arch, self.attributes)
 
-        self.snippet_funcs = self.process_snippets()
-
         self.config = config
 
         supported = self.config.supported_instructions
-        self.insts = self.process_instrs(
-            [
-                insn
-                for insn in self.arch.instructions
-                if (supported is None or insn.name in supported)
-                and insn.name not in self.config.excluded_instructions
-            ],
-        )
+        insns = [
+            insn
+            for insn in self.arch.instructions
+            if (supported is None or insn.name in supported)
+            and insn.name not in self.config.excluded_instructions
+        ]
+        self.snippet_funcs = self.process_snippets(insns)
+        self.insts = self.process_instrs(insns)
 
     def process_attributes(self) -> Dict[str, object]:
         attributes: Dict[str, object] = {}
@@ -49,10 +47,36 @@ class Driver:
                         attributes[attribute] = model.register(reg)
         return attributes
 
-    def process_snippets(self) -> List[Func]:
+    def used_snippets(self, insns) -> List[str]:
+        """Snippets a simulator needs: decoders, decode constraints and the
+        semantics of snippet-defined operations (transitively). Encoders are
+        not needed."""
+        pending = []
+        for insn in insns:
+            pending += list(insn.encoding.decode)
+            if insn.encoding.constraint_decode:
+                pending.append(insn.encoding.constraint_decode)
+            pending += self._op_snippets(insn.semantic)
+        used = set()
+        while pending:
+            name = pending.pop()
+            if name in used:
+                continue
+            used.add(name)
+            pending += self._op_snippets(self.index.snippet[name].seq)
+        return [name for name in self.index.snippet if name in used]
+
+    def _op_snippets(self, seq) -> List[str]:
         return [
-            Func.from_snippet(snippet, self.index)
-            for snippet in self.index.snippet.values()
+            self.index.op[stmt.specifier].semantic_func
+            for stmt in seq.stmts
+            if stmt.kind == "op" and self.index.op[stmt.specifier].semantic_func
+        ]
+
+    def process_snippets(self, insns) -> List[Func]:
+        return [
+            Func.from_snippet(self.index.snippet[name], self.index)
+            for name in self.used_snippets(insns)
         ]
 
     def process_instrs(self, insns) -> List[Instruction]:

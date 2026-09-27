@@ -35,5 +35,13 @@ class Instruction:
         return self.insn.encoding.constraint_decode
 
     @property
+    def const_mask(self) -> int:
+        return self.insn.encoding.const_mask
+
+    @property
+    def const_value(self) -> int:
+        return self.insn.encoding.const_encoding_part
+
+    @property
     def ilen(self) -> int:
         return self.insn.encoding.encoded_size // 8

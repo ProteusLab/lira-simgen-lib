@@ -30,12 +30,9 @@ class Constant(Variable):
         super().__init__(name, width)
         self.value: str = value
 
-    def __str__(self) -> str:
-        return self.definition
-
     @property
     def definition(self) -> str:
-        return f"{self.type} {self.name} = {self.value};"
+        return f"{self.type} {self.name} = {OperandType.literal(int(self.value), self.width)};"
 
 
 class Register(Variable):

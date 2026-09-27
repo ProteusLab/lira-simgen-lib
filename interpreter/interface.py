@@ -81,6 +81,7 @@ class SetPC(CpuInterface):
   // Set PC function
   void CPU::{self.name}(const {t} value) {{
     m_{self.pc.name} = value;
+    m_pcWritten = true;
   }}
 """
 

@@ -12,10 +12,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from lib.driver import Driver
 
+from interpreter import Target
 from interpreter.config import SimpleInterpConfig
-
-import interpreter.Target.RISC_V.interface
-import interpreter.Target.RISC_V.regfile
 
 
 def main() -> None:
@@ -27,9 +25,14 @@ def main() -> None:
         type=Path,
         help="Directory for the generated sources",
     )
+    ap.add_argument(
+        "--target",
+        default="RISC_V",
+        help="Target directory under interpreter/Target (default: RISC_V)",
+    )
     args = ap.parse_args()
 
-    cfg = SimpleInterpConfig()
+    cfg = SimpleInterpConfig(Target.load(args.target))
     driver = Driver(args.ir_path, cfg)
     cfg.emit(driver, args.out_dir)
 

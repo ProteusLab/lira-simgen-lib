@@ -19,11 +19,11 @@ class Hart {
 public:
   Hart(std::unique_ptr<Memory> mem, std::unique_ptr<ExecEngine> engine);
 
-  void setRegister(uint32_t index, uint32_t value);
+  CPU &cpu() { return *m_cpu; }
 
   void load(const ElfLoader &loader);
 
-  void setPC(uint32_t addr);
+  void setPC(isa::Addr addr);
 
   void run() {
     while (!m_cpu->m_finished) {

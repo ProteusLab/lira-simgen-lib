@@ -13,7 +13,10 @@ class SimpleInterpConfig(IConfig):
     CPU_VAR = "cpu"
     MEM_VAR = "mem"
 
-    def __init__(self):
+    def __init__(self, target=None):
+        from interpreter.Target import TargetInfo
+
+        self.target = target if target is not None else TargetInfo()
         self.templates = Templates(self.templates_dir)
         self.emitter = InterpEmitter(self)
 

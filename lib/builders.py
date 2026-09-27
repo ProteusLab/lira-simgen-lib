@@ -1,7 +1,7 @@
 # lira-simgen-lib/simgen/builders.py
 
 from abc import ABC, ABCMeta, abstractmethod
-from typing import Dict, List, Optional, cast
+from typing import Dict, List, Optional
 
 from lira.arch import Instruction as LiraInstruction
 from lira.arch_utils import ArchIndex
@@ -20,6 +20,8 @@ from lira.ir_std import (
 
 from lib.config import IConfig
 from lib.nodes import (
+    CondEnv as CondEnvNode,
+    ConstDef,
     EnvExec,
     Input,
     Op,
@@ -88,6 +90,7 @@ class CodeBuilder(IBuilder, metaclass=BuilderMeta):
         self.params: List[Variable] = params if params is not None else [self.mach_inst]
         self.nodes: List[object] = []
         self._vars: Dict[str, Variable] = {}
+        self._outputs: Dict[int, Variable] = {}
 
     def _dispatch(self, stmt: Statement) -> None:
         handler_cls = type(self).handlers.get(stmt.kind)
@@ -98,6 +101,8 @@ class CodeBuilder(IBuilder, metaclass=BuilderMeta):
     def build(self, seq: StatementSeq) -> List[object]:
         for stmt in seq.stmts:
             self._dispatch(stmt)
+        if self._outputs:
+            self.nodes.append(Return([self._outputs[i] for i in sorted(self._outputs)]))
         return self.nodes
 
     def variable(self, name: str, width: int) -> Variable:
@@ -128,24 +133,26 @@ class CodeBuilder(IBuilder, metaclass=BuilderMeta):
             out = self.stmt.outputs[0]
             const = Constant(out, self.stmt.outputs_types[0], self.stmt.specifier)
             builder._vars[out] = const
-            builder.nodes.append(const)
+            builder.nodes.append(ConstDef(const))
 
     @serves(StmtOp.kind)
     class OpHandler(StmtHandler):
         def build(self) -> None:
             builder = self.builder
-            out = self.stmt.outputs[0]
-            var = builder.variable(out, self.stmt.outputs_types[0])
+            outs = [
+                builder.variable(name, width)
+                for name, width in zip(self.stmt.outputs, self.stmt.outputs_types)
+            ]
             inputs = [builder.resolve_var(a) for a in self.stmt.inputs]
             op = builder.index.op[self.stmt.specifier]
-            builder.nodes.append(Op(var, op, inputs))
+            builder.nodes.append(Op(outs, op, inputs))
 
     @serves(StmtOutput.kind)
     class Output(StmtHandler):
         def build(self) -> None:
             builder = self.builder
             val = builder.resolve_var(self.stmt.inputs[0])
-            builder.nodes.append(Return(val))
+            builder._outputs[int(self.stmt.specifier)] = val
 
 
 class SemanticBuilder(CodeBuilder):
@@ -166,15 +173,22 @@ class SemanticBuilder(CodeBuilder):
             if scan_fn is not None:
                 scan_fn(stmt)
 
-    def _scan_read(self, stmt: Statement) -> None:
+    def _operand_index(self, stmt: Statement) -> Optional[int]:
+        """Operand that directly provides the register index of a read/write."""
         producer = stmt.input(0, self.insn.semantic)
-        idx = int(producer.specifier)
-        self.read_operands.append(self.insn.operand_names[idx])
+        if producer.kind != StmtInput.kind:
+            return None
+        return int(producer.specifier)
+
+    def _scan_read(self, stmt: Statement) -> None:
+        idx = self._operand_index(stmt)
+        if idx is not None:
+            self.read_operands.append(self.insn.operand_names[idx])
 
     def _scan_write(self, stmt: Statement) -> None:
-        producer = stmt.input(0, self.insn.semantic)
-        idx = int(producer.specifier)
-        self.write_operands.append(self.insn.operand_names[idx])
+        idx = self._operand_index(stmt)
+        if idx is not None:
+            self.write_operands.append(self.insn.operand_names[idx])
 
     def _scan_env(self, stmt: Statement) -> None:
         interface = self.interfaces[stmt.specifier]
@@ -212,8 +226,9 @@ class SemanticBuilder(CodeBuilder):
         for stmt in self.insn.semantic.stmts:
             if stmt.kind not in (StmtRead.kind, StmtWrite.kind):
                 continue
-            producer = stmt.input(0, self.insn.semantic)
-            self.regs[int(producer.specifier)].rf = self.reg_files[stmt.specifier]
+            idx = self._operand_index(stmt)
+            if idx is not None:
+                self.regs[idx].rf = self.reg_files[stmt.specifier]
 
     def build(self, seq: StatementSeq) -> List[object]:
         self._scan()
@@ -230,20 +245,20 @@ class SemanticBuilder(CodeBuilder):
     class Read(StmtHandler):
         def build(self) -> None:
             builder = self.builder
-            producer = self.stmt.input(0, builder.insn.semantic)
-            reg = cast(Register, builder.resolve_var(producer.outputs[0]))
+            index = builder.resolve_var(self.stmt.inputs[0])
             out = self.stmt.outputs[0]
             var = builder.variable(out, self.stmt.outputs_types[0])
-            builder.nodes.append(ReadReg(reg, var))
+            rf = builder.reg_files[self.stmt.specifier]
+            builder.nodes.append(ReadReg(rf, index, var))
 
     @serves(StmtWrite.kind)
     class Write(StmtHandler):
         def build(self) -> None:
             builder = self.builder
-            producer = self.stmt.input(0, builder.insn.semantic)
-            reg = cast(Register, builder.resolve_var(producer.outputs[0]))
+            index = builder.resolve_var(self.stmt.inputs[0])
             val = builder.resolve_var(self.stmt.inputs[1])
-            builder.nodes.append(WriteReg(reg, val))
+            rf = builder.reg_files[self.stmt.specifier]
+            builder.nodes.append(WriteReg(rf, index, val))
 
     @serves(StmtEnv.kind)
     class Env(StmtHandler):
@@ -269,7 +284,26 @@ class SemanticBuilder(CodeBuilder):
     @serves(CondEnv.kind)
     class CondEnv(StmtHandler):
         def build(self) -> None:
-            raise NotImplementedError("'cond_env' statement is not supported yet")
+            builder = self.builder
+            interface = builder.interfaces[self.stmt.specifier]
+            if interface.has_mem:
+                builder.has_mem = True
+            args = [builder.resolve_var(a) for a in self.stmt.inputs]
+            outs = [
+                builder.variable(name, width)
+                for name, width in zip(self.stmt.outputs, self.stmt.outputs_types)
+            ]
+            # inputs: cond, env arguments..., on_false values (one per output)
+            num_args = len(args) - 1 - len(outs)
+            builder.nodes.append(
+                CondEnvNode(
+                    args[0],
+                    args[1 : 1 + num_args],
+                    args[1 + num_args :],
+                    outs,
+                    interface,
+                )
+            )
 
     @serves(StmtDynConst.kind)
     class DynConst(StmtHandler):

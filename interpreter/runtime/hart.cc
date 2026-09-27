@@ -10,8 +10,5 @@ void Hart::load(const ElfLoader &loader) {
   setPC(loader.getEntryPoint());
 }
 
-void Hart::setRegister(uint32_t index, uint32_t value) {
-  m_cpu->setXRegs(index, value);
-}
-void Hart::setPC(uint32_t addr) { m_cpu->setPC(addr); }
+void Hart::setPC(isa::Addr addr) { m_cpu->setPC(addr); }
 } // namespace prot::hart

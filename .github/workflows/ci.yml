@@ -28,7 +28,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        arch: [RISC_V]
+        arch: [RISC_V, AArch64]
         build_type: [Release, Debug]
     steps:
       - uses: actions/checkout@v4
