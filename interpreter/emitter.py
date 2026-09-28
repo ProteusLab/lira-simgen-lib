@@ -80,9 +80,10 @@ class InterpEmitter:
             self.cfg.templates.render(self.cfg.cpu_state_cc_jinja, defs=defs),
         )
 
-    def base_ops(self, operations) -> Tuple[str, str]:
+    def base_ops(self, operations, tables) -> Tuple[str, str]:
         # snippet-defined operations are emitted with the snippets
-        funcs = [Func.from_op(op) for op in operations if not op.semantic_func]
+        by_name = {t.name: t for t in tables}
+        funcs = [Func.from_op(op, by_name) for op in operations if not op.semantic_func]
 
         decls = "\n".join(f.declaration for f in funcs)
         defs = "\n".join(f.definition for f in funcs)

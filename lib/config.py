@@ -59,7 +59,7 @@ class IConfig(ABC):
         pass
 
     @abstractmethod
-    def emit_base_ops(self, operations) -> Tuple[str, str]:
+    def emit_base_ops(self, operations, tables) -> Tuple[str, str]:
         pass
 
     @abstractmethod
@@ -68,7 +68,7 @@ class IConfig(ABC):
 
     def artifacts(self, driver) -> Dict[Path, str]:
         dec_hh, dec_cc = self.emit_decoder(driver.index, driver.insts)
-        ops_hh, ops_cc = self.emit_base_ops(driver.arch.operations)
+        ops_hh, ops_cc = self.emit_base_ops(driver.arch.operations, driver.arch.tables_int)
         snp_hh, snp_cc = self.emit_snippets(driver)
         return {
             self.decoder_hh: dec_hh,

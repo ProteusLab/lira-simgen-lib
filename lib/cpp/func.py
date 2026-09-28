@@ -28,6 +28,14 @@ def _masked(body: str, width: int, ret: str) -> str:
   return ({ret})(r & {mask});"""
 
 
+def _table_body(table, op) -> str:
+    """out = table[a] (an index outside the table gives 0)."""
+    t = OperandType.gen(op.outputs[0])
+    values = ", ".join(str(v) for v in table.values)
+    return f"""  static constexpr {t} table[{len(table.values)}] = {{{values}}};
+  return a < {len(table.values)} ? table[a] : 0;"""
+
+
 @dataclass
 class Func:
     name: str
@@ -36,11 +44,16 @@ class Func:
     body: str
 
     @classmethod
-    def from_op(cls, op) -> "Func":
+    def from_op(cls, op, tables=None) -> "Func":
+        """The C++ function of an operation; a table operation needs `tables`
+        (name -> TableInt) for its body."""
         ret = OperandType.tuple(op.outputs)
         if op.semantic_func:
             # Defined by a snippet (emitted with the other snippets)
             return cls(op.semantic_func, ret, _letter_params(op.inputs), "")
+        if op.semantic_table:
+            body = _table_body(tables[op.semantic_table], op) if tables else ""
+            return cls(op.name, ret, _letter_params(op.inputs), body)
         body_fn = getattr(type(op), "_cpp_body", None)
         if body_fn is None:
             raise ValueError(f"No C++ body defined for operation {op.name}")

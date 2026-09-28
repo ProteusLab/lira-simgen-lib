@@ -125,8 +125,8 @@ class SimpleInterpConfig(IConfig):
     def emit_decoder(self, index, insts) -> Tuple[str, str]:
         return self.emitter.decoder(index, insts)
 
-    def emit_base_ops(self, operations) -> Tuple[str, str]:
-        return self.emitter.base_ops(operations)
+    def emit_base_ops(self, operations, tables) -> Tuple[str, str]:
+        return self.emitter.base_ops(operations, tables)
 
     def emit_snippets(self, driver) -> Tuple[str, str]:
         return self.emitter.snippets(driver.snippet_funcs)

@@ -33,6 +33,9 @@ Consumers import the library as `lib`.
 
 ## Targets
 
+A table operation (`semantic_table`) is a lookup in a `static constexpr`
+copy of the description's table.
+
 A value of a vector statement (shape N > 1) is a `std::array` of N lanes;
 lane-wise statements (`op`, `fop`, `env`, `cond_env`) become loops over the
 lanes, and `index`, `replicate`, `gather`, `extract_first`, `extend_zero`,

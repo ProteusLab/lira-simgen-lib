@@ -155,7 +155,8 @@ if __name__ == "__main__":
     args = ap.parse_args()
 
     arch = read_arch(args.ir_path)
-    funcs = [Func.from_op(op) for op in arch.operations]
+    tables = {t.name: t for t in arch.tables_int}
+    funcs = [Func.from_op(op, tables) for op in arch.operations]
 
     decls = "\n".join(f.declaration for f in funcs)
     defs = "\n".join(f.definition for f in funcs)
