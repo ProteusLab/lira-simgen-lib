@@ -156,6 +156,104 @@ class CondEnv(Node):
         return f"{defs}if ({self.cond}) {{\n{call}\n}} else {{\n{other}\n}}\n"
 
 
+LANE_INDEX = "lane_i"
+
+
+class LaneLoop(Node):
+    """A lane-wise statement (`op`, `fop`, `env`, `cond_env` on vectors): the
+    scalar node `body` (built on LaneViews) run for every lane."""
+
+    def __init__(self, outs: List[Variable], lanes: int, body: Node):
+        self.outs: List[Variable] = outs
+        self.lanes: int = lanes
+        self.body: Node = body
+
+    def cpp_body(self) -> str:
+        defs = "".join(f"{o.definition}\n" for o in self.outs)
+        return f"""{defs}for (std::size_t {LANE_INDEX} = 0; {LANE_INDEX} < {self.lanes}; ++{LANE_INDEX}) {{
+{self.body.cpp_body()}
+}}
+"""
+
+
+class VecCall(Node):
+    """`out = prot::vec::<helper><decltype(out)>(args...)` (runtime/lira_vec.hh):
+    index, replicate, gather, extract_first, extend_zero."""
+
+    def __init__(self, out: Variable, helper: str, args: List[Variable]):
+        self.out: Variable = out
+        self.helper: str = helper
+        self.args: List[Variable] = args
+
+    def cpp_body(self) -> str:
+        args = ", ".join(a.name for a in self.args)
+        return f"""{self.out.definition}
+{self.out} = prot::vec::{self.helper}<decltype({self.out})>({args});
+"""
+
+
+class Fold(Node):
+    """`fold op state vectors...`: state = op(state, lanes...) over the lanes."""
+
+    def __init__(self, out: Variable, op: Operation, state: Variable, vectors: List[Variable], lanes: int):
+        self.out: Variable = out
+        self.op: Operation = op
+        self.state: Variable = state
+        self.vectors: List[Variable] = vectors
+        self.lanes: int = lanes
+
+    def cpp_body(self) -> str:
+        from lib.cpp.func import Func
+
+        i = LANE_INDEX
+        args = [self.out.name] + [f"prot::vec::lane({v.name}, {i})" for v in self.vectors]
+        call = Func.from_op(self.op)(args)
+        return f"""{self.out.definition}
+{self.out} = {self.state};
+for (std::size_t {i} = 0; {i} < {self.lanes}; ++{i}) {{
+  {self.out} = {call};
+}}
+"""
+
+
+class ReadRegLanes(Node):
+    """`read` of a register as lanes of `lane_width` bits."""
+
+    def __init__(self, rf, index: Variable, var: Variable, reg_type: str, lane_width: int):
+        self.rf = rf
+        self.index: Variable = index
+        self.var: Variable = var
+        self.reg_type: str = reg_type
+        self.lane_width: int = lane_width
+
+    def cpp_body(self) -> str:
+        return f"""{self.var.definition}
+{{
+  {self.reg_type} reg{{0}};
+  {self.rf.read(self.index, "reg")}
+  {self.var} = prot::vec::unpack<decltype({self.var}), {self.lane_width}>(reg);
+}}
+"""
+
+
+class WriteRegLanes(Node):
+    """`write` of lanes of `lane_width` bits to a register."""
+
+    def __init__(self, rf, index: Variable, value: Variable, reg_type: str, lane_width: int):
+        self.rf = rf
+        self.index: Variable = index
+        self.value: Variable = value
+        self.reg_type: str = reg_type
+        self.lane_width: int = lane_width
+
+    def cpp_body(self) -> str:
+        return f"""{{
+  const {self.reg_type} reg = prot::vec::pack<{self.reg_type}, {self.lane_width}>({self.value});
+  {self.rf.write(self.index, "reg")}
+}}
+"""
+
+
 class Return(Node):
     def __init__(self, values: List[Variable]):
         self.values: List[Variable] = values
@@ -172,14 +270,6 @@ class Return(Node):
 
 class DynConst(Node):
     """Stub: the dyn_const statement is not supported yet."""
-
-
-class Gather(Node):
-    """Stub: the gather statement is not supported yet."""
-
-
-class Fold(Node):
-    """Stub: the fold statement is not supported yet."""
 
 
 class Scan(Node):

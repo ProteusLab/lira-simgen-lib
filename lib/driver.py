@@ -71,7 +71,7 @@ class Driver:
         return [
             self.index.op[stmt.specifier].semantic_func
             for stmt in seq.stmts
-            if stmt.kind == "op" and self.index.op[stmt.specifier].semantic_func
+            if stmt.kind in ("op", "fold") and self.index.op[stmt.specifier].semantic_func
         ]
 
     def process_snippets(self, insns) -> List[Func]:

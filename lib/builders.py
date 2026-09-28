@@ -21,20 +21,27 @@ from lira.ir_std import (
 
 from lib.config import IConfig
 from lib.nodes import (
+    LANE_INDEX,
     CondEnv as CondEnvNode,
     ConstDef,
     EnvExec,
+    Fold,
     Fop,
     Input,
+    LaneLoop,
     Op,
     ReadMem,
     ReadReg,
+    ReadRegLanes,
     Return,
+    VecCall,
     WriteReg,
+    WriteRegLanes,
 )
 
 
-from lib.operand import Constant, Register, Variable
+from lib.operand import Constant, LaneView, Register, Variable
+from lib.types import OperandType
 
 
 class IBuilder(ABC):
@@ -107,15 +114,36 @@ class CodeBuilder(IBuilder, metaclass=BuilderMeta):
             self.nodes.append(Return([self._outputs[i] for i in sorted(self._outputs)]))
         return self.nodes
 
-    def variable(self, name: str, width: int) -> Variable:
+    def variable(self, name: str, width: int, lanes: int = 1) -> Variable:
         if name in self._vars:
             return self._vars[name]
-        var = Variable(name, width)
+        var = Variable(name, width, lanes)
         self._vars[name] = var
         return var
 
     def resolve_var(self, name: str) -> Variable:
         return self._vars[name]
+
+    def outputs(self, stmt: Statement) -> List[Variable]:
+        """The output variables of a statement, with its shape."""
+        return [
+            self.variable(name, width, stmt.shape.lanes_base)
+            for name, width in zip(stmt.outputs, stmt.outputs_types)
+        ]
+
+    def lanewise(self, stmt: Statement, make_node) -> None:
+        """Add the node `make_node(outs, inputs)` for a statement that works
+        lane by lane: directly for a scalar, in a loop over the lanes of a
+        vector."""
+        outs = self.outputs(stmt)
+        inputs = [self.resolve_var(a) for a in stmt.inputs]
+        lanes = stmt.shape.lanes_base
+        if lanes == 1:
+            self.nodes.append(make_node(outs, inputs))
+            return
+        view = lambda v: LaneView(v, LANE_INDEX)  # noqa: E731
+        body = make_node([view(o) for o in outs], [view(i) for i in inputs])
+        self.nodes.append(LaneLoop(outs, lanes, body))
 
     @serves(StmtInput.kind)
     class InputHandler(StmtHandler):
@@ -133,21 +161,64 @@ class CodeBuilder(IBuilder, metaclass=BuilderMeta):
         def build(self) -> None:
             builder = self.builder
             out = self.stmt.outputs[0]
-            const = Constant(out, self.stmt.outputs_types[0], self.stmt.specifier)
+            const = Constant(
+                out,
+                self.stmt.outputs_types[0],
+                self.stmt.specifier,
+                self.stmt.shape.lanes_base,
+            )
             builder._vars[out] = const
             builder.nodes.append(ConstDef(const))
 
     @serves(StmtOp.kind)
     class OpHandler(StmtHandler):
         def build(self) -> None:
+            op = self.builder.index.op[self.stmt.specifier]
+            self.builder.lanewise(self.stmt, lambda outs, ins: Op(outs, op, ins))
+
+    class VecHandler(StmtHandler):
+        """Vector statement computed by a prot::vec helper."""
+
+        helper: str
+
+        def build(self) -> None:
             builder = self.builder
-            outs = [
-                builder.variable(name, width)
-                for name, width in zip(self.stmt.outputs, self.stmt.outputs_types)
-            ]
-            inputs = [builder.resolve_var(a) for a in self.stmt.inputs]
+            out = builder.outputs(self.stmt)[0]
+            args = [builder.resolve_var(a) for a in self.stmt.inputs]
+            builder.nodes.append(VecCall(out, self.helper, args))
+
+    @serves("index")
+    class Index(VecHandler):
+        helper = "iota"
+
+    @serves("replicate")
+    class Replicate(VecHandler):
+        helper = "splat"
+
+    @serves("gather")
+    class Gather(VecHandler):
+        helper = "gather"
+
+    @serves("extract_first")
+    class ExtractFirst(VecHandler):
+        helper = "resize"
+
+    @serves("extend_zero")
+    class ExtendZeroLanes(VecHandler):
+        helper = "resize"
+
+    @serves("fold")
+    class FoldHandler(StmtHandler):
+        def build(self) -> None:
+            builder = self.builder
+            if len(self.stmt.outputs) != 1:
+                raise NotImplementedError("'fold' with several state values")
+            out = builder.variable(self.stmt.outputs[0], self.stmt.outputs_types[0])
+            state, *vectors = [builder.resolve_var(a) for a in self.stmt.inputs]
             op = builder.index.op[self.stmt.specifier]
-            builder.nodes.append(Op(outs, op, inputs))
+            builder.nodes.append(
+                Fold(out, op, state, vectors, self.stmt.shape.lanes_base)
+            )
 
     @serves(StmtOutput.kind)
     class Output(StmtHandler):
@@ -254,15 +325,21 @@ class SemanticBuilder(CodeBuilder):
         def build(self) -> None:
             pass
 
+    def reg_width(self, rf_name: str) -> int:
+        return self.index.rf[rf_name].reg_size.lanes_base
+
     @serves(StmtRead.kind)
     class Read(StmtHandler):
         def build(self) -> None:
             builder = self.builder
             index = builder.resolve_var(self.stmt.inputs[0])
-            out = self.stmt.outputs[0]
-            var = builder.variable(out, self.stmt.outputs_types[0])
+            var = builder.outputs(self.stmt)[0]
             rf = builder.reg_files[self.stmt.specifier]
-            builder.nodes.append(ReadReg(rf, index, var))
+            if var.lanes == 1:
+                builder.nodes.append(ReadReg(rf, index, var))
+                return
+            reg_type = OperandType.gen(builder.reg_width(self.stmt.specifier))
+            builder.nodes.append(ReadRegLanes(rf, index, var, reg_type, var.width))
 
     @serves(StmtWrite.kind)
     class Write(StmtHandler):
@@ -271,7 +348,13 @@ class SemanticBuilder(CodeBuilder):
             index = builder.resolve_var(self.stmt.inputs[0])
             val = builder.resolve_var(self.stmt.inputs[1])
             rf = builder.reg_files[self.stmt.specifier]
-            builder.nodes.append(WriteReg(rf, index, val))
+            lanes = self.stmt.shape.lanes_base
+            if lanes == 1:
+                builder.nodes.append(WriteReg(rf, index, val))
+                return
+            width = builder.reg_width(self.stmt.specifier)
+            reg_type = OperandType.gen(width)
+            builder.nodes.append(WriteRegLanes(rf, index, val, reg_type, width // lanes))
 
     @serves(StmtEnv.kind)
     class Env(StmtHandler):
@@ -285,14 +368,12 @@ class SemanticBuilder(CodeBuilder):
                     f"{builder.insn.name}: env '{func.name}' is not supported yet"
                 )
 
-            inputs = [builder.resolve_var(a) for a in self.stmt.inputs]
             if self.stmt.outputs:
-                out = self.stmt.outputs[0]
-                width = self.stmt.outputs_types[0]
-                data = builder.variable(out, width)
-                builder.nodes.append(ReadMem(data, inputs, interface))
+                builder.lanewise(
+                    self.stmt, lambda outs, ins: ReadMem(outs[0], ins, interface)
+                )
             else:
-                builder.nodes.append(EnvExec(inputs, interface))
+                builder.lanewise(self.stmt, lambda outs, ins: EnvExec(ins, interface))
 
     @serves(CondEnv.kind)
     class CondEnv(StmtHandler):
@@ -301,36 +382,27 @@ class SemanticBuilder(CodeBuilder):
             interface = builder.interfaces[self.stmt.specifier]
             if interface.has_mem:
                 builder.has_mem = True
-            args = [builder.resolve_var(a) for a in self.stmt.inputs]
-            outs = [
-                builder.variable(name, width)
-                for name, width in zip(self.stmt.outputs, self.stmt.outputs_types)
-            ]
             # inputs: cond, env arguments..., on_false values (one per output)
-            num_args = len(args) - 1 - len(outs)
-            builder.nodes.append(
-                CondEnvNode(
+            num_args = len(self.stmt.inputs) - 1 - len(self.stmt.outputs)
+            builder.lanewise(
+                self.stmt,
+                lambda outs, args: CondEnvNode(
                     args[0],
                     args[1 : 1 + num_args],
                     args[1 + num_args :],
                     outs,
                     interface,
-                )
+                ),
             )
 
     @serves(StmtFop.kind)
     class FopHandler(StmtHandler):
         def build(self) -> None:
             builder = self.builder
-            if self.stmt.shape.lanes_base != 1 or self.stmt.shape.lanes_mult:
-                raise NotImplementedError("vector 'fop' is not supported yet")
-            outs = [
-                builder.variable(name, width)
-                for name, width in zip(self.stmt.outputs, self.stmt.outputs_types)
-            ]
-            inputs = [builder.resolve_var(a) for a in self.stmt.inputs]
             fop = builder.fops[self.stmt.specifier]
-            builder.nodes.append(Fop(outs, fop, inputs, builder.fpu))
+            builder.lanewise(
+                self.stmt, lambda outs, ins: Fop(outs, fop, ins, builder.fpu)
+            )
 
     @serves(StmtDynConst.kind)
     class DynConst(StmtHandler):

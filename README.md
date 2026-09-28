@@ -33,6 +33,11 @@ Consumers import the library as `lib`.
 
 ## Targets
 
+A value of a vector statement (shape N > 1) is a `std::array` of N lanes;
+lane-wise statements (`op`, `fop`, `env`, `cond_env`) become loops over the
+lanes, and `index`, `replicate`, `gather`, `extract_first`, `extend_zero`,
+`fold` and shaped register accesses use `interpreter/runtime/lira_vec.hh`.
+
 `fop` statements call the standard float operations of
 `interpreter/runtime/lira_fp.hh`, a C++ port of LIRA's reference
 (`lira/float_ops.py`: Arm FPU rules, exact rounding in every mode, FZ/FZ16/DN
@@ -46,8 +51,8 @@ and `interpreter/runtime/Target/<ARCH_TARGET>` (ELF loader, syscalls, `main`).
 - `RISC_V` — RV32I (`data/RISC_V/RV32I.yaml`).
 - `AArch64` — A64 base integer instructions, MRS/MSR for NZCV/FPCR/FPSR and
   the scalar v8.x instructions without FP, including exclusives, LSE atomics,
-  load-acquire/store-release, barriers and hints, the SIMD&FP register
-  file and scalar floating point (`data/AArch64/aarch64.yaml`,
+  load-acquire/store-release, barriers and hints, scalar floating point
+  and Advanced SIMD (`data/AArch64/aarch64.yaml`,
   generated in the LIRA repository by
   `python -m archs.aarch64.gen --simgen <path>`). Linux-style
   `exit`/`write` syscalls via `SVC`; a misaligned atomic, ordered or

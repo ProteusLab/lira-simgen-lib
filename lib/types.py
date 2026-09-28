@@ -17,6 +17,13 @@ class OperandType:
         return next(s for s in cls._STANDARD_WIDTHS if s >= width)
 
     @classmethod
+    def vector(cls, width: int, lanes: int) -> str:
+        """C++ type of a value of `lanes` lanes (runtime/lira_vec.hh)."""
+        if lanes == 1:
+            return cls.gen(width)
+        return f"std::array<{cls.gen(width)}, {lanes}>"
+
+    @classmethod
     def is_exact(cls, width: int) -> bool:
         """True if the C++ type holds exactly `width` bits (no masking needed)."""
         return width != 1 and width in cls._STANDARD_WIDTHS

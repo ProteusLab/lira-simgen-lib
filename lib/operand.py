@@ -9,16 +9,19 @@ from lib.types import OperandType
 
 
 class Variable:
-    def __init__(self, name: str, width: int):
+    """A value; `lanes` > 1 for the result of a vector statement."""
+
+    def __init__(self, name: str, width: int, lanes: int = 1):
         self.name: str = name
         self.width: int = width
+        self.lanes: int = lanes
 
     def __str__(self) -> str:
         return self.name
 
     @property
     def type(self) -> str:
-        return OperandType.gen(self.width)
+        return OperandType.vector(self.width, self.lanes)
 
     @property
     def definition(self) -> str:
@@ -26,13 +29,28 @@ class Variable:
 
 
 class Constant(Variable):
-    def __init__(self, name: str, width: int, value: str):
-        super().__init__(name, width)
+    def __init__(self, name: str, width: int, value: str, lanes: int = 1):
+        super().__init__(name, width, lanes)
         self.value: str = value
 
     @property
     def definition(self) -> str:
-        return f"{self.type} {self.name} = {OperandType.literal(int(self.value), self.width)};"
+        literal = OperandType.literal(int(self.value), self.width)
+        if self.lanes > 1:
+            literal = f"prot::vec::splat<{self.type}>({literal})"
+        return f"{self.type} {self.name} = {literal};"
+
+
+class LaneView(Variable):
+    """Lane `index` of a variable, inside a loop over the lanes of a vector
+    statement (defined by the loop, not by the node using it)."""
+
+    def __init__(self, var: Variable, index: str):
+        super().__init__(f"prot::vec::lane({var.name}, {index})", var.width)
+
+    @property
+    def definition(self) -> str:
+        return ""
 
 
 class Register(Variable):
