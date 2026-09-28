@@ -42,11 +42,13 @@ private:
 
 } // namespace
 
-// x: 32 registers (x0..x30, sp); nzcv: 4-bit flags; fpcr, fpsr: FP control
-// and status registers; pc. All in/out.
+// x: 32 registers (x0..x30, sp); v: 32 SIMD&FP registers as 64 words (low,
+// high); nzcv: 4-bit flags; fpcr, fpsr: FP control and status registers; pc.
+// All in/out.
 // Returns 0 on success, -1 if the word does not decode, -2 on a runtime error.
-extern "C" int lira_a64_exec(uint32_t word, uint64_t *x, uint64_t *nzcv,
-                             uint64_t *fpcr, uint64_t *fpsr, uint64_t *pc) try {
+extern "C" int lira_a64_exec(uint32_t word, uint64_t *x, uint64_t *v,
+                             uint64_t *nzcv, uint64_t *fpcr, uint64_t *fpsr,
+                             uint64_t *pc) try {
   auto insn = prot::decoder::decode(word);
   if (!insn) {
     return -1;
@@ -54,6 +56,7 @@ extern "C" int lira_a64_exec(uint32_t word, uint64_t *x, uint64_t *nzcv,
   prot::state::CPU cpu{};
   for (std::size_t i = 0; i < 32; ++i) {
     cpu.setX(i, x[i]);
+    cpu.setV(i, static_cast<unsigned __int128>(v[2 * i + 1]) << 64 | v[2 * i]);
   }
   cpu.m_nzcv = static_cast<uint8_t>(*nzcv);
   cpu.m_fpcr = static_cast<uint32_t>(*fpcr);
@@ -64,6 +67,8 @@ extern "C" int lira_a64_exec(uint32_t word, uint64_t *x, uint64_t *nzcv,
   engine.execute(cpu, mem, *insn);
   for (std::size_t i = 0; i < 32; ++i) {
     x[i] = cpu.getX<uint64_t>(i);
+    v[2 * i] = static_cast<uint64_t>(cpu.getV(i));
+    v[2 * i + 1] = static_cast<uint64_t>(cpu.getV(i) >> 64);
   }
   *nzcv = cpu.m_nzcv;
   *fpcr = cpu.m_fpcr;

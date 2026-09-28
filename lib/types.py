@@ -2,7 +2,7 @@
 
 
 class OperandType:
-    _STANDARD_WIDTHS = [1, 8, 16, 32, 64, 128]
+    _STANDARD_WIDTHS = [1, 8, 16, 32, 64, 128, 256]
 
     @classmethod
     def gen(cls, width: int, signed: bool = False) -> str:
@@ -24,6 +24,7 @@ class OperandType:
     @classmethod
     def literal(cls, value: int, width: int) -> str:
         """C++ literal for an unsigned constant of the given width."""
+        assert value >> 128 == 0, f"no C++ literal for {value:#x}"
         if width > 64 and value >> 64:
             hi, lo = value >> 64, value & ((1 << 64) - 1)
             return f"((uint128_t){hi:#x}ULL << 64 | {lo:#x}ULL)"

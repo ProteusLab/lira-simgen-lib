@@ -114,12 +114,25 @@ Select._cpp_body = lambda self: _render("select.jinja")
 ExtendSign._cpp_body = lambda self: _render(
     "extend_sign.jinja", iw=self.inputs[0], t=_out_type(self)
 )
-ExtendZero._cpp_body = lambda self: _render(
-    "extend_zero.jinja", iw=self.inputs[0], t=_out_type(self)
-)
-ExtractLow._cpp_body = lambda self: _render(
-    "extract_low.jinja", ow=self.outputs[0], t=_in_type(self)
-)
+# Values wider than 128 bits are uint256_t: an extension to them is a
+# conversion, an extraction from them takes the low 128-bit half (masked by
+# Func when the result is narrower).
+def _extend_zero(self) -> str:
+    if self.outputs[0] > 128:
+        return _render("extend_zero_wide.jinja", t=_out_type(self))
+    return _render("extend_zero.jinja", iw=self.inputs[0], t=_out_type(self))
+
+
+def _extract_low(self) -> str:
+    if self.inputs[0] > 128:
+        if self.outputs[0] > 128:
+            raise ValueError(f"{self.name}: no C++ body for results wider than 128 bits")
+        return _render("extract_low_wide.jinja", t=_out_type(self))
+    return _render("extract_low.jinja", ow=self.outputs[0], t=_in_type(self))
+
+
+ExtendZero._cpp_body = _extend_zero
+ExtractLow._cpp_body = _extract_low
 Popcnt._cpp_body = lambda self: _render("popcnt.jinja", width=self.inputs[0])
 Ctz._cpp_body = lambda self: _render("ctz.jinja", width=self.inputs[0])
 Clz._cpp_body = lambda self: _render("clz.jinja", width=self.inputs[0])

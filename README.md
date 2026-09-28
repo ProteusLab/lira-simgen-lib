@@ -40,7 +40,9 @@ and `interpreter/runtime/Target/<ARCH_TARGET>` (ELF loader, syscalls, `main`).
 - `RISC_V` — RV32I (`data/RISC_V/RV32I.yaml`).
 - `AArch64` — A64 base integer instructions, MRS/MSR for NZCV/FPCR/FPSR and
   the scalar v8.x instructions without FP, including exclusives, LSE atomics,
-  load-acquire/store-release, barriers and hints (`data/AArch64/aarch64.yaml`,
+  load-acquire/store-release, barriers and hints, and the SIMD&FP register
+  file with the instructions that only move or load/store it
+  (`data/AArch64/aarch64.yaml`,
   generated in the LIRA repository by
   `python -m archs.aarch64.gen --simgen <path>`). Linux-style
   `exit`/`write` syscalls via `SVC`; a misaligned atomic, ordered or
