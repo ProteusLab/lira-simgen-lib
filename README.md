@@ -61,7 +61,10 @@ and `interpreter/runtime/Target/<ARCH_TARGET>` (ELF loader, syscalls, `main`).
   `exit`/`write` syscalls via `SVC`; a misaligned atomic, ordered or
   exclusive access is an Alignment fault that stops the program. MOPS
   (CPY*/SET*) copy or set the whole block in the prologue; copies that may
-  overlap behave like memmove. The
+  overlap behave like memmove. Pointer authentication follows a Linux EL0
+  process (48-bit VAs, top byte ignored for data pointers only) with an
+  implementation-defined keyed hash as the PAC and fixed keys; a failed
+  authentication is a fault (FEAT_FPAC). The
   `a64-capi` target builds
   `liba64-capi` (single-instruction execution over host memory) used by the
   LIRA AArch64 tests.

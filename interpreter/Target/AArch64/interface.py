@@ -86,5 +86,10 @@ for _name in (
     "hint",
     "wait_timeout",
     "branch_target",
+    # Pointer authentication
+    "pac_add",
+    "pac_auth",
+    "pac_strip",
+    "pac_generic",
 ):
     serves(_name)(RuntimeCall)
