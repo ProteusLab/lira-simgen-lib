@@ -2534,6 +2534,16 @@ operations:
     semantic_func:
     semantic_func_128:
     semantic_table:
+  - name: extend_zero_6_to_8
+    attributes: []
+    inputs:
+      - 6
+    outputs:
+      - 8
+    semantic_base: extend_zero
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
   - name: sub_8
     attributes: []
     inputs:
@@ -5073,6 +5083,20 @@ snippets:
       1 32 _t5 = op lsl_32 _t3 _t4;
       1 32 _t6 = op orr_32 _t1 _t5;
       1 = output 0 _t6;
+  - name: encode_16w5_5w5
+    seq: |
+      1 32 _t1 = dyn_const enc_base;
+      1 5 _t2 = input 0;
+      1 32 _t3 = op extend_zero_5_to_32 _t2;
+      1 32 _t4 = const 16;
+      1 32 _t5 = op lsl_32 _t3 _t4;
+      1 32 _t6 = op orr_32 _t1 _t5;
+      1 5 _t7 = input 1;
+      1 32 _t8 = op extend_zero_5_to_32 _t7;
+      1 32 _t9 = const 5;
+      1 32 _t10 = op lsl_32 _t8 _t9;
+      1 32 _t11 = op orr_32 _t6 _t10;
+      1 = output 0 _t11;
   - name: decode_field_13_8
     seq: |
       1 32 _t1 = input 0;
@@ -5092,6 +5116,50 @@ snippets:
       1 32 _t8 = op extend_zero_5_to_32 _t7;
       1 32 _t9 = op orr_32 _t6 _t8;
       1 = output 0 _t9;
+  - name: constraint_encode_FCVTZS_32H_float2fix
+    seq: |
+      1 6 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 6 _t4 = const 5;
+      1 6 _t5 = op lsr_6 _t1 _t4;
+      1 1 _t6 = op extract_low_6_to_1 _t5;
+      1 1 _t7 = op not_1 _t6;
+      1 1 _t8 = op not_1 _t7;
+      1 = output 0 _t8;
+  - name: constraint_decode_FCVTZS_32H_float2fix
+    seq: |
+      1 32 _t1 = input 0;
+      1 32 _t2 = const 10;
+      1 32 _t3 = op lsr_32 _t1 _t2;
+      1 6 _t4 = op extract_low_32_to_6 _t3;
+      1 32 _t5 = const 5;
+      1 32 _t6 = op lsr_32 _t1 _t5;
+      1 5 _t7 = op extract_low_32_to_5 _t6;
+      1 5 _t8 = op extract_low_32_to_5 _t1;
+      1 6 _t9 = const 5;
+      1 6 _t10 = op lsr_6 _t4 _t9;
+      1 1 _t11 = op extract_low_6_to_1 _t10;
+      1 1 _t12 = op not_1 _t11;
+      1 1 _t13 = op not_1 _t12;
+      1 = output 0 _t13;
+  - name: encode_10w6_5w5_0w5
+    seq: |
+      1 32 _t1 = dyn_const enc_base;
+      1 6 _t2 = input 0;
+      1 32 _t3 = op extend_zero_6_to_32 _t2;
+      1 32 _t4 = const 10;
+      1 32 _t5 = op lsl_32 _t3 _t4;
+      1 32 _t6 = op orr_32 _t1 _t5;
+      1 5 _t7 = input 1;
+      1 32 _t8 = op extend_zero_5_to_32 _t7;
+      1 32 _t9 = const 5;
+      1 32 _t10 = op lsl_32 _t8 _t9;
+      1 32 _t11 = op orr_32 _t6 _t10;
+      1 5 _t12 = input 2;
+      1 32 _t13 = op extend_zero_5_to_32 _t12;
+      1 32 _t14 = op orr_32 _t11 _t13;
+      1 = output 0 _t14;
   - name: decode_field_18_1
     seq: |
       1 32 _t1 = input 0;
@@ -16770,6 +16838,1500 @@ instructions:
     semantic: |
       1 16 _t1 = input 0;
       1 = env supervisor_call _t1;
+  - name: FADD_H_floatdp2
+    attributes:
+      - datatype.half
+      - instr-class.float
+      - mnemonic.FADD
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 518006784
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 16 _t5 = op extract_low_128_to_16 _t4;
+      1 128 _t6 = read V _t1;
+      1 16 _t7 = op extract_low_128_to_16 _t6;
+      1 3 _t8 = const 7;
+      1 16 _t9 = fop fadd_16 _t5 _t7 _t8;
+      1 128 _t10 = op extend_zero_16_to_128 _t9;
+      1 = write V _t3 _t10;
+  - name: FADD_S_floatdp2
+    attributes:
+      - datatype.single
+      - instr-class.float
+      - mnemonic.FADD
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 505423872
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 32 _t5 = op extract_low_128_to_32 _t4;
+      1 128 _t6 = read V _t1;
+      1 32 _t7 = op extract_low_128_to_32 _t6;
+      1 3 _t8 = const 7;
+      1 32 _t9 = fop fadd_32 _t5 _t7 _t8;
+      1 128 _t10 = op extend_zero_32_to_128 _t9;
+      1 = write V _t3 _t10;
+  - name: FADD_D_floatdp2
+    attributes:
+      - datatype.double
+      - instr-class.float
+      - mnemonic.FADD
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 509618176
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 64 _t5 = op extract_low_128_to_64 _t4;
+      1 128 _t6 = read V _t1;
+      1 64 _t7 = op extract_low_128_to_64 _t6;
+      1 3 _t8 = const 7;
+      1 64 _t9 = fop fadd_64 _t5 _t7 _t8;
+      1 128 _t10 = op extend_zero_64_to_128 _t9;
+      1 = write V _t3 _t10;
+  - name: FSUB_H_floatdp2
+    attributes:
+      - datatype.half
+      - instr-class.float
+      - mnemonic.FSUB
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 518010880
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 16 _t5 = op extract_low_128_to_16 _t4;
+      1 128 _t6 = read V _t1;
+      1 16 _t7 = op extract_low_128_to_16 _t6;
+      1 3 _t8 = const 7;
+      1 16 _t9 = fop fsub_16 _t5 _t7 _t8;
+      1 128 _t10 = op extend_zero_16_to_128 _t9;
+      1 = write V _t3 _t10;
+  - name: FSUB_S_floatdp2
+    attributes:
+      - datatype.single
+      - instr-class.float
+      - mnemonic.FSUB
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 505427968
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 32 _t5 = op extract_low_128_to_32 _t4;
+      1 128 _t6 = read V _t1;
+      1 32 _t7 = op extract_low_128_to_32 _t6;
+      1 3 _t8 = const 7;
+      1 32 _t9 = fop fsub_32 _t5 _t7 _t8;
+      1 128 _t10 = op extend_zero_32_to_128 _t9;
+      1 = write V _t3 _t10;
+  - name: FSUB_D_floatdp2
+    attributes:
+      - datatype.double
+      - instr-class.float
+      - mnemonic.FSUB
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 509622272
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 64 _t5 = op extract_low_128_to_64 _t4;
+      1 128 _t6 = read V _t1;
+      1 64 _t7 = op extract_low_128_to_64 _t6;
+      1 3 _t8 = const 7;
+      1 64 _t9 = fop fsub_64 _t5 _t7 _t8;
+      1 128 _t10 = op extend_zero_64_to_128 _t9;
+      1 = write V _t3 _t10;
+  - name: FMUL_H_floatdp2
+    attributes:
+      - datatype.half
+      - instr-class.float
+      - mnemonic.FMUL
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 517998592
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 16 _t5 = op extract_low_128_to_16 _t4;
+      1 128 _t6 = read V _t1;
+      1 16 _t7 = op extract_low_128_to_16 _t6;
+      1 3 _t8 = const 7;
+      1 16 _t9 = fop fmul_16 _t5 _t7 _t8;
+      1 128 _t10 = op extend_zero_16_to_128 _t9;
+      1 = write V _t3 _t10;
+  - name: FMUL_S_floatdp2
+    attributes:
+      - datatype.single
+      - instr-class.float
+      - mnemonic.FMUL
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 505415680
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 32 _t5 = op extract_low_128_to_32 _t4;
+      1 128 _t6 = read V _t1;
+      1 32 _t7 = op extract_low_128_to_32 _t6;
+      1 3 _t8 = const 7;
+      1 32 _t9 = fop fmul_32 _t5 _t7 _t8;
+      1 128 _t10 = op extend_zero_32_to_128 _t9;
+      1 = write V _t3 _t10;
+  - name: FMUL_D_floatdp2
+    attributes:
+      - datatype.double
+      - instr-class.float
+      - mnemonic.FMUL
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 509609984
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 64 _t5 = op extract_low_128_to_64 _t4;
+      1 128 _t6 = read V _t1;
+      1 64 _t7 = op extract_low_128_to_64 _t6;
+      1 3 _t8 = const 7;
+      1 64 _t9 = fop fmul_64 _t5 _t7 _t8;
+      1 128 _t10 = op extend_zero_64_to_128 _t9;
+      1 = write V _t3 _t10;
+  - name: FDIV_H_floatdp2
+    attributes:
+      - datatype.half
+      - instr-class.float
+      - mnemonic.FDIV
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 518002688
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 16 _t5 = op extract_low_128_to_16 _t4;
+      1 128 _t6 = read V _t1;
+      1 16 _t7 = op extract_low_128_to_16 _t6;
+      1 3 _t8 = const 7;
+      1 16 _t9 = fop fdiv_16 _t5 _t7 _t8;
+      1 128 _t10 = op extend_zero_16_to_128 _t9;
+      1 = write V _t3 _t10;
+  - name: FDIV_S_floatdp2
+    attributes:
+      - datatype.single
+      - instr-class.float
+      - mnemonic.FDIV
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 505419776
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 32 _t5 = op extract_low_128_to_32 _t4;
+      1 128 _t6 = read V _t1;
+      1 32 _t7 = op extract_low_128_to_32 _t6;
+      1 3 _t8 = const 7;
+      1 32 _t9 = fop fdiv_32 _t5 _t7 _t8;
+      1 128 _t10 = op extend_zero_32_to_128 _t9;
+      1 = write V _t3 _t10;
+  - name: FDIV_D_floatdp2
+    attributes:
+      - datatype.double
+      - instr-class.float
+      - mnemonic.FDIV
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 509614080
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 64 _t5 = op extract_low_128_to_64 _t4;
+      1 128 _t6 = read V _t1;
+      1 64 _t7 = op extract_low_128_to_64 _t6;
+      1 3 _t8 = const 7;
+      1 64 _t9 = fop fdiv_64 _t5 _t7 _t8;
+      1 128 _t10 = op extend_zero_64_to_128 _t9;
+      1 = write V _t3 _t10;
+  - name: FNMUL_H_floatdp2
+    attributes:
+      - datatype.half
+      - instr-class.float
+      - mnemonic.FNMUL
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 518031360
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 16 _t5 = op extract_low_128_to_16 _t4;
+      1 128 _t6 = read V _t1;
+      1 16 _t7 = op extract_low_128_to_16 _t6;
+      1 3 _t8 = const 7;
+      1 16 _t9 = fop fmul_16 _t5 _t7 _t8;
+      1 16 _t10 = const 32768;
+      1 16 _t11 = op xor_16 _t9 _t10;
+      1 128 _t12 = op extend_zero_16_to_128 _t11;
+      1 = write V _t3 _t12;
+  - name: FNMUL_S_floatdp2
+    attributes:
+      - datatype.single
+      - instr-class.float
+      - mnemonic.FNMUL
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 505448448
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 32 _t5 = op extract_low_128_to_32 _t4;
+      1 128 _t6 = read V _t1;
+      1 32 _t7 = op extract_low_128_to_32 _t6;
+      1 3 _t8 = const 7;
+      1 32 _t9 = fop fmul_32 _t5 _t7 _t8;
+      1 32 _t10 = const 2147483648;
+      1 32 _t11 = op xor_32 _t9 _t10;
+      1 128 _t12 = op extend_zero_32_to_128 _t11;
+      1 = write V _t3 _t12;
+  - name: FNMUL_D_floatdp2
+    attributes:
+      - datatype.double
+      - instr-class.float
+      - mnemonic.FNMUL
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 509642752
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 64 _t5 = op extract_low_128_to_64 _t4;
+      1 128 _t6 = read V _t1;
+      1 64 _t7 = op extract_low_128_to_64 _t6;
+      1 3 _t8 = const 7;
+      1 64 _t9 = fop fmul_64 _t5 _t7 _t8;
+      1 64 _t10 = const 9223372036854775808;
+      1 64 _t11 = op xor_64 _t9 _t10;
+      1 128 _t12 = op extend_zero_64_to_128 _t11;
+      1 = write V _t3 _t12;
+  - name: FMAX_H_floatdp2
+    attributes:
+      - datatype.half
+      - instr-class.float
+      - mnemonic.FMAX
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 518014976
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 16 _t5 = op extract_low_128_to_16 _t4;
+      1 128 _t6 = read V _t1;
+      1 16 _t7 = op extract_low_128_to_16 _t6;
+      1 16 _t8 = fop fmax_16 _t5 _t7;
+      1 128 _t9 = op extend_zero_16_to_128 _t8;
+      1 = write V _t3 _t9;
+  - name: FMAX_S_floatdp2
+    attributes:
+      - datatype.single
+      - instr-class.float
+      - mnemonic.FMAX
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 505432064
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 32 _t5 = op extract_low_128_to_32 _t4;
+      1 128 _t6 = read V _t1;
+      1 32 _t7 = op extract_low_128_to_32 _t6;
+      1 32 _t8 = fop fmax_32 _t5 _t7;
+      1 128 _t9 = op extend_zero_32_to_128 _t8;
+      1 = write V _t3 _t9;
+  - name: FMAX_D_floatdp2
+    attributes:
+      - datatype.double
+      - instr-class.float
+      - mnemonic.FMAX
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 509626368
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 64 _t5 = op extract_low_128_to_64 _t4;
+      1 128 _t6 = read V _t1;
+      1 64 _t7 = op extract_low_128_to_64 _t6;
+      1 64 _t8 = fop fmax_64 _t5 _t7;
+      1 128 _t9 = op extend_zero_64_to_128 _t8;
+      1 = write V _t3 _t9;
+  - name: FMIN_H_floatdp2
+    attributes:
+      - datatype.half
+      - instr-class.float
+      - mnemonic.FMIN
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 518019072
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 16 _t5 = op extract_low_128_to_16 _t4;
+      1 128 _t6 = read V _t1;
+      1 16 _t7 = op extract_low_128_to_16 _t6;
+      1 16 _t8 = fop fmin_16 _t5 _t7;
+      1 128 _t9 = op extend_zero_16_to_128 _t8;
+      1 = write V _t3 _t9;
+  - name: FMIN_S_floatdp2
+    attributes:
+      - datatype.single
+      - instr-class.float
+      - mnemonic.FMIN
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 505436160
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 32 _t5 = op extract_low_128_to_32 _t4;
+      1 128 _t6 = read V _t1;
+      1 32 _t7 = op extract_low_128_to_32 _t6;
+      1 32 _t8 = fop fmin_32 _t5 _t7;
+      1 128 _t9 = op extend_zero_32_to_128 _t8;
+      1 = write V _t3 _t9;
+  - name: FMIN_D_floatdp2
+    attributes:
+      - datatype.double
+      - instr-class.float
+      - mnemonic.FMIN
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 509630464
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 64 _t5 = op extract_low_128_to_64 _t4;
+      1 128 _t6 = read V _t1;
+      1 64 _t7 = op extract_low_128_to_64 _t6;
+      1 64 _t8 = fop fmin_64 _t5 _t7;
+      1 128 _t9 = op extend_zero_64_to_128 _t8;
+      1 = write V _t3 _t9;
+  - name: FMAXNM_H_floatdp2
+    attributes:
+      - datatype.half
+      - instr-class.float
+      - mnemonic.FMAXNM
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 518023168
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 16 _t5 = op extract_low_128_to_16 _t4;
+      1 128 _t6 = read V _t1;
+      1 16 _t7 = op extract_low_128_to_16 _t6;
+      1 16 _t8 = fop fmaxnm_16 _t5 _t7;
+      1 128 _t9 = op extend_zero_16_to_128 _t8;
+      1 = write V _t3 _t9;
+  - name: FMAXNM_S_floatdp2
+    attributes:
+      - datatype.single
+      - instr-class.float
+      - mnemonic.FMAXNM
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 505440256
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 32 _t5 = op extract_low_128_to_32 _t4;
+      1 128 _t6 = read V _t1;
+      1 32 _t7 = op extract_low_128_to_32 _t6;
+      1 32 _t8 = fop fmaxnm_32 _t5 _t7;
+      1 128 _t9 = op extend_zero_32_to_128 _t8;
+      1 = write V _t3 _t9;
+  - name: FMAXNM_D_floatdp2
+    attributes:
+      - datatype.double
+      - instr-class.float
+      - mnemonic.FMAXNM
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 509634560
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 64 _t5 = op extract_low_128_to_64 _t4;
+      1 128 _t6 = read V _t1;
+      1 64 _t7 = op extract_low_128_to_64 _t6;
+      1 64 _t8 = fop fmaxnm_64 _t5 _t7;
+      1 128 _t9 = op extend_zero_64_to_128 _t8;
+      1 = write V _t3 _t9;
+  - name: FMINNM_H_floatdp2
+    attributes:
+      - datatype.half
+      - instr-class.float
+      - mnemonic.FMINNM
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 518027264
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 16 _t5 = op extract_low_128_to_16 _t4;
+      1 128 _t6 = read V _t1;
+      1 16 _t7 = op extract_low_128_to_16 _t6;
+      1 16 _t8 = fop fminnm_16 _t5 _t7;
+      1 128 _t9 = op extend_zero_16_to_128 _t8;
+      1 = write V _t3 _t9;
+  - name: FMINNM_S_floatdp2
+    attributes:
+      - datatype.single
+      - instr-class.float
+      - mnemonic.FMINNM
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 505444352
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 32 _t5 = op extract_low_128_to_32 _t4;
+      1 128 _t6 = read V _t1;
+      1 32 _t7 = op extract_low_128_to_32 _t6;
+      1 32 _t8 = fop fminnm_32 _t5 _t7;
+      1 128 _t9 = op extend_zero_32_to_128 _t8;
+      1 = write V _t3 _t9;
+  - name: FMINNM_D_floatdp2
+    attributes:
+      - datatype.double
+      - instr-class.float
+      - mnemonic.FMINNM
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 509638656
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 64 _t5 = op extract_low_128_to_64 _t4;
+      1 128 _t6 = read V _t1;
+      1 64 _t7 = op extract_low_128_to_64 _t6;
+      1 64 _t8 = fop fminnm_64 _t5 _t7;
+      1 128 _t9 = op extend_zero_64_to_128 _t8;
+      1 = write V _t3 _t9;
+  - name: FMADD_H_floatdp3
+    attributes:
+      - datatype.half
+      - instr-class.float
+      - mnemonic.FMADD
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Ra
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 532676608
+      const_mask: 4292902912
+      decode:
+        - decode_field_16_5
+        - decode_field_10_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_10w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 5 _t4 = input 3;
+      1 128 _t5 = read V _t2;
+      1 16 _t6 = op extract_low_128_to_16 _t5;
+      1 128 _t7 = read V _t3;
+      1 16 _t8 = op extract_low_128_to_16 _t7;
+      1 128 _t9 = read V _t1;
+      1 16 _t10 = op extract_low_128_to_16 _t9;
+      1 3 _t11 = const 7;
+      1 16 _t12 = fop fmuladd_16 _t6 _t8 _t10 _t11;
+      1 128 _t13 = op extend_zero_16_to_128 _t12;
+      1 = write V _t4 _t13;
+  - name: FMADD_S_floatdp3
+    attributes:
+      - datatype.single
+      - instr-class.float
+      - mnemonic.FMADD
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Ra
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 520093696
+      const_mask: 4292902912
+      decode:
+        - decode_field_16_5
+        - decode_field_10_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_10w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 5 _t4 = input 3;
+      1 128 _t5 = read V _t2;
+      1 32 _t6 = op extract_low_128_to_32 _t5;
+      1 128 _t7 = read V _t3;
+      1 32 _t8 = op extract_low_128_to_32 _t7;
+      1 128 _t9 = read V _t1;
+      1 32 _t10 = op extract_low_128_to_32 _t9;
+      1 3 _t11 = const 7;
+      1 32 _t12 = fop fmuladd_32 _t6 _t8 _t10 _t11;
+      1 128 _t13 = op extend_zero_32_to_128 _t12;
+      1 = write V _t4 _t13;
+  - name: FMADD_D_floatdp3
+    attributes:
+      - datatype.double
+      - instr-class.float
+      - mnemonic.FMADD
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Ra
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 524288000
+      const_mask: 4292902912
+      decode:
+        - decode_field_16_5
+        - decode_field_10_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_10w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 5 _t4 = input 3;
+      1 128 _t5 = read V _t2;
+      1 64 _t6 = op extract_low_128_to_64 _t5;
+      1 128 _t7 = read V _t3;
+      1 64 _t8 = op extract_low_128_to_64 _t7;
+      1 128 _t9 = read V _t1;
+      1 64 _t10 = op extract_low_128_to_64 _t9;
+      1 3 _t11 = const 7;
+      1 64 _t12 = fop fmuladd_64 _t6 _t8 _t10 _t11;
+      1 128 _t13 = op extend_zero_64_to_128 _t12;
+      1 = write V _t4 _t13;
+  - name: FMSUB_H_floatdp3
+    attributes:
+      - datatype.half
+      - instr-class.float
+      - mnemonic.FMSUB
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Ra
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 532709376
+      const_mask: 4292902912
+      decode:
+        - decode_field_16_5
+        - decode_field_10_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_10w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 5 _t4 = input 3;
+      1 128 _t5 = read V _t2;
+      1 16 _t6 = op extract_low_128_to_16 _t5;
+      1 128 _t7 = read V _t3;
+      1 16 _t8 = op extract_low_128_to_16 _t7;
+      1 128 _t9 = read V _t1;
+      1 16 _t10 = op extract_low_128_to_16 _t9;
+      1 16 _t11 = const 32768;
+      1 16 _t12 = op xor_16 _t8 _t11;
+      1 3 _t13 = const 7;
+      1 16 _t14 = fop fmuladd_16 _t6 _t12 _t10 _t13;
+      1 128 _t15 = op extend_zero_16_to_128 _t14;
+      1 = write V _t4 _t15;
+  - name: FMSUB_S_floatdp3
+    attributes:
+      - datatype.single
+      - instr-class.float
+      - mnemonic.FMSUB
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Ra
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 520126464
+      const_mask: 4292902912
+      decode:
+        - decode_field_16_5
+        - decode_field_10_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_10w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 5 _t4 = input 3;
+      1 128 _t5 = read V _t2;
+      1 32 _t6 = op extract_low_128_to_32 _t5;
+      1 128 _t7 = read V _t3;
+      1 32 _t8 = op extract_low_128_to_32 _t7;
+      1 128 _t9 = read V _t1;
+      1 32 _t10 = op extract_low_128_to_32 _t9;
+      1 32 _t11 = const 2147483648;
+      1 32 _t12 = op xor_32 _t8 _t11;
+      1 3 _t13 = const 7;
+      1 32 _t14 = fop fmuladd_32 _t6 _t12 _t10 _t13;
+      1 128 _t15 = op extend_zero_32_to_128 _t14;
+      1 = write V _t4 _t15;
+  - name: FMSUB_D_floatdp3
+    attributes:
+      - datatype.double
+      - instr-class.float
+      - mnemonic.FMSUB
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Ra
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 524320768
+      const_mask: 4292902912
+      decode:
+        - decode_field_16_5
+        - decode_field_10_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_10w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 5 _t4 = input 3;
+      1 128 _t5 = read V _t2;
+      1 64 _t6 = op extract_low_128_to_64 _t5;
+      1 128 _t7 = read V _t3;
+      1 64 _t8 = op extract_low_128_to_64 _t7;
+      1 128 _t9 = read V _t1;
+      1 64 _t10 = op extract_low_128_to_64 _t9;
+      1 64 _t11 = const 9223372036854775808;
+      1 64 _t12 = op xor_64 _t8 _t11;
+      1 3 _t13 = const 7;
+      1 64 _t14 = fop fmuladd_64 _t6 _t12 _t10 _t13;
+      1 128 _t15 = op extend_zero_64_to_128 _t14;
+      1 = write V _t4 _t15;
+  - name: FNMADD_H_floatdp3
+    attributes:
+      - datatype.half
+      - instr-class.float
+      - mnemonic.FNMADD
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Ra
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 534773760
+      const_mask: 4292902912
+      decode:
+        - decode_field_16_5
+        - decode_field_10_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_10w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 5 _t4 = input 3;
+      1 128 _t5 = read V _t2;
+      1 16 _t6 = op extract_low_128_to_16 _t5;
+      1 128 _t7 = read V _t3;
+      1 16 _t8 = op extract_low_128_to_16 _t7;
+      1 128 _t9 = read V _t1;
+      1 16 _t10 = op extract_low_128_to_16 _t9;
+      1 16 _t11 = const 32768;
+      1 16 _t12 = op xor_16 _t6 _t11;
+      1 16 _t13 = const 32768;
+      1 16 _t14 = op xor_16 _t8 _t13;
+      1 3 _t15 = const 7;
+      1 16 _t16 = fop fmuladd_16 _t12 _t14 _t10 _t15;
+      1 128 _t17 = op extend_zero_16_to_128 _t16;
+      1 = write V _t4 _t17;
+  - name: FNMADD_S_floatdp3
+    attributes:
+      - datatype.single
+      - instr-class.float
+      - mnemonic.FNMADD
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Ra
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 522190848
+      const_mask: 4292902912
+      decode:
+        - decode_field_16_5
+        - decode_field_10_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_10w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 5 _t4 = input 3;
+      1 128 _t5 = read V _t2;
+      1 32 _t6 = op extract_low_128_to_32 _t5;
+      1 128 _t7 = read V _t3;
+      1 32 _t8 = op extract_low_128_to_32 _t7;
+      1 128 _t9 = read V _t1;
+      1 32 _t10 = op extract_low_128_to_32 _t9;
+      1 32 _t11 = const 2147483648;
+      1 32 _t12 = op xor_32 _t6 _t11;
+      1 32 _t13 = const 2147483648;
+      1 32 _t14 = op xor_32 _t8 _t13;
+      1 3 _t15 = const 7;
+      1 32 _t16 = fop fmuladd_32 _t12 _t14 _t10 _t15;
+      1 128 _t17 = op extend_zero_32_to_128 _t16;
+      1 = write V _t4 _t17;
+  - name: FNMADD_D_floatdp3
+    attributes:
+      - datatype.double
+      - instr-class.float
+      - mnemonic.FNMADD
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Ra
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 526385152
+      const_mask: 4292902912
+      decode:
+        - decode_field_16_5
+        - decode_field_10_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_10w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 5 _t4 = input 3;
+      1 128 _t5 = read V _t2;
+      1 64 _t6 = op extract_low_128_to_64 _t5;
+      1 128 _t7 = read V _t3;
+      1 64 _t8 = op extract_low_128_to_64 _t7;
+      1 128 _t9 = read V _t1;
+      1 64 _t10 = op extract_low_128_to_64 _t9;
+      1 64 _t11 = const 9223372036854775808;
+      1 64 _t12 = op xor_64 _t6 _t11;
+      1 64 _t13 = const 9223372036854775808;
+      1 64 _t14 = op xor_64 _t8 _t13;
+      1 3 _t15 = const 7;
+      1 64 _t16 = fop fmuladd_64 _t12 _t14 _t10 _t15;
+      1 128 _t17 = op extend_zero_64_to_128 _t16;
+      1 = write V _t4 _t17;
+  - name: FNMSUB_H_floatdp3
+    attributes:
+      - datatype.half
+      - instr-class.float
+      - mnemonic.FNMSUB
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Ra
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 534806528
+      const_mask: 4292902912
+      decode:
+        - decode_field_16_5
+        - decode_field_10_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_10w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 5 _t4 = input 3;
+      1 128 _t5 = read V _t2;
+      1 16 _t6 = op extract_low_128_to_16 _t5;
+      1 128 _t7 = read V _t3;
+      1 16 _t8 = op extract_low_128_to_16 _t7;
+      1 128 _t9 = read V _t1;
+      1 16 _t10 = op extract_low_128_to_16 _t9;
+      1 16 _t11 = const 32768;
+      1 16 _t12 = op xor_16 _t6 _t11;
+      1 3 _t13 = const 7;
+      1 16 _t14 = fop fmuladd_16 _t12 _t8 _t10 _t13;
+      1 128 _t15 = op extend_zero_16_to_128 _t14;
+      1 = write V _t4 _t15;
+  - name: FNMSUB_S_floatdp3
+    attributes:
+      - datatype.single
+      - instr-class.float
+      - mnemonic.FNMSUB
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Ra
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 522223616
+      const_mask: 4292902912
+      decode:
+        - decode_field_16_5
+        - decode_field_10_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_10w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 5 _t4 = input 3;
+      1 128 _t5 = read V _t2;
+      1 32 _t6 = op extract_low_128_to_32 _t5;
+      1 128 _t7 = read V _t3;
+      1 32 _t8 = op extract_low_128_to_32 _t7;
+      1 128 _t9 = read V _t1;
+      1 32 _t10 = op extract_low_128_to_32 _t9;
+      1 32 _t11 = const 2147483648;
+      1 32 _t12 = op xor_32 _t6 _t11;
+      1 3 _t13 = const 7;
+      1 32 _t14 = fop fmuladd_32 _t12 _t8 _t10 _t13;
+      1 128 _t15 = op extend_zero_32_to_128 _t14;
+      1 = write V _t4 _t15;
+  - name: FNMSUB_D_floatdp3
+    attributes:
+      - datatype.double
+      - instr-class.float
+      - mnemonic.FNMSUB
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Ra
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 526417920
+      const_mask: 4292902912
+      decode:
+        - decode_field_16_5
+        - decode_field_10_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_10w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 5 _t4 = input 3;
+      1 128 _t5 = read V _t2;
+      1 64 _t6 = op extract_low_128_to_64 _t5;
+      1 128 _t7 = read V _t3;
+      1 64 _t8 = op extract_low_128_to_64 _t7;
+      1 128 _t9 = read V _t1;
+      1 64 _t10 = op extract_low_128_to_64 _t9;
+      1 64 _t11 = const 9223372036854775808;
+      1 64 _t12 = op xor_64 _t6 _t11;
+      1 3 _t13 = const 7;
+      1 64 _t14 = fop fmuladd_64 _t12 _t8 _t10 _t13;
+      1 128 _t15 = op extend_zero_64_to_128 _t14;
+      1 = write V _t4 _t15;
   - name: FABS_H_floatdp1
     attributes:
       - datatype.half
@@ -17034,6 +18596,1776 @@ instructions:
       1 64 _t4 = op extract_low_128_to_64 _t3;
       1 128 _t5 = op extend_zero_64_to_128 _t4;
       1 = write V _t2 _t5;
+  - name: FSQRT_H_floatdp1
+    attributes:
+      - datatype.half
+      - instr-class.float
+      - mnemonic.FSQRT
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 518111232
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 16 _t4 = op extract_low_128_to_16 _t3;
+      1 3 _t5 = const 7;
+      1 16 _t6 = fop fsqrt_16 _t4 _t5;
+      1 128 _t7 = op extend_zero_16_to_128 _t6;
+      1 = write V _t2 _t7;
+  - name: FSQRT_S_floatdp1
+    attributes:
+      - datatype.single
+      - instr-class.float
+      - mnemonic.FSQRT
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 505528320
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 32 _t4 = op extract_low_128_to_32 _t3;
+      1 3 _t5 = const 7;
+      1 32 _t6 = fop fsqrt_32 _t4 _t5;
+      1 128 _t7 = op extend_zero_32_to_128 _t6;
+      1 = write V _t2 _t7;
+  - name: FSQRT_D_floatdp1
+    attributes:
+      - datatype.double
+      - instr-class.float
+      - mnemonic.FSQRT
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 509722624
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 64 _t4 = op extract_low_128_to_64 _t3;
+      1 3 _t5 = const 7;
+      1 64 _t6 = fop fsqrt_64 _t4 _t5;
+      1 128 _t7 = op extend_zero_64_to_128 _t6;
+      1 = write V _t2 _t7;
+  - name: FRINTN_H_floatdp1
+    attributes:
+      - datatype.half
+      - instr-class.float
+      - mnemonic.FRINTN
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 518275072
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 16 _t4 = op extract_low_128_to_16 _t3;
+      1 3 _t5 = const 0;
+      1 16 _t6 = fop frint_16 _t4 _t5;
+      1 128 _t7 = op extend_zero_16_to_128 _t6;
+      1 = write V _t2 _t7;
+  - name: FRINTN_S_floatdp1
+    attributes:
+      - datatype.single
+      - instr-class.float
+      - mnemonic.FRINTN
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 505692160
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 32 _t4 = op extract_low_128_to_32 _t3;
+      1 3 _t5 = const 0;
+      1 32 _t6 = fop frint_32 _t4 _t5;
+      1 128 _t7 = op extend_zero_32_to_128 _t6;
+      1 = write V _t2 _t7;
+  - name: FRINTN_D_floatdp1
+    attributes:
+      - datatype.double
+      - instr-class.float
+      - mnemonic.FRINTN
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 509886464
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 64 _t4 = op extract_low_128_to_64 _t3;
+      1 3 _t5 = const 0;
+      1 64 _t6 = fop frint_64 _t4 _t5;
+      1 128 _t7 = op extend_zero_64_to_128 _t6;
+      1 = write V _t2 _t7;
+  - name: FRINTP_H_floatdp1
+    attributes:
+      - datatype.half
+      - instr-class.float
+      - mnemonic.FRINTP
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 518307840
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 16 _t4 = op extract_low_128_to_16 _t3;
+      1 3 _t5 = const 1;
+      1 16 _t6 = fop frint_16 _t4 _t5;
+      1 128 _t7 = op extend_zero_16_to_128 _t6;
+      1 = write V _t2 _t7;
+  - name: FRINTP_S_floatdp1
+    attributes:
+      - datatype.single
+      - instr-class.float
+      - mnemonic.FRINTP
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 505724928
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 32 _t4 = op extract_low_128_to_32 _t3;
+      1 3 _t5 = const 1;
+      1 32 _t6 = fop frint_32 _t4 _t5;
+      1 128 _t7 = op extend_zero_32_to_128 _t6;
+      1 = write V _t2 _t7;
+  - name: FRINTP_D_floatdp1
+    attributes:
+      - datatype.double
+      - instr-class.float
+      - mnemonic.FRINTP
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 509919232
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 64 _t4 = op extract_low_128_to_64 _t3;
+      1 3 _t5 = const 1;
+      1 64 _t6 = fop frint_64 _t4 _t5;
+      1 128 _t7 = op extend_zero_64_to_128 _t6;
+      1 = write V _t2 _t7;
+  - name: FRINTM_H_floatdp1
+    attributes:
+      - datatype.half
+      - instr-class.float
+      - mnemonic.FRINTM
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 518340608
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 16 _t4 = op extract_low_128_to_16 _t3;
+      1 3 _t5 = const 2;
+      1 16 _t6 = fop frint_16 _t4 _t5;
+      1 128 _t7 = op extend_zero_16_to_128 _t6;
+      1 = write V _t2 _t7;
+  - name: FRINTM_S_floatdp1
+    attributes:
+      - datatype.single
+      - instr-class.float
+      - mnemonic.FRINTM
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 505757696
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 32 _t4 = op extract_low_128_to_32 _t3;
+      1 3 _t5 = const 2;
+      1 32 _t6 = fop frint_32 _t4 _t5;
+      1 128 _t7 = op extend_zero_32_to_128 _t6;
+      1 = write V _t2 _t7;
+  - name: FRINTM_D_floatdp1
+    attributes:
+      - datatype.double
+      - instr-class.float
+      - mnemonic.FRINTM
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 509952000
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 64 _t4 = op extract_low_128_to_64 _t3;
+      1 3 _t5 = const 2;
+      1 64 _t6 = fop frint_64 _t4 _t5;
+      1 128 _t7 = op extend_zero_64_to_128 _t6;
+      1 = write V _t2 _t7;
+  - name: FRINTZ_H_floatdp1
+    attributes:
+      - datatype.half
+      - instr-class.float
+      - mnemonic.FRINTZ
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 518373376
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 16 _t4 = op extract_low_128_to_16 _t3;
+      1 3 _t5 = const 3;
+      1 16 _t6 = fop frint_16 _t4 _t5;
+      1 128 _t7 = op extend_zero_16_to_128 _t6;
+      1 = write V _t2 _t7;
+  - name: FRINTZ_S_floatdp1
+    attributes:
+      - datatype.single
+      - instr-class.float
+      - mnemonic.FRINTZ
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 505790464
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 32 _t4 = op extract_low_128_to_32 _t3;
+      1 3 _t5 = const 3;
+      1 32 _t6 = fop frint_32 _t4 _t5;
+      1 128 _t7 = op extend_zero_32_to_128 _t6;
+      1 = write V _t2 _t7;
+  - name: FRINTZ_D_floatdp1
+    attributes:
+      - datatype.double
+      - instr-class.float
+      - mnemonic.FRINTZ
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 509984768
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 64 _t4 = op extract_low_128_to_64 _t3;
+      1 3 _t5 = const 3;
+      1 64 _t6 = fop frint_64 _t4 _t5;
+      1 128 _t7 = op extend_zero_64_to_128 _t6;
+      1 = write V _t2 _t7;
+  - name: FRINTA_H_floatdp1
+    attributes:
+      - datatype.half
+      - instr-class.float
+      - mnemonic.FRINTA
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 518406144
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 16 _t4 = op extract_low_128_to_16 _t3;
+      1 3 _t5 = const 4;
+      1 16 _t6 = fop frint_16 _t4 _t5;
+      1 128 _t7 = op extend_zero_16_to_128 _t6;
+      1 = write V _t2 _t7;
+  - name: FRINTA_S_floatdp1
+    attributes:
+      - datatype.single
+      - instr-class.float
+      - mnemonic.FRINTA
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 505823232
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 32 _t4 = op extract_low_128_to_32 _t3;
+      1 3 _t5 = const 4;
+      1 32 _t6 = fop frint_32 _t4 _t5;
+      1 128 _t7 = op extend_zero_32_to_128 _t6;
+      1 = write V _t2 _t7;
+  - name: FRINTA_D_floatdp1
+    attributes:
+      - datatype.double
+      - instr-class.float
+      - mnemonic.FRINTA
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 510017536
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 64 _t4 = op extract_low_128_to_64 _t3;
+      1 3 _t5 = const 4;
+      1 64 _t6 = fop frint_64 _t4 _t5;
+      1 128 _t7 = op extend_zero_64_to_128 _t6;
+      1 = write V _t2 _t7;
+  - name: FRINTI_H_floatdp1
+    attributes:
+      - datatype.half
+      - instr-class.float
+      - mnemonic.FRINTI
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 518504448
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 16 _t4 = op extract_low_128_to_16 _t3;
+      1 3 _t5 = const 7;
+      1 16 _t6 = fop frint_16 _t4 _t5;
+      1 128 _t7 = op extend_zero_16_to_128 _t6;
+      1 = write V _t2 _t7;
+  - name: FRINTI_S_floatdp1
+    attributes:
+      - datatype.single
+      - instr-class.float
+      - mnemonic.FRINTI
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 505921536
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 32 _t4 = op extract_low_128_to_32 _t3;
+      1 3 _t5 = const 7;
+      1 32 _t6 = fop frint_32 _t4 _t5;
+      1 128 _t7 = op extend_zero_32_to_128 _t6;
+      1 = write V _t2 _t7;
+  - name: FRINTI_D_floatdp1
+    attributes:
+      - datatype.double
+      - instr-class.float
+      - mnemonic.FRINTI
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 510115840
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 64 _t4 = op extract_low_128_to_64 _t3;
+      1 3 _t5 = const 7;
+      1 64 _t6 = fop frint_64 _t4 _t5;
+      1 128 _t7 = op extend_zero_64_to_128 _t6;
+      1 = write V _t2 _t7;
+  - name: FRINTX_H_floatdp1
+    attributes:
+      - datatype.half
+      - instr-class.float
+      - mnemonic.FRINTX
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 518471680
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 16 _t4 = op extract_low_128_to_16 _t3;
+      1 3 _t5 = const 7;
+      1 16 _t6 = fop frintx_16 _t4 _t5;
+      1 128 _t7 = op extend_zero_16_to_128 _t6;
+      1 = write V _t2 _t7;
+  - name: FRINTX_S_floatdp1
+    attributes:
+      - datatype.single
+      - instr-class.float
+      - mnemonic.FRINTX
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 505888768
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 32 _t4 = op extract_low_128_to_32 _t3;
+      1 3 _t5 = const 7;
+      1 32 _t6 = fop frintx_32 _t4 _t5;
+      1 128 _t7 = op extend_zero_32_to_128 _t6;
+      1 = write V _t2 _t7;
+  - name: FRINTX_D_floatdp1
+    attributes:
+      - datatype.double
+      - instr-class.float
+      - mnemonic.FRINTX
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 510083072
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 64 _t4 = op extract_low_128_to_64 _t3;
+      1 3 _t5 = const 7;
+      1 64 _t6 = fop frintx_64 _t4 _t5;
+      1 128 _t7 = op extend_zero_64_to_128 _t6;
+      1 = write V _t2 _t7;
+  - name: FCVT_SH_floatdp1
+    attributes:
+      - convert-type.half-to-single
+      - instr-class.float
+      - mnemonic.FCVT
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 518144000
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 16 _t4 = op extract_low_128_to_16 _t3;
+      1 3 _t5 = const 7;
+      1 32 _t6 = fop fcvtf_16_to_32 _t4 _t5;
+      1 128 _t7 = op extend_zero_32_to_128 _t6;
+      1 = write V _t2 _t7;
+  - name: FCVT_DH_floatdp1
+    attributes:
+      - convert-type.half-to-double
+      - instr-class.float
+      - mnemonic.FCVT
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 518176768
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 16 _t4 = op extract_low_128_to_16 _t3;
+      1 3 _t5 = const 7;
+      1 64 _t6 = fop fcvtf_16_to_64 _t4 _t5;
+      1 128 _t7 = op extend_zero_64_to_128 _t6;
+      1 = write V _t2 _t7;
+  - name: FCVT_HS_floatdp1
+    attributes:
+      - convert-type.single-to-half
+      - instr-class.float
+      - mnemonic.FCVT
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 505659392
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 32 _t4 = op extract_low_128_to_32 _t3;
+      1 3 _t5 = const 7;
+      1 16 _t6 = fop fcvtf_32_to_16 _t4 _t5;
+      1 128 _t7 = op extend_zero_16_to_128 _t6;
+      1 = write V _t2 _t7;
+  - name: FCVT_DS_floatdp1
+    attributes:
+      - convert-type.single-to-double
+      - instr-class.float
+      - mnemonic.FCVT
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 505593856
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 32 _t4 = op extract_low_128_to_32 _t3;
+      1 3 _t5 = const 7;
+      1 64 _t6 = fop fcvtf_32_to_64 _t4 _t5;
+      1 128 _t7 = op extend_zero_64_to_128 _t6;
+      1 = write V _t2 _t7;
+  - name: FCVT_HD_floatdp1
+    attributes:
+      - convert-type.double-to-half
+      - instr-class.float
+      - mnemonic.FCVT
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 509853696
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 64 _t4 = op extract_low_128_to_64 _t3;
+      1 3 _t5 = const 7;
+      1 16 _t6 = fop fcvtf_64_to_16 _t4 _t5;
+      1 128 _t7 = op extend_zero_16_to_128 _t6;
+      1 = write V _t2 _t7;
+  - name: FCVT_SD_floatdp1
+    attributes:
+      - convert-type.double-to-single
+      - instr-class.float
+      - mnemonic.FCVT
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 509755392
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 64 _t4 = op extract_low_128_to_64 _t3;
+      1 3 _t5 = const 7;
+      1 32 _t6 = fop fcvtf_64_to_32 _t4 _t5;
+      1 128 _t7 = op extend_zero_32_to_128 _t6;
+      1 = write V _t2 _t7;
+  - name: FCMP_H_floatcmp
+    attributes:
+      - compare-with.cmp-reg
+      - datatype.half
+      - instr-class.float
+      - mnemonic.FCMP
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 518004736
+      const_mask: 4292934687
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+      encode: encode_16w5_5w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t2;
+      1 16 _t4 = op extract_low_128_to_16 _t3;
+      1 128 _t5 = read V _t1;
+      1 16 _t6 = op extract_low_128_to_16 _t5;
+      1 2 _t7 = fop fcmpq_16 _t4 _t6;
+      1 4 _t8 = const 3;
+      1 2 _t9 = const 2;
+      1 1 _t10 = op eq_2 _t7 _t9;
+      1 4 _t11 = const 2;
+      1 4 _t12 = op select_4 _t10 _t11 _t8;
+      1 2 _t13 = const 1;
+      1 1 _t14 = op eq_2 _t7 _t13;
+      1 4 _t15 = const 8;
+      1 4 _t16 = op select_4 _t14 _t15 _t12;
+      1 2 _t17 = const 0;
+      1 1 _t18 = op eq_2 _t7 _t17;
+      1 4 _t19 = const 6;
+      1 4 _t20 = op select_4 _t18 _t19 _t16;
+      1 1 _t21 = const 0;
+      1 = write NZCV _t21 _t20;
+  - name: FCMP_HZ_floatcmp
+    attributes:
+      - compare-with.cmp-zero
+      - datatype.half
+      - instr-class.float
+      - mnemonic.FCMP
+    operand_sizes:
+      - 5
+    operand_names:
+      - Rn
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 518004744
+      const_mask: 4294966303
+      decode:
+        - decode_field_5_5
+      encode: encode_5w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 128 _t2 = read V _t1;
+      1 16 _t3 = op extract_low_128_to_16 _t2;
+      1 16 _t4 = const 0;
+      1 2 _t5 = fop fcmpq_16 _t3 _t4;
+      1 4 _t6 = const 3;
+      1 2 _t7 = const 2;
+      1 1 _t8 = op eq_2 _t5 _t7;
+      1 4 _t9 = const 2;
+      1 4 _t10 = op select_4 _t8 _t9 _t6;
+      1 2 _t11 = const 1;
+      1 1 _t12 = op eq_2 _t5 _t11;
+      1 4 _t13 = const 8;
+      1 4 _t14 = op select_4 _t12 _t13 _t10;
+      1 2 _t15 = const 0;
+      1 1 _t16 = op eq_2 _t5 _t15;
+      1 4 _t17 = const 6;
+      1 4 _t18 = op select_4 _t16 _t17 _t14;
+      1 1 _t19 = const 0;
+      1 = write NZCV _t19 _t18;
+  - name: FCMP_S_floatcmp
+    attributes:
+      - compare-with.cmp-reg
+      - datatype.single
+      - instr-class.float
+      - mnemonic.FCMP
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 505421824
+      const_mask: 4292934687
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+      encode: encode_16w5_5w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t2;
+      1 32 _t4 = op extract_low_128_to_32 _t3;
+      1 128 _t5 = read V _t1;
+      1 32 _t6 = op extract_low_128_to_32 _t5;
+      1 2 _t7 = fop fcmpq_32 _t4 _t6;
+      1 4 _t8 = const 3;
+      1 2 _t9 = const 2;
+      1 1 _t10 = op eq_2 _t7 _t9;
+      1 4 _t11 = const 2;
+      1 4 _t12 = op select_4 _t10 _t11 _t8;
+      1 2 _t13 = const 1;
+      1 1 _t14 = op eq_2 _t7 _t13;
+      1 4 _t15 = const 8;
+      1 4 _t16 = op select_4 _t14 _t15 _t12;
+      1 2 _t17 = const 0;
+      1 1 _t18 = op eq_2 _t7 _t17;
+      1 4 _t19 = const 6;
+      1 4 _t20 = op select_4 _t18 _t19 _t16;
+      1 1 _t21 = const 0;
+      1 = write NZCV _t21 _t20;
+  - name: FCMP_SZ_floatcmp
+    attributes:
+      - compare-with.cmp-zero
+      - datatype.single
+      - instr-class.float
+      - mnemonic.FCMP
+    operand_sizes:
+      - 5
+    operand_names:
+      - Rn
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 505421832
+      const_mask: 4294966303
+      decode:
+        - decode_field_5_5
+      encode: encode_5w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 128 _t2 = read V _t1;
+      1 32 _t3 = op extract_low_128_to_32 _t2;
+      1 32 _t4 = const 0;
+      1 2 _t5 = fop fcmpq_32 _t3 _t4;
+      1 4 _t6 = const 3;
+      1 2 _t7 = const 2;
+      1 1 _t8 = op eq_2 _t5 _t7;
+      1 4 _t9 = const 2;
+      1 4 _t10 = op select_4 _t8 _t9 _t6;
+      1 2 _t11 = const 1;
+      1 1 _t12 = op eq_2 _t5 _t11;
+      1 4 _t13 = const 8;
+      1 4 _t14 = op select_4 _t12 _t13 _t10;
+      1 2 _t15 = const 0;
+      1 1 _t16 = op eq_2 _t5 _t15;
+      1 4 _t17 = const 6;
+      1 4 _t18 = op select_4 _t16 _t17 _t14;
+      1 1 _t19 = const 0;
+      1 = write NZCV _t19 _t18;
+  - name: FCMP_D_floatcmp
+    attributes:
+      - compare-with.cmp-reg
+      - datatype.double
+      - instr-class.float
+      - mnemonic.FCMP
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 509616128
+      const_mask: 4292934687
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+      encode: encode_16w5_5w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t2;
+      1 64 _t4 = op extract_low_128_to_64 _t3;
+      1 128 _t5 = read V _t1;
+      1 64 _t6 = op extract_low_128_to_64 _t5;
+      1 2 _t7 = fop fcmpq_64 _t4 _t6;
+      1 4 _t8 = const 3;
+      1 2 _t9 = const 2;
+      1 1 _t10 = op eq_2 _t7 _t9;
+      1 4 _t11 = const 2;
+      1 4 _t12 = op select_4 _t10 _t11 _t8;
+      1 2 _t13 = const 1;
+      1 1 _t14 = op eq_2 _t7 _t13;
+      1 4 _t15 = const 8;
+      1 4 _t16 = op select_4 _t14 _t15 _t12;
+      1 2 _t17 = const 0;
+      1 1 _t18 = op eq_2 _t7 _t17;
+      1 4 _t19 = const 6;
+      1 4 _t20 = op select_4 _t18 _t19 _t16;
+      1 1 _t21 = const 0;
+      1 = write NZCV _t21 _t20;
+  - name: FCMP_DZ_floatcmp
+    attributes:
+      - compare-with.cmp-zero
+      - datatype.double
+      - instr-class.float
+      - mnemonic.FCMP
+    operand_sizes:
+      - 5
+    operand_names:
+      - Rn
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 509616136
+      const_mask: 4294966303
+      decode:
+        - decode_field_5_5
+      encode: encode_5w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 128 _t2 = read V _t1;
+      1 64 _t3 = op extract_low_128_to_64 _t2;
+      1 64 _t4 = const 0;
+      1 2 _t5 = fop fcmpq_64 _t3 _t4;
+      1 4 _t6 = const 3;
+      1 2 _t7 = const 2;
+      1 1 _t8 = op eq_2 _t5 _t7;
+      1 4 _t9 = const 2;
+      1 4 _t10 = op select_4 _t8 _t9 _t6;
+      1 2 _t11 = const 1;
+      1 1 _t12 = op eq_2 _t5 _t11;
+      1 4 _t13 = const 8;
+      1 4 _t14 = op select_4 _t12 _t13 _t10;
+      1 2 _t15 = const 0;
+      1 1 _t16 = op eq_2 _t5 _t15;
+      1 4 _t17 = const 6;
+      1 4 _t18 = op select_4 _t16 _t17 _t14;
+      1 1 _t19 = const 0;
+      1 = write NZCV _t19 _t18;
+  - name: FCMPE_H_floatcmp
+    attributes:
+      - compare-with.cmp-reg
+      - datatype.half
+      - instr-class.float
+      - mnemonic.FCMPE
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 518004752
+      const_mask: 4292934687
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+      encode: encode_16w5_5w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t2;
+      1 16 _t4 = op extract_low_128_to_16 _t3;
+      1 128 _t5 = read V _t1;
+      1 16 _t6 = op extract_low_128_to_16 _t5;
+      1 2 _t7 = fop fcmps_16 _t4 _t6;
+      1 4 _t8 = const 3;
+      1 2 _t9 = const 2;
+      1 1 _t10 = op eq_2 _t7 _t9;
+      1 4 _t11 = const 2;
+      1 4 _t12 = op select_4 _t10 _t11 _t8;
+      1 2 _t13 = const 1;
+      1 1 _t14 = op eq_2 _t7 _t13;
+      1 4 _t15 = const 8;
+      1 4 _t16 = op select_4 _t14 _t15 _t12;
+      1 2 _t17 = const 0;
+      1 1 _t18 = op eq_2 _t7 _t17;
+      1 4 _t19 = const 6;
+      1 4 _t20 = op select_4 _t18 _t19 _t16;
+      1 1 _t21 = const 0;
+      1 = write NZCV _t21 _t20;
+  - name: FCMPE_HZ_floatcmp
+    attributes:
+      - compare-with.cmp-zero
+      - datatype.half
+      - instr-class.float
+      - mnemonic.FCMPE
+    operand_sizes:
+      - 5
+    operand_names:
+      - Rn
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 518004760
+      const_mask: 4294966303
+      decode:
+        - decode_field_5_5
+      encode: encode_5w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 128 _t2 = read V _t1;
+      1 16 _t3 = op extract_low_128_to_16 _t2;
+      1 16 _t4 = const 0;
+      1 2 _t5 = fop fcmps_16 _t3 _t4;
+      1 4 _t6 = const 3;
+      1 2 _t7 = const 2;
+      1 1 _t8 = op eq_2 _t5 _t7;
+      1 4 _t9 = const 2;
+      1 4 _t10 = op select_4 _t8 _t9 _t6;
+      1 2 _t11 = const 1;
+      1 1 _t12 = op eq_2 _t5 _t11;
+      1 4 _t13 = const 8;
+      1 4 _t14 = op select_4 _t12 _t13 _t10;
+      1 2 _t15 = const 0;
+      1 1 _t16 = op eq_2 _t5 _t15;
+      1 4 _t17 = const 6;
+      1 4 _t18 = op select_4 _t16 _t17 _t14;
+      1 1 _t19 = const 0;
+      1 = write NZCV _t19 _t18;
+  - name: FCMPE_S_floatcmp
+    attributes:
+      - compare-with.cmp-reg
+      - datatype.single
+      - instr-class.float
+      - mnemonic.FCMPE
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 505421840
+      const_mask: 4292934687
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+      encode: encode_16w5_5w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t2;
+      1 32 _t4 = op extract_low_128_to_32 _t3;
+      1 128 _t5 = read V _t1;
+      1 32 _t6 = op extract_low_128_to_32 _t5;
+      1 2 _t7 = fop fcmps_32 _t4 _t6;
+      1 4 _t8 = const 3;
+      1 2 _t9 = const 2;
+      1 1 _t10 = op eq_2 _t7 _t9;
+      1 4 _t11 = const 2;
+      1 4 _t12 = op select_4 _t10 _t11 _t8;
+      1 2 _t13 = const 1;
+      1 1 _t14 = op eq_2 _t7 _t13;
+      1 4 _t15 = const 8;
+      1 4 _t16 = op select_4 _t14 _t15 _t12;
+      1 2 _t17 = const 0;
+      1 1 _t18 = op eq_2 _t7 _t17;
+      1 4 _t19 = const 6;
+      1 4 _t20 = op select_4 _t18 _t19 _t16;
+      1 1 _t21 = const 0;
+      1 = write NZCV _t21 _t20;
+  - name: FCMPE_SZ_floatcmp
+    attributes:
+      - compare-with.cmp-zero
+      - datatype.single
+      - instr-class.float
+      - mnemonic.FCMPE
+    operand_sizes:
+      - 5
+    operand_names:
+      - Rn
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 505421848
+      const_mask: 4294966303
+      decode:
+        - decode_field_5_5
+      encode: encode_5w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 128 _t2 = read V _t1;
+      1 32 _t3 = op extract_low_128_to_32 _t2;
+      1 32 _t4 = const 0;
+      1 2 _t5 = fop fcmps_32 _t3 _t4;
+      1 4 _t6 = const 3;
+      1 2 _t7 = const 2;
+      1 1 _t8 = op eq_2 _t5 _t7;
+      1 4 _t9 = const 2;
+      1 4 _t10 = op select_4 _t8 _t9 _t6;
+      1 2 _t11 = const 1;
+      1 1 _t12 = op eq_2 _t5 _t11;
+      1 4 _t13 = const 8;
+      1 4 _t14 = op select_4 _t12 _t13 _t10;
+      1 2 _t15 = const 0;
+      1 1 _t16 = op eq_2 _t5 _t15;
+      1 4 _t17 = const 6;
+      1 4 _t18 = op select_4 _t16 _t17 _t14;
+      1 1 _t19 = const 0;
+      1 = write NZCV _t19 _t18;
+  - name: FCMPE_D_floatcmp
+    attributes:
+      - compare-with.cmp-reg
+      - datatype.double
+      - instr-class.float
+      - mnemonic.FCMPE
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 509616144
+      const_mask: 4292934687
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+      encode: encode_16w5_5w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t2;
+      1 64 _t4 = op extract_low_128_to_64 _t3;
+      1 128 _t5 = read V _t1;
+      1 64 _t6 = op extract_low_128_to_64 _t5;
+      1 2 _t7 = fop fcmps_64 _t4 _t6;
+      1 4 _t8 = const 3;
+      1 2 _t9 = const 2;
+      1 1 _t10 = op eq_2 _t7 _t9;
+      1 4 _t11 = const 2;
+      1 4 _t12 = op select_4 _t10 _t11 _t8;
+      1 2 _t13 = const 1;
+      1 1 _t14 = op eq_2 _t7 _t13;
+      1 4 _t15 = const 8;
+      1 4 _t16 = op select_4 _t14 _t15 _t12;
+      1 2 _t17 = const 0;
+      1 1 _t18 = op eq_2 _t7 _t17;
+      1 4 _t19 = const 6;
+      1 4 _t20 = op select_4 _t18 _t19 _t16;
+      1 1 _t21 = const 0;
+      1 = write NZCV _t21 _t20;
+  - name: FCMPE_DZ_floatcmp
+    attributes:
+      - compare-with.cmp-zero
+      - datatype.double
+      - instr-class.float
+      - mnemonic.FCMPE
+    operand_sizes:
+      - 5
+    operand_names:
+      - Rn
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 509616152
+      const_mask: 4294966303
+      decode:
+        - decode_field_5_5
+      encode: encode_5w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 128 _t2 = read V _t1;
+      1 64 _t3 = op extract_low_128_to_64 _t2;
+      1 64 _t4 = const 0;
+      1 2 _t5 = fop fcmps_64 _t3 _t4;
+      1 4 _t6 = const 3;
+      1 2 _t7 = const 2;
+      1 1 _t8 = op eq_2 _t5 _t7;
+      1 4 _t9 = const 2;
+      1 4 _t10 = op select_4 _t8 _t9 _t6;
+      1 2 _t11 = const 1;
+      1 1 _t12 = op eq_2 _t5 _t11;
+      1 4 _t13 = const 8;
+      1 4 _t14 = op select_4 _t12 _t13 _t10;
+      1 2 _t15 = const 0;
+      1 1 _t16 = op eq_2 _t5 _t15;
+      1 4 _t17 = const 6;
+      1 4 _t18 = op select_4 _t16 _t17 _t14;
+      1 1 _t19 = const 0;
+      1 = write NZCV _t19 _t18;
+  - name: FCCMP_H_floatccmp
+    attributes:
+      - datatype.half
+      - instr-class.float
+      - mnemonic.FCCMP
+    operand_sizes:
+      - 5
+      - 4
+      - 5
+      - 4
+    operand_names:
+      - Rm
+      - cond
+      - Rn
+      - nzcv
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 517997568
+      const_mask: 4292873232
+      decode:
+        - decode_field_16_5
+        - decode_field_12_4
+        - decode_field_5_5
+        - decode_field_0_4
+      encode: encode_16w5_12w4_5w5_0w4
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 4 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 4 _t4 = input 3;
+      1 1 _t5 = const 0;
+      1 4 _t6 = read NZCV _t5;
+      1 1 _t7 = op condition_holds _t2 _t6;
+      1 128 _t8 = read V _t3;
+      1 16 _t9 = op extract_low_128_to_16 _t8;
+      1 128 _t10 = read V _t1;
+      1 16 _t11 = op extract_low_128_to_16 _t10;
+      1 16 _t12 = const 0;
+      1 16 _t13 = op select_16 _t7 _t9 _t12;
+      1 16 _t14 = const 0;
+      1 16 _t15 = op select_16 _t7 _t11 _t14;
+      1 2 _t16 = fop fcmpq_16 _t13 _t15;
+      1 4 _t17 = const 3;
+      1 2 _t18 = const 2;
+      1 1 _t19 = op eq_2 _t16 _t18;
+      1 4 _t20 = const 2;
+      1 4 _t21 = op select_4 _t19 _t20 _t17;
+      1 2 _t22 = const 1;
+      1 1 _t23 = op eq_2 _t16 _t22;
+      1 4 _t24 = const 8;
+      1 4 _t25 = op select_4 _t23 _t24 _t21;
+      1 2 _t26 = const 0;
+      1 1 _t27 = op eq_2 _t16 _t26;
+      1 4 _t28 = const 6;
+      1 4 _t29 = op select_4 _t27 _t28 _t25;
+      1 4 _t30 = op select_4 _t7 _t29 _t4;
+      1 1 _t31 = const 0;
+      1 = write NZCV _t31 _t30;
+  - name: FCCMP_S_floatccmp
+    attributes:
+      - datatype.single
+      - instr-class.float
+      - mnemonic.FCCMP
+    operand_sizes:
+      - 5
+      - 4
+      - 5
+      - 4
+    operand_names:
+      - Rm
+      - cond
+      - Rn
+      - nzcv
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 505414656
+      const_mask: 4292873232
+      decode:
+        - decode_field_16_5
+        - decode_field_12_4
+        - decode_field_5_5
+        - decode_field_0_4
+      encode: encode_16w5_12w4_5w5_0w4
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 4 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 4 _t4 = input 3;
+      1 1 _t5 = const 0;
+      1 4 _t6 = read NZCV _t5;
+      1 1 _t7 = op condition_holds _t2 _t6;
+      1 128 _t8 = read V _t3;
+      1 32 _t9 = op extract_low_128_to_32 _t8;
+      1 128 _t10 = read V _t1;
+      1 32 _t11 = op extract_low_128_to_32 _t10;
+      1 32 _t12 = const 0;
+      1 32 _t13 = op select_32 _t7 _t9 _t12;
+      1 32 _t14 = const 0;
+      1 32 _t15 = op select_32 _t7 _t11 _t14;
+      1 2 _t16 = fop fcmpq_32 _t13 _t15;
+      1 4 _t17 = const 3;
+      1 2 _t18 = const 2;
+      1 1 _t19 = op eq_2 _t16 _t18;
+      1 4 _t20 = const 2;
+      1 4 _t21 = op select_4 _t19 _t20 _t17;
+      1 2 _t22 = const 1;
+      1 1 _t23 = op eq_2 _t16 _t22;
+      1 4 _t24 = const 8;
+      1 4 _t25 = op select_4 _t23 _t24 _t21;
+      1 2 _t26 = const 0;
+      1 1 _t27 = op eq_2 _t16 _t26;
+      1 4 _t28 = const 6;
+      1 4 _t29 = op select_4 _t27 _t28 _t25;
+      1 4 _t30 = op select_4 _t7 _t29 _t4;
+      1 1 _t31 = const 0;
+      1 = write NZCV _t31 _t30;
+  - name: FCCMP_D_floatccmp
+    attributes:
+      - datatype.double
+      - instr-class.float
+      - mnemonic.FCCMP
+    operand_sizes:
+      - 5
+      - 4
+      - 5
+      - 4
+    operand_names:
+      - Rm
+      - cond
+      - Rn
+      - nzcv
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 509608960
+      const_mask: 4292873232
+      decode:
+        - decode_field_16_5
+        - decode_field_12_4
+        - decode_field_5_5
+        - decode_field_0_4
+      encode: encode_16w5_12w4_5w5_0w4
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 4 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 4 _t4 = input 3;
+      1 1 _t5 = const 0;
+      1 4 _t6 = read NZCV _t5;
+      1 1 _t7 = op condition_holds _t2 _t6;
+      1 128 _t8 = read V _t3;
+      1 64 _t9 = op extract_low_128_to_64 _t8;
+      1 128 _t10 = read V _t1;
+      1 64 _t11 = op extract_low_128_to_64 _t10;
+      1 64 _t12 = const 0;
+      1 64 _t13 = op select_64 _t7 _t9 _t12;
+      1 64 _t14 = const 0;
+      1 64 _t15 = op select_64 _t7 _t11 _t14;
+      1 2 _t16 = fop fcmpq_64 _t13 _t15;
+      1 4 _t17 = const 3;
+      1 2 _t18 = const 2;
+      1 1 _t19 = op eq_2 _t16 _t18;
+      1 4 _t20 = const 2;
+      1 4 _t21 = op select_4 _t19 _t20 _t17;
+      1 2 _t22 = const 1;
+      1 1 _t23 = op eq_2 _t16 _t22;
+      1 4 _t24 = const 8;
+      1 4 _t25 = op select_4 _t23 _t24 _t21;
+      1 2 _t26 = const 0;
+      1 1 _t27 = op eq_2 _t16 _t26;
+      1 4 _t28 = const 6;
+      1 4 _t29 = op select_4 _t27 _t28 _t25;
+      1 4 _t30 = op select_4 _t7 _t29 _t4;
+      1 1 _t31 = const 0;
+      1 = write NZCV _t31 _t30;
+  - name: FCCMPE_H_floatccmp
+    attributes:
+      - datatype.half
+      - instr-class.float
+      - mnemonic.FCCMPE
+    operand_sizes:
+      - 5
+      - 4
+      - 5
+      - 4
+    operand_names:
+      - Rm
+      - cond
+      - Rn
+      - nzcv
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 517997584
+      const_mask: 4292873232
+      decode:
+        - decode_field_16_5
+        - decode_field_12_4
+        - decode_field_5_5
+        - decode_field_0_4
+      encode: encode_16w5_12w4_5w5_0w4
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 4 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 4 _t4 = input 3;
+      1 1 _t5 = const 0;
+      1 4 _t6 = read NZCV _t5;
+      1 1 _t7 = op condition_holds _t2 _t6;
+      1 128 _t8 = read V _t3;
+      1 16 _t9 = op extract_low_128_to_16 _t8;
+      1 128 _t10 = read V _t1;
+      1 16 _t11 = op extract_low_128_to_16 _t10;
+      1 16 _t12 = const 0;
+      1 16 _t13 = op select_16 _t7 _t9 _t12;
+      1 16 _t14 = const 0;
+      1 16 _t15 = op select_16 _t7 _t11 _t14;
+      1 2 _t16 = fop fcmps_16 _t13 _t15;
+      1 4 _t17 = const 3;
+      1 2 _t18 = const 2;
+      1 1 _t19 = op eq_2 _t16 _t18;
+      1 4 _t20 = const 2;
+      1 4 _t21 = op select_4 _t19 _t20 _t17;
+      1 2 _t22 = const 1;
+      1 1 _t23 = op eq_2 _t16 _t22;
+      1 4 _t24 = const 8;
+      1 4 _t25 = op select_4 _t23 _t24 _t21;
+      1 2 _t26 = const 0;
+      1 1 _t27 = op eq_2 _t16 _t26;
+      1 4 _t28 = const 6;
+      1 4 _t29 = op select_4 _t27 _t28 _t25;
+      1 4 _t30 = op select_4 _t7 _t29 _t4;
+      1 1 _t31 = const 0;
+      1 = write NZCV _t31 _t30;
+  - name: FCCMPE_S_floatccmp
+    attributes:
+      - datatype.single
+      - instr-class.float
+      - mnemonic.FCCMPE
+    operand_sizes:
+      - 5
+      - 4
+      - 5
+      - 4
+    operand_names:
+      - Rm
+      - cond
+      - Rn
+      - nzcv
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 505414672
+      const_mask: 4292873232
+      decode:
+        - decode_field_16_5
+        - decode_field_12_4
+        - decode_field_5_5
+        - decode_field_0_4
+      encode: encode_16w5_12w4_5w5_0w4
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 4 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 4 _t4 = input 3;
+      1 1 _t5 = const 0;
+      1 4 _t6 = read NZCV _t5;
+      1 1 _t7 = op condition_holds _t2 _t6;
+      1 128 _t8 = read V _t3;
+      1 32 _t9 = op extract_low_128_to_32 _t8;
+      1 128 _t10 = read V _t1;
+      1 32 _t11 = op extract_low_128_to_32 _t10;
+      1 32 _t12 = const 0;
+      1 32 _t13 = op select_32 _t7 _t9 _t12;
+      1 32 _t14 = const 0;
+      1 32 _t15 = op select_32 _t7 _t11 _t14;
+      1 2 _t16 = fop fcmps_32 _t13 _t15;
+      1 4 _t17 = const 3;
+      1 2 _t18 = const 2;
+      1 1 _t19 = op eq_2 _t16 _t18;
+      1 4 _t20 = const 2;
+      1 4 _t21 = op select_4 _t19 _t20 _t17;
+      1 2 _t22 = const 1;
+      1 1 _t23 = op eq_2 _t16 _t22;
+      1 4 _t24 = const 8;
+      1 4 _t25 = op select_4 _t23 _t24 _t21;
+      1 2 _t26 = const 0;
+      1 1 _t27 = op eq_2 _t16 _t26;
+      1 4 _t28 = const 6;
+      1 4 _t29 = op select_4 _t27 _t28 _t25;
+      1 4 _t30 = op select_4 _t7 _t29 _t4;
+      1 1 _t31 = const 0;
+      1 = write NZCV _t31 _t30;
+  - name: FCCMPE_D_floatccmp
+    attributes:
+      - datatype.double
+      - instr-class.float
+      - mnemonic.FCCMPE
+    operand_sizes:
+      - 5
+      - 4
+      - 5
+      - 4
+    operand_names:
+      - Rm
+      - cond
+      - Rn
+      - nzcv
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 509608976
+      const_mask: 4292873232
+      decode:
+        - decode_field_16_5
+        - decode_field_12_4
+        - decode_field_5_5
+        - decode_field_0_4
+      encode: encode_16w5_12w4_5w5_0w4
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 4 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 4 _t4 = input 3;
+      1 1 _t5 = const 0;
+      1 4 _t6 = read NZCV _t5;
+      1 1 _t7 = op condition_holds _t2 _t6;
+      1 128 _t8 = read V _t3;
+      1 64 _t9 = op extract_low_128_to_64 _t8;
+      1 128 _t10 = read V _t1;
+      1 64 _t11 = op extract_low_128_to_64 _t10;
+      1 64 _t12 = const 0;
+      1 64 _t13 = op select_64 _t7 _t9 _t12;
+      1 64 _t14 = const 0;
+      1 64 _t15 = op select_64 _t7 _t11 _t14;
+      1 2 _t16 = fop fcmps_64 _t13 _t15;
+      1 4 _t17 = const 3;
+      1 2 _t18 = const 2;
+      1 1 _t19 = op eq_2 _t16 _t18;
+      1 4 _t20 = const 2;
+      1 4 _t21 = op select_4 _t19 _t20 _t17;
+      1 2 _t22 = const 1;
+      1 1 _t23 = op eq_2 _t16 _t22;
+      1 4 _t24 = const 8;
+      1 4 _t25 = op select_4 _t23 _t24 _t21;
+      1 2 _t26 = const 0;
+      1 1 _t27 = op eq_2 _t16 _t26;
+      1 4 _t28 = const 6;
+      1 4 _t29 = op select_4 _t27 _t28 _t25;
+      1 4 _t30 = op select_4 _t7 _t29 _t4;
+      1 1 _t31 = const 0;
+      1 = write NZCV _t31 _t30;
   - name: FCSEL_H_floatsel
     attributes:
       - datatype.half
@@ -17349,6 +20681,3462 @@ instructions:
       1 64 _t38 = op orr_64 _t34 _t37;
       1 128 _t39 = op extend_zero_64_to_128 _t38;
       1 = write V _t2 _t39;
+  - name: FCVTNS_32H_float2int
+    attributes:
+      - convert-type.half-to-32
+      - instr-class.float
+      - mnemonic.FCVTNS
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 517996544
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 16 _t4 = op extract_low_128_to_16 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 0;
+      1 32 _t7 = fop ftosi_16_to_32 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op extend_zero_32_to_64 _t7;
+      1 64 _t12 = op select_64 _t10 _t8 _t11;
+      1 = write X _t2 _t12;
+  - name: FCVTNS_64H_float2int
+    attributes:
+      - convert-type.half-to-64
+      - instr-class.float
+      - mnemonic.FCVTNS
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2665480192
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 16 _t4 = op extract_low_128_to_16 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 0;
+      1 64 _t7 = fop ftosi_16_to_64 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op select_64 _t10 _t8 _t7;
+      1 = write X _t2 _t11;
+  - name: FCVTNS_32S_float2int
+    attributes:
+      - convert-type.single-to-32
+      - instr-class.float
+      - mnemonic.FCVTNS
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 505413632
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 32 _t4 = op extract_low_128_to_32 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 0;
+      1 32 _t7 = fop ftosi_32_to_32 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op extend_zero_32_to_64 _t7;
+      1 64 _t12 = op select_64 _t10 _t8 _t11;
+      1 = write X _t2 _t12;
+  - name: FCVTNS_64S_float2int
+    attributes:
+      - convert-type.single-to-64
+      - instr-class.float
+      - mnemonic.FCVTNS
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2652897280
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 32 _t4 = op extract_low_128_to_32 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 0;
+      1 64 _t7 = fop ftosi_32_to_64 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op select_64 _t10 _t8 _t7;
+      1 = write X _t2 _t11;
+  - name: FCVTNS_32D_float2int
+    attributes:
+      - convert-type.double-to-32
+      - instr-class.float
+      - mnemonic.FCVTNS
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 509607936
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 64 _t4 = op extract_low_128_to_64 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 0;
+      1 32 _t7 = fop ftosi_64_to_32 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op extend_zero_32_to_64 _t7;
+      1 64 _t12 = op select_64 _t10 _t8 _t11;
+      1 = write X _t2 _t12;
+  - name: FCVTNS_64D_float2int
+    attributes:
+      - convert-type.double-to-64
+      - instr-class.float
+      - mnemonic.FCVTNS
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2657091584
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 64 _t4 = op extract_low_128_to_64 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 0;
+      1 64 _t7 = fop ftosi_64_to_64 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op select_64 _t10 _t8 _t7;
+      1 = write X _t2 _t11;
+  - name: FCVTNU_32H_float2int
+    attributes:
+      - convert-type.half-to-32
+      - instr-class.float
+      - mnemonic.FCVTNU
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 518062080
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 16 _t4 = op extract_low_128_to_16 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 0;
+      1 32 _t7 = fop ftoui_16_to_32 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op extend_zero_32_to_64 _t7;
+      1 64 _t12 = op select_64 _t10 _t8 _t11;
+      1 = write X _t2 _t12;
+  - name: FCVTNU_64H_float2int
+    attributes:
+      - convert-type.half-to-64
+      - instr-class.float
+      - mnemonic.FCVTNU
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2665545728
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 16 _t4 = op extract_low_128_to_16 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 0;
+      1 64 _t7 = fop ftoui_16_to_64 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op select_64 _t10 _t8 _t7;
+      1 = write X _t2 _t11;
+  - name: FCVTNU_32S_float2int
+    attributes:
+      - convert-type.single-to-32
+      - instr-class.float
+      - mnemonic.FCVTNU
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 505479168
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 32 _t4 = op extract_low_128_to_32 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 0;
+      1 32 _t7 = fop ftoui_32_to_32 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op extend_zero_32_to_64 _t7;
+      1 64 _t12 = op select_64 _t10 _t8 _t11;
+      1 = write X _t2 _t12;
+  - name: FCVTNU_64S_float2int
+    attributes:
+      - convert-type.single-to-64
+      - instr-class.float
+      - mnemonic.FCVTNU
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2652962816
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 32 _t4 = op extract_low_128_to_32 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 0;
+      1 64 _t7 = fop ftoui_32_to_64 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op select_64 _t10 _t8 _t7;
+      1 = write X _t2 _t11;
+  - name: FCVTNU_32D_float2int
+    attributes:
+      - convert-type.double-to-32
+      - instr-class.float
+      - mnemonic.FCVTNU
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 509673472
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 64 _t4 = op extract_low_128_to_64 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 0;
+      1 32 _t7 = fop ftoui_64_to_32 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op extend_zero_32_to_64 _t7;
+      1 64 _t12 = op select_64 _t10 _t8 _t11;
+      1 = write X _t2 _t12;
+  - name: FCVTNU_64D_float2int
+    attributes:
+      - convert-type.double-to-64
+      - instr-class.float
+      - mnemonic.FCVTNU
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2657157120
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 64 _t4 = op extract_low_128_to_64 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 0;
+      1 64 _t7 = fop ftoui_64_to_64 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op select_64 _t10 _t8 _t7;
+      1 = write X _t2 _t11;
+  - name: FCVTAS_32H_float2int
+    attributes:
+      - convert-type.half-to-32
+      - instr-class.float
+      - mnemonic.FCVTAS
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 518258688
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 16 _t4 = op extract_low_128_to_16 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 4;
+      1 32 _t7 = fop ftosi_16_to_32 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op extend_zero_32_to_64 _t7;
+      1 64 _t12 = op select_64 _t10 _t8 _t11;
+      1 = write X _t2 _t12;
+  - name: FCVTAS_64H_float2int
+    attributes:
+      - convert-type.half-to-64
+      - instr-class.float
+      - mnemonic.FCVTAS
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2665742336
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 16 _t4 = op extract_low_128_to_16 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 4;
+      1 64 _t7 = fop ftosi_16_to_64 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op select_64 _t10 _t8 _t7;
+      1 = write X _t2 _t11;
+  - name: FCVTAS_32S_float2int
+    attributes:
+      - convert-type.single-to-32
+      - instr-class.float
+      - mnemonic.FCVTAS
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 505675776
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 32 _t4 = op extract_low_128_to_32 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 4;
+      1 32 _t7 = fop ftosi_32_to_32 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op extend_zero_32_to_64 _t7;
+      1 64 _t12 = op select_64 _t10 _t8 _t11;
+      1 = write X _t2 _t12;
+  - name: FCVTAS_64S_float2int
+    attributes:
+      - convert-type.single-to-64
+      - instr-class.float
+      - mnemonic.FCVTAS
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2653159424
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 32 _t4 = op extract_low_128_to_32 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 4;
+      1 64 _t7 = fop ftosi_32_to_64 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op select_64 _t10 _t8 _t7;
+      1 = write X _t2 _t11;
+  - name: FCVTAS_32D_float2int
+    attributes:
+      - convert-type.double-to-32
+      - instr-class.float
+      - mnemonic.FCVTAS
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 509870080
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 64 _t4 = op extract_low_128_to_64 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 4;
+      1 32 _t7 = fop ftosi_64_to_32 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op extend_zero_32_to_64 _t7;
+      1 64 _t12 = op select_64 _t10 _t8 _t11;
+      1 = write X _t2 _t12;
+  - name: FCVTAS_64D_float2int
+    attributes:
+      - convert-type.double-to-64
+      - instr-class.float
+      - mnemonic.FCVTAS
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2657353728
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 64 _t4 = op extract_low_128_to_64 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 4;
+      1 64 _t7 = fop ftosi_64_to_64 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op select_64 _t10 _t8 _t7;
+      1 = write X _t2 _t11;
+  - name: FCVTAU_32H_float2int
+    attributes:
+      - convert-type.half-to-32
+      - instr-class.float
+      - mnemonic.FCVTAU
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 518324224
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 16 _t4 = op extract_low_128_to_16 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 4;
+      1 32 _t7 = fop ftoui_16_to_32 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op extend_zero_32_to_64 _t7;
+      1 64 _t12 = op select_64 _t10 _t8 _t11;
+      1 = write X _t2 _t12;
+  - name: FCVTAU_64H_float2int
+    attributes:
+      - convert-type.half-to-64
+      - instr-class.float
+      - mnemonic.FCVTAU
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2665807872
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 16 _t4 = op extract_low_128_to_16 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 4;
+      1 64 _t7 = fop ftoui_16_to_64 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op select_64 _t10 _t8 _t7;
+      1 = write X _t2 _t11;
+  - name: FCVTAU_32S_float2int
+    attributes:
+      - convert-type.single-to-32
+      - instr-class.float
+      - mnemonic.FCVTAU
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 505741312
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 32 _t4 = op extract_low_128_to_32 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 4;
+      1 32 _t7 = fop ftoui_32_to_32 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op extend_zero_32_to_64 _t7;
+      1 64 _t12 = op select_64 _t10 _t8 _t11;
+      1 = write X _t2 _t12;
+  - name: FCVTAU_64S_float2int
+    attributes:
+      - convert-type.single-to-64
+      - instr-class.float
+      - mnemonic.FCVTAU
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2653224960
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 32 _t4 = op extract_low_128_to_32 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 4;
+      1 64 _t7 = fop ftoui_32_to_64 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op select_64 _t10 _t8 _t7;
+      1 = write X _t2 _t11;
+  - name: FCVTAU_32D_float2int
+    attributes:
+      - convert-type.double-to-32
+      - instr-class.float
+      - mnemonic.FCVTAU
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 509935616
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 64 _t4 = op extract_low_128_to_64 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 4;
+      1 32 _t7 = fop ftoui_64_to_32 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op extend_zero_32_to_64 _t7;
+      1 64 _t12 = op select_64 _t10 _t8 _t11;
+      1 = write X _t2 _t12;
+  - name: FCVTAU_64D_float2int
+    attributes:
+      - convert-type.double-to-64
+      - instr-class.float
+      - mnemonic.FCVTAU
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2657419264
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 64 _t4 = op extract_low_128_to_64 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 4;
+      1 64 _t7 = fop ftoui_64_to_64 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op select_64 _t10 _t8 _t7;
+      1 = write X _t2 _t11;
+  - name: FCVTPS_32H_float2int
+    attributes:
+      - convert-type.half-to-32
+      - instr-class.float
+      - mnemonic.FCVTPS
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 518520832
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 16 _t4 = op extract_low_128_to_16 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 1;
+      1 32 _t7 = fop ftosi_16_to_32 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op extend_zero_32_to_64 _t7;
+      1 64 _t12 = op select_64 _t10 _t8 _t11;
+      1 = write X _t2 _t12;
+  - name: FCVTPS_64H_float2int
+    attributes:
+      - convert-type.half-to-64
+      - instr-class.float
+      - mnemonic.FCVTPS
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2666004480
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 16 _t4 = op extract_low_128_to_16 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 1;
+      1 64 _t7 = fop ftosi_16_to_64 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op select_64 _t10 _t8 _t7;
+      1 = write X _t2 _t11;
+  - name: FCVTPS_32S_float2int
+    attributes:
+      - convert-type.single-to-32
+      - instr-class.float
+      - mnemonic.FCVTPS
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 505937920
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 32 _t4 = op extract_low_128_to_32 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 1;
+      1 32 _t7 = fop ftosi_32_to_32 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op extend_zero_32_to_64 _t7;
+      1 64 _t12 = op select_64 _t10 _t8 _t11;
+      1 = write X _t2 _t12;
+  - name: FCVTPS_64S_float2int
+    attributes:
+      - convert-type.single-to-64
+      - instr-class.float
+      - mnemonic.FCVTPS
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2653421568
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 32 _t4 = op extract_low_128_to_32 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 1;
+      1 64 _t7 = fop ftosi_32_to_64 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op select_64 _t10 _t8 _t7;
+      1 = write X _t2 _t11;
+  - name: FCVTPS_32D_float2int
+    attributes:
+      - convert-type.double-to-32
+      - instr-class.float
+      - mnemonic.FCVTPS
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 510132224
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 64 _t4 = op extract_low_128_to_64 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 1;
+      1 32 _t7 = fop ftosi_64_to_32 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op extend_zero_32_to_64 _t7;
+      1 64 _t12 = op select_64 _t10 _t8 _t11;
+      1 = write X _t2 _t12;
+  - name: FCVTPS_64D_float2int
+    attributes:
+      - convert-type.double-to-64
+      - instr-class.float
+      - mnemonic.FCVTPS
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2657615872
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 64 _t4 = op extract_low_128_to_64 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 1;
+      1 64 _t7 = fop ftosi_64_to_64 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op select_64 _t10 _t8 _t7;
+      1 = write X _t2 _t11;
+  - name: FCVTPU_32H_float2int
+    attributes:
+      - convert-type.half-to-32
+      - instr-class.float
+      - mnemonic.FCVTPU
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 518586368
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 16 _t4 = op extract_low_128_to_16 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 1;
+      1 32 _t7 = fop ftoui_16_to_32 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op extend_zero_32_to_64 _t7;
+      1 64 _t12 = op select_64 _t10 _t8 _t11;
+      1 = write X _t2 _t12;
+  - name: FCVTPU_64H_float2int
+    attributes:
+      - convert-type.half-to-64
+      - instr-class.float
+      - mnemonic.FCVTPU
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2666070016
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 16 _t4 = op extract_low_128_to_16 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 1;
+      1 64 _t7 = fop ftoui_16_to_64 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op select_64 _t10 _t8 _t7;
+      1 = write X _t2 _t11;
+  - name: FCVTPU_32S_float2int
+    attributes:
+      - convert-type.single-to-32
+      - instr-class.float
+      - mnemonic.FCVTPU
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 506003456
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 32 _t4 = op extract_low_128_to_32 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 1;
+      1 32 _t7 = fop ftoui_32_to_32 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op extend_zero_32_to_64 _t7;
+      1 64 _t12 = op select_64 _t10 _t8 _t11;
+      1 = write X _t2 _t12;
+  - name: FCVTPU_64S_float2int
+    attributes:
+      - convert-type.single-to-64
+      - instr-class.float
+      - mnemonic.FCVTPU
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2653487104
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 32 _t4 = op extract_low_128_to_32 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 1;
+      1 64 _t7 = fop ftoui_32_to_64 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op select_64 _t10 _t8 _t7;
+      1 = write X _t2 _t11;
+  - name: FCVTPU_32D_float2int
+    attributes:
+      - convert-type.double-to-32
+      - instr-class.float
+      - mnemonic.FCVTPU
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 510197760
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 64 _t4 = op extract_low_128_to_64 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 1;
+      1 32 _t7 = fop ftoui_64_to_32 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op extend_zero_32_to_64 _t7;
+      1 64 _t12 = op select_64 _t10 _t8 _t11;
+      1 = write X _t2 _t12;
+  - name: FCVTPU_64D_float2int
+    attributes:
+      - convert-type.double-to-64
+      - instr-class.float
+      - mnemonic.FCVTPU
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2657681408
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 64 _t4 = op extract_low_128_to_64 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 1;
+      1 64 _t7 = fop ftoui_64_to_64 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op select_64 _t10 _t8 _t7;
+      1 = write X _t2 _t11;
+  - name: FCVTMS_32H_float2int
+    attributes:
+      - convert-type.half-to-32
+      - instr-class.float
+      - mnemonic.FCVTMS
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 519045120
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 16 _t4 = op extract_low_128_to_16 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 2;
+      1 32 _t7 = fop ftosi_16_to_32 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op extend_zero_32_to_64 _t7;
+      1 64 _t12 = op select_64 _t10 _t8 _t11;
+      1 = write X _t2 _t12;
+  - name: FCVTMS_64H_float2int
+    attributes:
+      - convert-type.half-to-64
+      - instr-class.float
+      - mnemonic.FCVTMS
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2666528768
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 16 _t4 = op extract_low_128_to_16 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 2;
+      1 64 _t7 = fop ftosi_16_to_64 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op select_64 _t10 _t8 _t7;
+      1 = write X _t2 _t11;
+  - name: FCVTMS_32S_float2int
+    attributes:
+      - convert-type.single-to-32
+      - instr-class.float
+      - mnemonic.FCVTMS
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 506462208
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 32 _t4 = op extract_low_128_to_32 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 2;
+      1 32 _t7 = fop ftosi_32_to_32 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op extend_zero_32_to_64 _t7;
+      1 64 _t12 = op select_64 _t10 _t8 _t11;
+      1 = write X _t2 _t12;
+  - name: FCVTMS_64S_float2int
+    attributes:
+      - convert-type.single-to-64
+      - instr-class.float
+      - mnemonic.FCVTMS
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2653945856
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 32 _t4 = op extract_low_128_to_32 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 2;
+      1 64 _t7 = fop ftosi_32_to_64 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op select_64 _t10 _t8 _t7;
+      1 = write X _t2 _t11;
+  - name: FCVTMS_32D_float2int
+    attributes:
+      - convert-type.double-to-32
+      - instr-class.float
+      - mnemonic.FCVTMS
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 510656512
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 64 _t4 = op extract_low_128_to_64 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 2;
+      1 32 _t7 = fop ftosi_64_to_32 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op extend_zero_32_to_64 _t7;
+      1 64 _t12 = op select_64 _t10 _t8 _t11;
+      1 = write X _t2 _t12;
+  - name: FCVTMS_64D_float2int
+    attributes:
+      - convert-type.double-to-64
+      - instr-class.float
+      - mnemonic.FCVTMS
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2658140160
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 64 _t4 = op extract_low_128_to_64 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 2;
+      1 64 _t7 = fop ftosi_64_to_64 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op select_64 _t10 _t8 _t7;
+      1 = write X _t2 _t11;
+  - name: FCVTMU_32H_float2int
+    attributes:
+      - convert-type.half-to-32
+      - instr-class.float
+      - mnemonic.FCVTMU
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 519110656
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 16 _t4 = op extract_low_128_to_16 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 2;
+      1 32 _t7 = fop ftoui_16_to_32 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op extend_zero_32_to_64 _t7;
+      1 64 _t12 = op select_64 _t10 _t8 _t11;
+      1 = write X _t2 _t12;
+  - name: FCVTMU_64H_float2int
+    attributes:
+      - convert-type.half-to-64
+      - instr-class.float
+      - mnemonic.FCVTMU
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2666594304
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 16 _t4 = op extract_low_128_to_16 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 2;
+      1 64 _t7 = fop ftoui_16_to_64 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op select_64 _t10 _t8 _t7;
+      1 = write X _t2 _t11;
+  - name: FCVTMU_32S_float2int
+    attributes:
+      - convert-type.single-to-32
+      - instr-class.float
+      - mnemonic.FCVTMU
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 506527744
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 32 _t4 = op extract_low_128_to_32 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 2;
+      1 32 _t7 = fop ftoui_32_to_32 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op extend_zero_32_to_64 _t7;
+      1 64 _t12 = op select_64 _t10 _t8 _t11;
+      1 = write X _t2 _t12;
+  - name: FCVTMU_64S_float2int
+    attributes:
+      - convert-type.single-to-64
+      - instr-class.float
+      - mnemonic.FCVTMU
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2654011392
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 32 _t4 = op extract_low_128_to_32 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 2;
+      1 64 _t7 = fop ftoui_32_to_64 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op select_64 _t10 _t8 _t7;
+      1 = write X _t2 _t11;
+  - name: FCVTMU_32D_float2int
+    attributes:
+      - convert-type.double-to-32
+      - instr-class.float
+      - mnemonic.FCVTMU
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 510722048
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 64 _t4 = op extract_low_128_to_64 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 2;
+      1 32 _t7 = fop ftoui_64_to_32 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op extend_zero_32_to_64 _t7;
+      1 64 _t12 = op select_64 _t10 _t8 _t11;
+      1 = write X _t2 _t12;
+  - name: FCVTMU_64D_float2int
+    attributes:
+      - convert-type.double-to-64
+      - instr-class.float
+      - mnemonic.FCVTMU
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2658205696
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 64 _t4 = op extract_low_128_to_64 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 2;
+      1 64 _t7 = fop ftoui_64_to_64 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op select_64 _t10 _t8 _t7;
+      1 = write X _t2 _t11;
+  - name: FCVTZS_32H_float2int
+    attributes:
+      - convert-type.half-to-32
+      - instr-class.float
+      - mnemonic.FCVTZS
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 519569408
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 16 _t4 = op extract_low_128_to_16 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 3;
+      1 32 _t7 = fop ftosi_16_to_32 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op extend_zero_32_to_64 _t7;
+      1 64 _t12 = op select_64 _t10 _t8 _t11;
+      1 = write X _t2 _t12;
+  - name: FCVTZS_64H_float2int
+    attributes:
+      - convert-type.half-to-64
+      - instr-class.float
+      - mnemonic.FCVTZS
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2667053056
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 16 _t4 = op extract_low_128_to_16 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 3;
+      1 64 _t7 = fop ftosi_16_to_64 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op select_64 _t10 _t8 _t7;
+      1 = write X _t2 _t11;
+  - name: FCVTZS_32S_float2int
+    attributes:
+      - convert-type.single-to-32
+      - instr-class.float
+      - mnemonic.FCVTZS
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 506986496
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 32 _t4 = op extract_low_128_to_32 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 3;
+      1 32 _t7 = fop ftosi_32_to_32 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op extend_zero_32_to_64 _t7;
+      1 64 _t12 = op select_64 _t10 _t8 _t11;
+      1 = write X _t2 _t12;
+  - name: FCVTZS_64S_float2int
+    attributes:
+      - convert-type.single-to-64
+      - instr-class.float
+      - mnemonic.FCVTZS
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2654470144
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 32 _t4 = op extract_low_128_to_32 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 3;
+      1 64 _t7 = fop ftosi_32_to_64 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op select_64 _t10 _t8 _t7;
+      1 = write X _t2 _t11;
+  - name: FCVTZS_32D_float2int
+    attributes:
+      - convert-type.double-to-32
+      - instr-class.float
+      - mnemonic.FCVTZS
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 511180800
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 64 _t4 = op extract_low_128_to_64 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 3;
+      1 32 _t7 = fop ftosi_64_to_32 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op extend_zero_32_to_64 _t7;
+      1 64 _t12 = op select_64 _t10 _t8 _t11;
+      1 = write X _t2 _t12;
+  - name: FCVTZS_64D_float2int
+    attributes:
+      - convert-type.double-to-64
+      - instr-class.float
+      - mnemonic.FCVTZS
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2658664448
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 64 _t4 = op extract_low_128_to_64 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 3;
+      1 64 _t7 = fop ftosi_64_to_64 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op select_64 _t10 _t8 _t7;
+      1 = write X _t2 _t11;
+  - name: FCVTZU_32H_float2int
+    attributes:
+      - convert-type.half-to-32
+      - instr-class.float
+      - mnemonic.FCVTZU
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 519634944
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 16 _t4 = op extract_low_128_to_16 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 3;
+      1 32 _t7 = fop ftoui_16_to_32 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op extend_zero_32_to_64 _t7;
+      1 64 _t12 = op select_64 _t10 _t8 _t11;
+      1 = write X _t2 _t12;
+  - name: FCVTZU_64H_float2int
+    attributes:
+      - convert-type.half-to-64
+      - instr-class.float
+      - mnemonic.FCVTZU
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2667118592
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 16 _t4 = op extract_low_128_to_16 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 3;
+      1 64 _t7 = fop ftoui_16_to_64 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op select_64 _t10 _t8 _t7;
+      1 = write X _t2 _t11;
+  - name: FCVTZU_32S_float2int
+    attributes:
+      - convert-type.single-to-32
+      - instr-class.float
+      - mnemonic.FCVTZU
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 507052032
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 32 _t4 = op extract_low_128_to_32 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 3;
+      1 32 _t7 = fop ftoui_32_to_32 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op extend_zero_32_to_64 _t7;
+      1 64 _t12 = op select_64 _t10 _t8 _t11;
+      1 = write X _t2 _t12;
+  - name: FCVTZU_64S_float2int
+    attributes:
+      - convert-type.single-to-64
+      - instr-class.float
+      - mnemonic.FCVTZU
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2654535680
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 32 _t4 = op extract_low_128_to_32 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 3;
+      1 64 _t7 = fop ftoui_32_to_64 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op select_64 _t10 _t8 _t7;
+      1 = write X _t2 _t11;
+  - name: FCVTZU_32D_float2int
+    attributes:
+      - convert-type.double-to-32
+      - instr-class.float
+      - mnemonic.FCVTZU
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 511246336
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 64 _t4 = op extract_low_128_to_64 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 3;
+      1 32 _t7 = fop ftoui_64_to_32 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op extend_zero_32_to_64 _t7;
+      1 64 _t12 = op select_64 _t10 _t8 _t11;
+      1 = write X _t2 _t12;
+  - name: FCVTZU_64D_float2int
+    attributes:
+      - convert-type.double-to-64
+      - instr-class.float
+      - mnemonic.FCVTZU
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2658729984
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 128 _t3 = read V _t1;
+      1 64 _t4 = op extract_low_128_to_64 _t3;
+      1 8 _t5 = const 0;
+      1 3 _t6 = const 3;
+      1 64 _t7 = fop ftoui_64_to_64 _t4 _t5 _t6;
+      1 64 _t8 = read X _t2;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t2 _t9;
+      1 64 _t11 = op select_64 _t10 _t8 _t7;
+      1 = write X _t2 _t11;
+  - name: FCVTZS_32H_float2fix
+    attributes:
+      - convert-type.half-to-fix32
+      - instr-class.float
+      - mnemonic.FCVTZS
+    operand_sizes:
+      - 6
+      - 5
+      - 5
+    operand_names:
+      - scale
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 517472256
+      const_mask: 4294901760
+      decode:
+        - decode_field_10_6
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w6_5w5_0w5
+      constraint_decode: constraint_decode_FCVTZS_32H_float2fix
+      constraint_encode: constraint_encode_FCVTZS_32H_float2fix
+    semantic: |
+      1 6 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 16 _t5 = op extract_low_128_to_16 _t4;
+      1 8 _t6 = const 64;
+      1 8 _t7 = op extend_zero_6_to_8 _t1;
+      1 8 _t8 = op sub_8 _t6 _t7;
+      1 3 _t9 = const 3;
+      1 32 _t10 = fop ftosi_16_to_32 _t5 _t8 _t9;
+      1 64 _t11 = read X _t3;
+      1 5 _t12 = const 31;
+      1 1 _t13 = op eq_5 _t3 _t12;
+      1 64 _t14 = op extend_zero_32_to_64 _t10;
+      1 64 _t15 = op select_64 _t13 _t11 _t14;
+      1 = write X _t3 _t15;
+  - name: FCVTZS_64H_float2fix
+    attributes:
+      - convert-type.half-to-fix64
+      - instr-class.float
+      - mnemonic.FCVTZS
+    operand_sizes:
+      - 6
+      - 5
+      - 5
+    operand_names:
+      - scale
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2664955904
+      const_mask: 4294901760
+      decode:
+        - decode_field_10_6
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w6_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 6 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 16 _t5 = op extract_low_128_to_16 _t4;
+      1 8 _t6 = const 64;
+      1 8 _t7 = op extend_zero_6_to_8 _t1;
+      1 8 _t8 = op sub_8 _t6 _t7;
+      1 3 _t9 = const 3;
+      1 64 _t10 = fop ftosi_16_to_64 _t5 _t8 _t9;
+      1 64 _t11 = read X _t3;
+      1 5 _t12 = const 31;
+      1 1 _t13 = op eq_5 _t3 _t12;
+      1 64 _t14 = op select_64 _t13 _t11 _t10;
+      1 = write X _t3 _t14;
+  - name: FCVTZS_32S_float2fix
+    attributes:
+      - convert-type.single-to-fix32
+      - instr-class.float
+      - mnemonic.FCVTZS
+    operand_sizes:
+      - 6
+      - 5
+      - 5
+    operand_names:
+      - scale
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 504889344
+      const_mask: 4294901760
+      decode:
+        - decode_field_10_6
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w6_5w5_0w5
+      constraint_decode: constraint_decode_FCVTZS_32H_float2fix
+      constraint_encode: constraint_encode_FCVTZS_32H_float2fix
+    semantic: |
+      1 6 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 32 _t5 = op extract_low_128_to_32 _t4;
+      1 8 _t6 = const 64;
+      1 8 _t7 = op extend_zero_6_to_8 _t1;
+      1 8 _t8 = op sub_8 _t6 _t7;
+      1 3 _t9 = const 3;
+      1 32 _t10 = fop ftosi_32_to_32 _t5 _t8 _t9;
+      1 64 _t11 = read X _t3;
+      1 5 _t12 = const 31;
+      1 1 _t13 = op eq_5 _t3 _t12;
+      1 64 _t14 = op extend_zero_32_to_64 _t10;
+      1 64 _t15 = op select_64 _t13 _t11 _t14;
+      1 = write X _t3 _t15;
+  - name: FCVTZS_64S_float2fix
+    attributes:
+      - convert-type.single-to-fix64
+      - instr-class.float
+      - mnemonic.FCVTZS
+    operand_sizes:
+      - 6
+      - 5
+      - 5
+    operand_names:
+      - scale
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2652372992
+      const_mask: 4294901760
+      decode:
+        - decode_field_10_6
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w6_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 6 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 32 _t5 = op extract_low_128_to_32 _t4;
+      1 8 _t6 = const 64;
+      1 8 _t7 = op extend_zero_6_to_8 _t1;
+      1 8 _t8 = op sub_8 _t6 _t7;
+      1 3 _t9 = const 3;
+      1 64 _t10 = fop ftosi_32_to_64 _t5 _t8 _t9;
+      1 64 _t11 = read X _t3;
+      1 5 _t12 = const 31;
+      1 1 _t13 = op eq_5 _t3 _t12;
+      1 64 _t14 = op select_64 _t13 _t11 _t10;
+      1 = write X _t3 _t14;
+  - name: FCVTZS_32D_float2fix
+    attributes:
+      - convert-type.double-to-fix32
+      - instr-class.float
+      - mnemonic.FCVTZS
+    operand_sizes:
+      - 6
+      - 5
+      - 5
+    operand_names:
+      - scale
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 509083648
+      const_mask: 4294901760
+      decode:
+        - decode_field_10_6
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w6_5w5_0w5
+      constraint_decode: constraint_decode_FCVTZS_32H_float2fix
+      constraint_encode: constraint_encode_FCVTZS_32H_float2fix
+    semantic: |
+      1 6 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 64 _t5 = op extract_low_128_to_64 _t4;
+      1 8 _t6 = const 64;
+      1 8 _t7 = op extend_zero_6_to_8 _t1;
+      1 8 _t8 = op sub_8 _t6 _t7;
+      1 3 _t9 = const 3;
+      1 32 _t10 = fop ftosi_64_to_32 _t5 _t8 _t9;
+      1 64 _t11 = read X _t3;
+      1 5 _t12 = const 31;
+      1 1 _t13 = op eq_5 _t3 _t12;
+      1 64 _t14 = op extend_zero_32_to_64 _t10;
+      1 64 _t15 = op select_64 _t13 _t11 _t14;
+      1 = write X _t3 _t15;
+  - name: FCVTZS_64D_float2fix
+    attributes:
+      - convert-type.double-to-fix64
+      - instr-class.float
+      - mnemonic.FCVTZS
+    operand_sizes:
+      - 6
+      - 5
+      - 5
+    operand_names:
+      - scale
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2656567296
+      const_mask: 4294901760
+      decode:
+        - decode_field_10_6
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w6_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 6 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 64 _t5 = op extract_low_128_to_64 _t4;
+      1 8 _t6 = const 64;
+      1 8 _t7 = op extend_zero_6_to_8 _t1;
+      1 8 _t8 = op sub_8 _t6 _t7;
+      1 3 _t9 = const 3;
+      1 64 _t10 = fop ftosi_64_to_64 _t5 _t8 _t9;
+      1 64 _t11 = read X _t3;
+      1 5 _t12 = const 31;
+      1 1 _t13 = op eq_5 _t3 _t12;
+      1 64 _t14 = op select_64 _t13 _t11 _t10;
+      1 = write X _t3 _t14;
+  - name: FCVTZU_32H_float2fix
+    attributes:
+      - convert-type.half-to-fix32
+      - instr-class.float
+      - mnemonic.FCVTZU
+    operand_sizes:
+      - 6
+      - 5
+      - 5
+    operand_names:
+      - scale
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 517537792
+      const_mask: 4294901760
+      decode:
+        - decode_field_10_6
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w6_5w5_0w5
+      constraint_decode: constraint_decode_FCVTZS_32H_float2fix
+      constraint_encode: constraint_encode_FCVTZS_32H_float2fix
+    semantic: |
+      1 6 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 16 _t5 = op extract_low_128_to_16 _t4;
+      1 8 _t6 = const 64;
+      1 8 _t7 = op extend_zero_6_to_8 _t1;
+      1 8 _t8 = op sub_8 _t6 _t7;
+      1 3 _t9 = const 3;
+      1 32 _t10 = fop ftoui_16_to_32 _t5 _t8 _t9;
+      1 64 _t11 = read X _t3;
+      1 5 _t12 = const 31;
+      1 1 _t13 = op eq_5 _t3 _t12;
+      1 64 _t14 = op extend_zero_32_to_64 _t10;
+      1 64 _t15 = op select_64 _t13 _t11 _t14;
+      1 = write X _t3 _t15;
+  - name: FCVTZU_64H_float2fix
+    attributes:
+      - convert-type.half-to-fix64
+      - instr-class.float
+      - mnemonic.FCVTZU
+    operand_sizes:
+      - 6
+      - 5
+      - 5
+    operand_names:
+      - scale
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2665021440
+      const_mask: 4294901760
+      decode:
+        - decode_field_10_6
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w6_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 6 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 16 _t5 = op extract_low_128_to_16 _t4;
+      1 8 _t6 = const 64;
+      1 8 _t7 = op extend_zero_6_to_8 _t1;
+      1 8 _t8 = op sub_8 _t6 _t7;
+      1 3 _t9 = const 3;
+      1 64 _t10 = fop ftoui_16_to_64 _t5 _t8 _t9;
+      1 64 _t11 = read X _t3;
+      1 5 _t12 = const 31;
+      1 1 _t13 = op eq_5 _t3 _t12;
+      1 64 _t14 = op select_64 _t13 _t11 _t10;
+      1 = write X _t3 _t14;
+  - name: FCVTZU_32S_float2fix
+    attributes:
+      - convert-type.single-to-fix32
+      - instr-class.float
+      - mnemonic.FCVTZU
+    operand_sizes:
+      - 6
+      - 5
+      - 5
+    operand_names:
+      - scale
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 504954880
+      const_mask: 4294901760
+      decode:
+        - decode_field_10_6
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w6_5w5_0w5
+      constraint_decode: constraint_decode_FCVTZS_32H_float2fix
+      constraint_encode: constraint_encode_FCVTZS_32H_float2fix
+    semantic: |
+      1 6 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 32 _t5 = op extract_low_128_to_32 _t4;
+      1 8 _t6 = const 64;
+      1 8 _t7 = op extend_zero_6_to_8 _t1;
+      1 8 _t8 = op sub_8 _t6 _t7;
+      1 3 _t9 = const 3;
+      1 32 _t10 = fop ftoui_32_to_32 _t5 _t8 _t9;
+      1 64 _t11 = read X _t3;
+      1 5 _t12 = const 31;
+      1 1 _t13 = op eq_5 _t3 _t12;
+      1 64 _t14 = op extend_zero_32_to_64 _t10;
+      1 64 _t15 = op select_64 _t13 _t11 _t14;
+      1 = write X _t3 _t15;
+  - name: FCVTZU_64S_float2fix
+    attributes:
+      - convert-type.single-to-fix64
+      - instr-class.float
+      - mnemonic.FCVTZU
+    operand_sizes:
+      - 6
+      - 5
+      - 5
+    operand_names:
+      - scale
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2652438528
+      const_mask: 4294901760
+      decode:
+        - decode_field_10_6
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w6_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 6 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 32 _t5 = op extract_low_128_to_32 _t4;
+      1 8 _t6 = const 64;
+      1 8 _t7 = op extend_zero_6_to_8 _t1;
+      1 8 _t8 = op sub_8 _t6 _t7;
+      1 3 _t9 = const 3;
+      1 64 _t10 = fop ftoui_32_to_64 _t5 _t8 _t9;
+      1 64 _t11 = read X _t3;
+      1 5 _t12 = const 31;
+      1 1 _t13 = op eq_5 _t3 _t12;
+      1 64 _t14 = op select_64 _t13 _t11 _t10;
+      1 = write X _t3 _t14;
+  - name: FCVTZU_32D_float2fix
+    attributes:
+      - convert-type.double-to-fix32
+      - instr-class.float
+      - mnemonic.FCVTZU
+    operand_sizes:
+      - 6
+      - 5
+      - 5
+    operand_names:
+      - scale
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 509149184
+      const_mask: 4294901760
+      decode:
+        - decode_field_10_6
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w6_5w5_0w5
+      constraint_decode: constraint_decode_FCVTZS_32H_float2fix
+      constraint_encode: constraint_encode_FCVTZS_32H_float2fix
+    semantic: |
+      1 6 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 64 _t5 = op extract_low_128_to_64 _t4;
+      1 8 _t6 = const 64;
+      1 8 _t7 = op extend_zero_6_to_8 _t1;
+      1 8 _t8 = op sub_8 _t6 _t7;
+      1 3 _t9 = const 3;
+      1 32 _t10 = fop ftoui_64_to_32 _t5 _t8 _t9;
+      1 64 _t11 = read X _t3;
+      1 5 _t12 = const 31;
+      1 1 _t13 = op eq_5 _t3 _t12;
+      1 64 _t14 = op extend_zero_32_to_64 _t10;
+      1 64 _t15 = op select_64 _t13 _t11 _t14;
+      1 = write X _t3 _t15;
+  - name: FCVTZU_64D_float2fix
+    attributes:
+      - convert-type.double-to-fix64
+      - instr-class.float
+      - mnemonic.FCVTZU
+    operand_sizes:
+      - 6
+      - 5
+      - 5
+    operand_names:
+      - scale
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2656632832
+      const_mask: 4294901760
+      decode:
+        - decode_field_10_6
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w6_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 6 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 128 _t4 = read V _t2;
+      1 64 _t5 = op extract_low_128_to_64 _t4;
+      1 8 _t6 = const 64;
+      1 8 _t7 = op extend_zero_6_to_8 _t1;
+      1 8 _t8 = op sub_8 _t6 _t7;
+      1 3 _t9 = const 3;
+      1 64 _t10 = fop ftoui_64_to_64 _t5 _t8 _t9;
+      1 64 _t11 = read X _t3;
+      1 5 _t12 = const 31;
+      1 1 _t13 = op eq_5 _t3 _t12;
+      1 64 _t14 = op select_64 _t13 _t11 _t10;
+      1 = write X _t3 _t14;
+  - name: SCVTF_H32_float2int
+    attributes:
+      - convert-type.32-to-half
+      - instr-class.float
+      - mnemonic.SCVTF
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 518127616
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 64 _t3 = read X _t1;
+      1 5 _t4 = const 31;
+      1 1 _t5 = op eq_5 _t1 _t4;
+      1 64 _t6 = const 0;
+      1 64 _t7 = op select_64 _t5 _t6 _t3;
+      1 32 _t8 = op extract_low_64_to_32 _t7;
+      1 8 _t9 = const 0;
+      1 3 _t10 = const 7;
+      1 16 _t11 = fop sitof_32_to_16 _t8 _t9 _t10;
+      1 128 _t12 = op extend_zero_16_to_128 _t11;
+      1 = write V _t2 _t12;
+  - name: SCVTF_S32_float2int
+    attributes:
+      - convert-type.32-to-single
+      - instr-class.float
+      - mnemonic.SCVTF
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 505544704
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 64 _t3 = read X _t1;
+      1 5 _t4 = const 31;
+      1 1 _t5 = op eq_5 _t1 _t4;
+      1 64 _t6 = const 0;
+      1 64 _t7 = op select_64 _t5 _t6 _t3;
+      1 32 _t8 = op extract_low_64_to_32 _t7;
+      1 8 _t9 = const 0;
+      1 3 _t10 = const 7;
+      1 32 _t11 = fop sitof_32_to_32 _t8 _t9 _t10;
+      1 128 _t12 = op extend_zero_32_to_128 _t11;
+      1 = write V _t2 _t12;
+  - name: SCVTF_D32_float2int
+    attributes:
+      - convert-type.32-to-double
+      - instr-class.float
+      - mnemonic.SCVTF
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 509739008
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 64 _t3 = read X _t1;
+      1 5 _t4 = const 31;
+      1 1 _t5 = op eq_5 _t1 _t4;
+      1 64 _t6 = const 0;
+      1 64 _t7 = op select_64 _t5 _t6 _t3;
+      1 32 _t8 = op extract_low_64_to_32 _t7;
+      1 8 _t9 = const 0;
+      1 3 _t10 = const 7;
+      1 64 _t11 = fop sitof_32_to_64 _t8 _t9 _t10;
+      1 128 _t12 = op extend_zero_64_to_128 _t11;
+      1 = write V _t2 _t12;
+  - name: SCVTF_H64_float2int
+    attributes:
+      - convert-type.64-to-half
+      - instr-class.float
+      - mnemonic.SCVTF
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2665611264
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 64 _t3 = read X _t1;
+      1 5 _t4 = const 31;
+      1 1 _t5 = op eq_5 _t1 _t4;
+      1 64 _t6 = const 0;
+      1 64 _t7 = op select_64 _t5 _t6 _t3;
+      1 8 _t8 = const 0;
+      1 3 _t9 = const 7;
+      1 16 _t10 = fop sitof_64_to_16 _t7 _t8 _t9;
+      1 128 _t11 = op extend_zero_16_to_128 _t10;
+      1 = write V _t2 _t11;
+  - name: SCVTF_S64_float2int
+    attributes:
+      - convert-type.64-to-single
+      - instr-class.float
+      - mnemonic.SCVTF
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2653028352
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 64 _t3 = read X _t1;
+      1 5 _t4 = const 31;
+      1 1 _t5 = op eq_5 _t1 _t4;
+      1 64 _t6 = const 0;
+      1 64 _t7 = op select_64 _t5 _t6 _t3;
+      1 8 _t8 = const 0;
+      1 3 _t9 = const 7;
+      1 32 _t10 = fop sitof_64_to_32 _t7 _t8 _t9;
+      1 128 _t11 = op extend_zero_32_to_128 _t10;
+      1 = write V _t2 _t11;
+  - name: SCVTF_D64_float2int
+    attributes:
+      - convert-type.64-to-double
+      - instr-class.float
+      - mnemonic.SCVTF
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2657222656
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 64 _t3 = read X _t1;
+      1 5 _t4 = const 31;
+      1 1 _t5 = op eq_5 _t1 _t4;
+      1 64 _t6 = const 0;
+      1 64 _t7 = op select_64 _t5 _t6 _t3;
+      1 8 _t8 = const 0;
+      1 3 _t9 = const 7;
+      1 64 _t10 = fop sitof_64_to_64 _t7 _t8 _t9;
+      1 128 _t11 = op extend_zero_64_to_128 _t10;
+      1 = write V _t2 _t11;
+  - name: UCVTF_H32_float2int
+    attributes:
+      - convert-type.32-to-half
+      - instr-class.float
+      - mnemonic.UCVTF
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 518193152
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 64 _t3 = read X _t1;
+      1 5 _t4 = const 31;
+      1 1 _t5 = op eq_5 _t1 _t4;
+      1 64 _t6 = const 0;
+      1 64 _t7 = op select_64 _t5 _t6 _t3;
+      1 32 _t8 = op extract_low_64_to_32 _t7;
+      1 8 _t9 = const 0;
+      1 3 _t10 = const 7;
+      1 16 _t11 = fop uitof_32_to_16 _t8 _t9 _t10;
+      1 128 _t12 = op extend_zero_16_to_128 _t11;
+      1 = write V _t2 _t12;
+  - name: UCVTF_S32_float2int
+    attributes:
+      - convert-type.32-to-single
+      - instr-class.float
+      - mnemonic.UCVTF
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 505610240
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 64 _t3 = read X _t1;
+      1 5 _t4 = const 31;
+      1 1 _t5 = op eq_5 _t1 _t4;
+      1 64 _t6 = const 0;
+      1 64 _t7 = op select_64 _t5 _t6 _t3;
+      1 32 _t8 = op extract_low_64_to_32 _t7;
+      1 8 _t9 = const 0;
+      1 3 _t10 = const 7;
+      1 32 _t11 = fop uitof_32_to_32 _t8 _t9 _t10;
+      1 128 _t12 = op extend_zero_32_to_128 _t11;
+      1 = write V _t2 _t12;
+  - name: UCVTF_D32_float2int
+    attributes:
+      - convert-type.32-to-double
+      - instr-class.float
+      - mnemonic.UCVTF
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 509804544
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 64 _t3 = read X _t1;
+      1 5 _t4 = const 31;
+      1 1 _t5 = op eq_5 _t1 _t4;
+      1 64 _t6 = const 0;
+      1 64 _t7 = op select_64 _t5 _t6 _t3;
+      1 32 _t8 = op extract_low_64_to_32 _t7;
+      1 8 _t9 = const 0;
+      1 3 _t10 = const 7;
+      1 64 _t11 = fop uitof_32_to_64 _t8 _t9 _t10;
+      1 128 _t12 = op extend_zero_64_to_128 _t11;
+      1 = write V _t2 _t12;
+  - name: UCVTF_H64_float2int
+    attributes:
+      - convert-type.64-to-half
+      - instr-class.float
+      - mnemonic.UCVTF
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2665676800
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 64 _t3 = read X _t1;
+      1 5 _t4 = const 31;
+      1 1 _t5 = op eq_5 _t1 _t4;
+      1 64 _t6 = const 0;
+      1 64 _t7 = op select_64 _t5 _t6 _t3;
+      1 8 _t8 = const 0;
+      1 3 _t9 = const 7;
+      1 16 _t10 = fop uitof_64_to_16 _t7 _t8 _t9;
+      1 128 _t11 = op extend_zero_16_to_128 _t10;
+      1 = write V _t2 _t11;
+  - name: UCVTF_S64_float2int
+    attributes:
+      - convert-type.64-to-single
+      - instr-class.float
+      - mnemonic.UCVTF
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2653093888
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 64 _t3 = read X _t1;
+      1 5 _t4 = const 31;
+      1 1 _t5 = op eq_5 _t1 _t4;
+      1 64 _t6 = const 0;
+      1 64 _t7 = op select_64 _t5 _t6 _t3;
+      1 8 _t8 = const 0;
+      1 3 _t9 = const 7;
+      1 32 _t10 = fop uitof_64_to_32 _t7 _t8 _t9;
+      1 128 _t11 = op extend_zero_32_to_128 _t10;
+      1 = write V _t2 _t11;
+  - name: UCVTF_D64_float2int
+    attributes:
+      - convert-type.64-to-double
+      - instr-class.float
+      - mnemonic.UCVTF
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2657288192
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 64 _t3 = read X _t1;
+      1 5 _t4 = const 31;
+      1 1 _t5 = op eq_5 _t1 _t4;
+      1 64 _t6 = const 0;
+      1 64 _t7 = op select_64 _t5 _t6 _t3;
+      1 8 _t8 = const 0;
+      1 3 _t9 = const 7;
+      1 64 _t10 = fop uitof_64_to_64 _t7 _t8 _t9;
+      1 128 _t11 = op extend_zero_64_to_128 _t10;
+      1 = write V _t2 _t11;
+  - name: SCVTF_H32_float2fix
+    attributes:
+      - convert-type.fix32-to-half
+      - instr-class.float
+      - mnemonic.SCVTF
+    operand_sizes:
+      - 6
+      - 5
+      - 5
+    operand_names:
+      - scale
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 516030464
+      const_mask: 4294901760
+      decode:
+        - decode_field_10_6
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w6_5w5_0w5
+      constraint_decode: constraint_decode_FCVTZS_32H_float2fix
+      constraint_encode: constraint_encode_FCVTZS_32H_float2fix
+    semantic: |
+      1 6 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 32 _t9 = op extract_low_64_to_32 _t8;
+      1 8 _t10 = const 64;
+      1 8 _t11 = op extend_zero_6_to_8 _t1;
+      1 8 _t12 = op sub_8 _t10 _t11;
+      1 3 _t13 = const 7;
+      1 16 _t14 = fop sitof_32_to_16 _t9 _t12 _t13;
+      1 128 _t15 = op extend_zero_16_to_128 _t14;
+      1 = write V _t3 _t15;
+  - name: SCVTF_H64_float2fix
+    attributes:
+      - convert-type.fix64-to-half
+      - instr-class.float
+      - mnemonic.SCVTF
+    operand_sizes:
+      - 6
+      - 5
+      - 5
+    operand_names:
+      - scale
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2663514112
+      const_mask: 4294901760
+      decode:
+        - decode_field_10_6
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w6_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 6 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 8 _t9 = const 64;
+      1 8 _t10 = op extend_zero_6_to_8 _t1;
+      1 8 _t11 = op sub_8 _t9 _t10;
+      1 3 _t12 = const 7;
+      1 16 _t13 = fop sitof_64_to_16 _t8 _t11 _t12;
+      1 128 _t14 = op extend_zero_16_to_128 _t13;
+      1 = write V _t3 _t14;
+  - name: SCVTF_S32_float2fix
+    attributes:
+      - convert-type.fix32-to-single
+      - instr-class.float
+      - mnemonic.SCVTF
+    operand_sizes:
+      - 6
+      - 5
+      - 5
+    operand_names:
+      - scale
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 503447552
+      const_mask: 4294901760
+      decode:
+        - decode_field_10_6
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w6_5w5_0w5
+      constraint_decode: constraint_decode_FCVTZS_32H_float2fix
+      constraint_encode: constraint_encode_FCVTZS_32H_float2fix
+    semantic: |
+      1 6 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 32 _t9 = op extract_low_64_to_32 _t8;
+      1 8 _t10 = const 64;
+      1 8 _t11 = op extend_zero_6_to_8 _t1;
+      1 8 _t12 = op sub_8 _t10 _t11;
+      1 3 _t13 = const 7;
+      1 32 _t14 = fop sitof_32_to_32 _t9 _t12 _t13;
+      1 128 _t15 = op extend_zero_32_to_128 _t14;
+      1 = write V _t3 _t15;
+  - name: SCVTF_S64_float2fix
+    attributes:
+      - convert-type.fix64-to-single
+      - instr-class.float
+      - mnemonic.SCVTF
+    operand_sizes:
+      - 6
+      - 5
+      - 5
+    operand_names:
+      - scale
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2650931200
+      const_mask: 4294901760
+      decode:
+        - decode_field_10_6
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w6_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 6 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 8 _t9 = const 64;
+      1 8 _t10 = op extend_zero_6_to_8 _t1;
+      1 8 _t11 = op sub_8 _t9 _t10;
+      1 3 _t12 = const 7;
+      1 32 _t13 = fop sitof_64_to_32 _t8 _t11 _t12;
+      1 128 _t14 = op extend_zero_32_to_128 _t13;
+      1 = write V _t3 _t14;
+  - name: SCVTF_D32_float2fix
+    attributes:
+      - convert-type.fix32-to-double
+      - instr-class.float
+      - mnemonic.SCVTF
+    operand_sizes:
+      - 6
+      - 5
+      - 5
+    operand_names:
+      - scale
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 507641856
+      const_mask: 4294901760
+      decode:
+        - decode_field_10_6
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w6_5w5_0w5
+      constraint_decode: constraint_decode_FCVTZS_32H_float2fix
+      constraint_encode: constraint_encode_FCVTZS_32H_float2fix
+    semantic: |
+      1 6 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 32 _t9 = op extract_low_64_to_32 _t8;
+      1 8 _t10 = const 64;
+      1 8 _t11 = op extend_zero_6_to_8 _t1;
+      1 8 _t12 = op sub_8 _t10 _t11;
+      1 3 _t13 = const 7;
+      1 64 _t14 = fop sitof_32_to_64 _t9 _t12 _t13;
+      1 128 _t15 = op extend_zero_64_to_128 _t14;
+      1 = write V _t3 _t15;
+  - name: SCVTF_D64_float2fix
+    attributes:
+      - convert-type.fix64-to-double
+      - instr-class.float
+      - mnemonic.SCVTF
+    operand_sizes:
+      - 6
+      - 5
+      - 5
+    operand_names:
+      - scale
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2655125504
+      const_mask: 4294901760
+      decode:
+        - decode_field_10_6
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w6_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 6 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 8 _t9 = const 64;
+      1 8 _t10 = op extend_zero_6_to_8 _t1;
+      1 8 _t11 = op sub_8 _t9 _t10;
+      1 3 _t12 = const 7;
+      1 64 _t13 = fop sitof_64_to_64 _t8 _t11 _t12;
+      1 128 _t14 = op extend_zero_64_to_128 _t13;
+      1 = write V _t3 _t14;
+  - name: UCVTF_H32_float2fix
+    attributes:
+      - convert-type.fix32-to-half
+      - instr-class.float
+      - mnemonic.UCVTF
+    operand_sizes:
+      - 6
+      - 5
+      - 5
+    operand_names:
+      - scale
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 516096000
+      const_mask: 4294901760
+      decode:
+        - decode_field_10_6
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w6_5w5_0w5
+      constraint_decode: constraint_decode_FCVTZS_32H_float2fix
+      constraint_encode: constraint_encode_FCVTZS_32H_float2fix
+    semantic: |
+      1 6 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 32 _t9 = op extract_low_64_to_32 _t8;
+      1 8 _t10 = const 64;
+      1 8 _t11 = op extend_zero_6_to_8 _t1;
+      1 8 _t12 = op sub_8 _t10 _t11;
+      1 3 _t13 = const 7;
+      1 16 _t14 = fop uitof_32_to_16 _t9 _t12 _t13;
+      1 128 _t15 = op extend_zero_16_to_128 _t14;
+      1 = write V _t3 _t15;
+  - name: UCVTF_H64_float2fix
+    attributes:
+      - convert-type.fix64-to-half
+      - instr-class.float
+      - mnemonic.UCVTF
+    operand_sizes:
+      - 6
+      - 5
+      - 5
+    operand_names:
+      - scale
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2663579648
+      const_mask: 4294901760
+      decode:
+        - decode_field_10_6
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w6_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 6 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 8 _t9 = const 64;
+      1 8 _t10 = op extend_zero_6_to_8 _t1;
+      1 8 _t11 = op sub_8 _t9 _t10;
+      1 3 _t12 = const 7;
+      1 16 _t13 = fop uitof_64_to_16 _t8 _t11 _t12;
+      1 128 _t14 = op extend_zero_16_to_128 _t13;
+      1 = write V _t3 _t14;
+  - name: UCVTF_S32_float2fix
+    attributes:
+      - convert-type.fix32-to-single
+      - instr-class.float
+      - mnemonic.UCVTF
+    operand_sizes:
+      - 6
+      - 5
+      - 5
+    operand_names:
+      - scale
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 503513088
+      const_mask: 4294901760
+      decode:
+        - decode_field_10_6
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w6_5w5_0w5
+      constraint_decode: constraint_decode_FCVTZS_32H_float2fix
+      constraint_encode: constraint_encode_FCVTZS_32H_float2fix
+    semantic: |
+      1 6 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 32 _t9 = op extract_low_64_to_32 _t8;
+      1 8 _t10 = const 64;
+      1 8 _t11 = op extend_zero_6_to_8 _t1;
+      1 8 _t12 = op sub_8 _t10 _t11;
+      1 3 _t13 = const 7;
+      1 32 _t14 = fop uitof_32_to_32 _t9 _t12 _t13;
+      1 128 _t15 = op extend_zero_32_to_128 _t14;
+      1 = write V _t3 _t15;
+  - name: UCVTF_S64_float2fix
+    attributes:
+      - convert-type.fix64-to-single
+      - instr-class.float
+      - mnemonic.UCVTF
+    operand_sizes:
+      - 6
+      - 5
+      - 5
+    operand_names:
+      - scale
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2650996736
+      const_mask: 4294901760
+      decode:
+        - decode_field_10_6
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w6_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 6 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 8 _t9 = const 64;
+      1 8 _t10 = op extend_zero_6_to_8 _t1;
+      1 8 _t11 = op sub_8 _t9 _t10;
+      1 3 _t12 = const 7;
+      1 32 _t13 = fop uitof_64_to_32 _t8 _t11 _t12;
+      1 128 _t14 = op extend_zero_32_to_128 _t13;
+      1 = write V _t3 _t14;
+  - name: UCVTF_D32_float2fix
+    attributes:
+      - convert-type.fix32-to-double
+      - instr-class.float
+      - mnemonic.UCVTF
+    operand_sizes:
+      - 6
+      - 5
+      - 5
+    operand_names:
+      - scale
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 507707392
+      const_mask: 4294901760
+      decode:
+        - decode_field_10_6
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w6_5w5_0w5
+      constraint_decode: constraint_decode_FCVTZS_32H_float2fix
+      constraint_encode: constraint_encode_FCVTZS_32H_float2fix
+    semantic: |
+      1 6 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 32 _t9 = op extract_low_64_to_32 _t8;
+      1 8 _t10 = const 64;
+      1 8 _t11 = op extend_zero_6_to_8 _t1;
+      1 8 _t12 = op sub_8 _t10 _t11;
+      1 3 _t13 = const 7;
+      1 64 _t14 = fop uitof_32_to_64 _t9 _t12 _t13;
+      1 128 _t15 = op extend_zero_64_to_128 _t14;
+      1 = write V _t3 _t15;
+  - name: UCVTF_D64_float2fix
+    attributes:
+      - convert-type.fix64-to-double
+      - instr-class.float
+      - mnemonic.UCVTF
+    operand_sizes:
+      - 6
+      - 5
+      - 5
+    operand_names:
+      - scale
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2655191040
+      const_mask: 4294901760
+      decode:
+        - decode_field_10_6
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w6_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 6 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 8 _t9 = const 64;
+      1 8 _t10 = op extend_zero_6_to_8 _t1;
+      1 8 _t11 = op sub_8 _t9 _t10;
+      1 3 _t12 = const 7;
+      1 64 _t13 = fop uitof_64_to_64 _t8 _t11 _t12;
+      1 128 _t14 = op extend_zero_64_to_128 _t13;
+      1 = write V _t3 _t14;
   - name: FMOV_32H_float2int
     attributes:
       - convert-type.half-to-32
@@ -52873,3 +59661,622 @@ instructions:
       1 128 _t38 = op extend_zero_64_to_128 _t33;
       1 = write V _t37 _t38;
       1 = write X _t2 _t10;
+float_operations:
+  - name: fadd_16
+    attributes: []
+    inputs:
+      - 16
+      - 16
+      - 3
+    outputs:
+      - 16
+    semantic_base: fadd
+  - name: fadd_32
+    attributes: []
+    inputs:
+      - 32
+      - 32
+      - 3
+    outputs:
+      - 32
+    semantic_base: fadd
+  - name: fadd_64
+    attributes: []
+    inputs:
+      - 64
+      - 64
+      - 3
+    outputs:
+      - 64
+    semantic_base: fadd
+  - name: fsub_16
+    attributes: []
+    inputs:
+      - 16
+      - 16
+      - 3
+    outputs:
+      - 16
+    semantic_base: fsub
+  - name: fsub_32
+    attributes: []
+    inputs:
+      - 32
+      - 32
+      - 3
+    outputs:
+      - 32
+    semantic_base: fsub
+  - name: fsub_64
+    attributes: []
+    inputs:
+      - 64
+      - 64
+      - 3
+    outputs:
+      - 64
+    semantic_base: fsub
+  - name: fmul_16
+    attributes: []
+    inputs:
+      - 16
+      - 16
+      - 3
+    outputs:
+      - 16
+    semantic_base: fmul
+  - name: fmul_32
+    attributes: []
+    inputs:
+      - 32
+      - 32
+      - 3
+    outputs:
+      - 32
+    semantic_base: fmul
+  - name: fmul_64
+    attributes: []
+    inputs:
+      - 64
+      - 64
+      - 3
+    outputs:
+      - 64
+    semantic_base: fmul
+  - name: fdiv_16
+    attributes: []
+    inputs:
+      - 16
+      - 16
+      - 3
+    outputs:
+      - 16
+    semantic_base: fdiv
+  - name: fdiv_32
+    attributes: []
+    inputs:
+      - 32
+      - 32
+      - 3
+    outputs:
+      - 32
+    semantic_base: fdiv
+  - name: fdiv_64
+    attributes: []
+    inputs:
+      - 64
+      - 64
+      - 3
+    outputs:
+      - 64
+    semantic_base: fdiv
+  - name: fmax_16
+    attributes: []
+    inputs:
+      - 16
+      - 16
+    outputs:
+      - 16
+    semantic_base: fmax
+  - name: fmax_32
+    attributes: []
+    inputs:
+      - 32
+      - 32
+    outputs:
+      - 32
+    semantic_base: fmax
+  - name: fmax_64
+    attributes: []
+    inputs:
+      - 64
+      - 64
+    outputs:
+      - 64
+    semantic_base: fmax
+  - name: fmin_16
+    attributes: []
+    inputs:
+      - 16
+      - 16
+    outputs:
+      - 16
+    semantic_base: fmin
+  - name: fmin_32
+    attributes: []
+    inputs:
+      - 32
+      - 32
+    outputs:
+      - 32
+    semantic_base: fmin
+  - name: fmin_64
+    attributes: []
+    inputs:
+      - 64
+      - 64
+    outputs:
+      - 64
+    semantic_base: fmin
+  - name: fmaxnm_16
+    attributes: []
+    inputs:
+      - 16
+      - 16
+    outputs:
+      - 16
+    semantic_base: fmaxnm
+  - name: fmaxnm_32
+    attributes: []
+    inputs:
+      - 32
+      - 32
+    outputs:
+      - 32
+    semantic_base: fmaxnm
+  - name: fmaxnm_64
+    attributes: []
+    inputs:
+      - 64
+      - 64
+    outputs:
+      - 64
+    semantic_base: fmaxnm
+  - name: fminnm_16
+    attributes: []
+    inputs:
+      - 16
+      - 16
+    outputs:
+      - 16
+    semantic_base: fminnm
+  - name: fminnm_32
+    attributes: []
+    inputs:
+      - 32
+      - 32
+    outputs:
+      - 32
+    semantic_base: fminnm
+  - name: fminnm_64
+    attributes: []
+    inputs:
+      - 64
+      - 64
+    outputs:
+      - 64
+    semantic_base: fminnm
+  - name: fmuladd_16
+    attributes: []
+    inputs:
+      - 16
+      - 16
+      - 16
+      - 3
+    outputs:
+      - 16
+    semantic_base: fmuladd
+  - name: fmuladd_32
+    attributes: []
+    inputs:
+      - 32
+      - 32
+      - 32
+      - 3
+    outputs:
+      - 32
+    semantic_base: fmuladd
+  - name: fmuladd_64
+    attributes: []
+    inputs:
+      - 64
+      - 64
+      - 64
+      - 3
+    outputs:
+      - 64
+    semantic_base: fmuladd
+  - name: fsqrt_16
+    attributes: []
+    inputs:
+      - 16
+      - 3
+    outputs:
+      - 16
+    semantic_base: fsqrt
+  - name: fsqrt_32
+    attributes: []
+    inputs:
+      - 32
+      - 3
+    outputs:
+      - 32
+    semantic_base: fsqrt
+  - name: fsqrt_64
+    attributes: []
+    inputs:
+      - 64
+      - 3
+    outputs:
+      - 64
+    semantic_base: fsqrt
+  - name: frint_16
+    attributes: []
+    inputs:
+      - 16
+      - 3
+    outputs:
+      - 16
+    semantic_base: frint
+  - name: frint_32
+    attributes: []
+    inputs:
+      - 32
+      - 3
+    outputs:
+      - 32
+    semantic_base: frint
+  - name: frint_64
+    attributes: []
+    inputs:
+      - 64
+      - 3
+    outputs:
+      - 64
+    semantic_base: frint
+  - name: frintx_16
+    attributes: []
+    inputs:
+      - 16
+      - 3
+    outputs:
+      - 16
+    semantic_base: frintx
+  - name: frintx_32
+    attributes: []
+    inputs:
+      - 32
+      - 3
+    outputs:
+      - 32
+    semantic_base: frintx
+  - name: frintx_64
+    attributes: []
+    inputs:
+      - 64
+      - 3
+    outputs:
+      - 64
+    semantic_base: frintx
+  - name: fcvtf_16_to_32
+    attributes: []
+    inputs:
+      - 16
+      - 3
+    outputs:
+      - 32
+    semantic_base: fcvtf
+  - name: fcvtf_16_to_64
+    attributes: []
+    inputs:
+      - 16
+      - 3
+    outputs:
+      - 64
+    semantic_base: fcvtf
+  - name: fcvtf_32_to_16
+    attributes: []
+    inputs:
+      - 32
+      - 3
+    outputs:
+      - 16
+    semantic_base: fcvtf
+  - name: fcvtf_32_to_64
+    attributes: []
+    inputs:
+      - 32
+      - 3
+    outputs:
+      - 64
+    semantic_base: fcvtf
+  - name: fcvtf_64_to_16
+    attributes: []
+    inputs:
+      - 64
+      - 3
+    outputs:
+      - 16
+    semantic_base: fcvtf
+  - name: fcvtf_64_to_32
+    attributes: []
+    inputs:
+      - 64
+      - 3
+    outputs:
+      - 32
+    semantic_base: fcvtf
+  - name: fcmpq_16
+    attributes: []
+    inputs:
+      - 16
+      - 16
+    outputs:
+      - 2
+    semantic_base: fcmpq
+  - name: fcmpq_32
+    attributes: []
+    inputs:
+      - 32
+      - 32
+    outputs:
+      - 2
+    semantic_base: fcmpq
+  - name: fcmpq_64
+    attributes: []
+    inputs:
+      - 64
+      - 64
+    outputs:
+      - 2
+    semantic_base: fcmpq
+  - name: fcmps_16
+    attributes: []
+    inputs:
+      - 16
+      - 16
+    outputs:
+      - 2
+    semantic_base: fcmps
+  - name: fcmps_32
+    attributes: []
+    inputs:
+      - 32
+      - 32
+    outputs:
+      - 2
+    semantic_base: fcmps
+  - name: fcmps_64
+    attributes: []
+    inputs:
+      - 64
+      - 64
+    outputs:
+      - 2
+    semantic_base: fcmps
+  - name: ftosi_16_to_32
+    attributes: []
+    inputs:
+      - 16
+      - 8
+      - 3
+    outputs:
+      - 32
+    semantic_base: ftosi
+  - name: ftosi_16_to_64
+    attributes: []
+    inputs:
+      - 16
+      - 8
+      - 3
+    outputs:
+      - 64
+    semantic_base: ftosi
+  - name: ftosi_32_to_32
+    attributes: []
+    inputs:
+      - 32
+      - 8
+      - 3
+    outputs:
+      - 32
+    semantic_base: ftosi
+  - name: ftosi_32_to_64
+    attributes: []
+    inputs:
+      - 32
+      - 8
+      - 3
+    outputs:
+      - 64
+    semantic_base: ftosi
+  - name: ftosi_64_to_32
+    attributes: []
+    inputs:
+      - 64
+      - 8
+      - 3
+    outputs:
+      - 32
+    semantic_base: ftosi
+  - name: ftosi_64_to_64
+    attributes: []
+    inputs:
+      - 64
+      - 8
+      - 3
+    outputs:
+      - 64
+    semantic_base: ftosi
+  - name: ftoui_16_to_32
+    attributes: []
+    inputs:
+      - 16
+      - 8
+      - 3
+    outputs:
+      - 32
+    semantic_base: ftoui
+  - name: ftoui_16_to_64
+    attributes: []
+    inputs:
+      - 16
+      - 8
+      - 3
+    outputs:
+      - 64
+    semantic_base: ftoui
+  - name: ftoui_32_to_32
+    attributes: []
+    inputs:
+      - 32
+      - 8
+      - 3
+    outputs:
+      - 32
+    semantic_base: ftoui
+  - name: ftoui_32_to_64
+    attributes: []
+    inputs:
+      - 32
+      - 8
+      - 3
+    outputs:
+      - 64
+    semantic_base: ftoui
+  - name: ftoui_64_to_32
+    attributes: []
+    inputs:
+      - 64
+      - 8
+      - 3
+    outputs:
+      - 32
+    semantic_base: ftoui
+  - name: ftoui_64_to_64
+    attributes: []
+    inputs:
+      - 64
+      - 8
+      - 3
+    outputs:
+      - 64
+    semantic_base: ftoui
+  - name: sitof_32_to_16
+    attributes: []
+    inputs:
+      - 32
+      - 8
+      - 3
+    outputs:
+      - 16
+    semantic_base: sitof
+  - name: sitof_32_to_32
+    attributes: []
+    inputs:
+      - 32
+      - 8
+      - 3
+    outputs:
+      - 32
+    semantic_base: sitof
+  - name: sitof_32_to_64
+    attributes: []
+    inputs:
+      - 32
+      - 8
+      - 3
+    outputs:
+      - 64
+    semantic_base: sitof
+  - name: sitof_64_to_16
+    attributes: []
+    inputs:
+      - 64
+      - 8
+      - 3
+    outputs:
+      - 16
+    semantic_base: sitof
+  - name: sitof_64_to_32
+    attributes: []
+    inputs:
+      - 64
+      - 8
+      - 3
+    outputs:
+      - 32
+    semantic_base: sitof
+  - name: sitof_64_to_64
+    attributes: []
+    inputs:
+      - 64
+      - 8
+      - 3
+    outputs:
+      - 64
+    semantic_base: sitof
+  - name: uitof_32_to_16
+    attributes: []
+    inputs:
+      - 32
+      - 8
+      - 3
+    outputs:
+      - 16
+    semantic_base: uitof
+  - name: uitof_32_to_32
+    attributes: []
+    inputs:
+      - 32
+      - 8
+      - 3
+    outputs:
+      - 32
+    semantic_base: uitof
+  - name: uitof_32_to_64
+    attributes: []
+    inputs:
+      - 32
+      - 8
+      - 3
+    outputs:
+      - 64
+    semantic_base: uitof
+  - name: uitof_64_to_16
+    attributes: []
+    inputs:
+      - 64
+      - 8
+      - 3
+    outputs:
+      - 16
+    semantic_base: uitof
+  - name: uitof_64_to_32
+    attributes: []
+    inputs:
+      - 64
+      - 8
+      - 3
+    outputs:
+      - 32
+    semantic_base: uitof
+  - name: uitof_64_to_64
+    attributes: []
+    inputs:
+      - 64
+      - 8
+      - 3
+    outputs:
+      - 64
+    semantic_base: uitof

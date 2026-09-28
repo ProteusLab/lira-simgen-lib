@@ -59,6 +59,32 @@ class Op(Node):
         return f"{defs}\nstd::tie({names}) = {call};\n"
 
 
+class Fop(Node):
+    """`fop`: a standard float operation (runtime/lira_fp.hh) on the FPU
+    state of the CPU; the flags it raises are accumulated."""
+
+    def __init__(self, outs: List[Variable], fop, args: List[Variable], fpu):
+        from lira.float_ops import parse
+
+        self.outs: List[Variable] = outs
+        self.fop = fop
+        self.args: List[Variable] = args
+        # FPU model of the generator (wraps the call with the FPU state)
+        self.fpu = fpu
+        _, self.n, self.m = parse(fop)
+
+    def cpp_body(self) -> str:
+        widths = f"{self.n}" if self.m is None else f"{self.n}, {self.m}"
+        args = ", ".join(["fpu"] + [a.name for a in self.args])
+        call = f"prot::fp::{self.fop.semantic_base}<{widths}>({args})"
+        defs = "\n".join(o.definition for o in self.outs)
+        if len(self.outs) != 1:
+            raise ValueError(f"{self.fop.name}: several outputs are not supported")
+        if self.fpu is None:
+            raise ValueError(f"{self.fop.name}: the generator has no FPU model")
+        return f"{defs}\n{self.fpu.wrap(f'{self.outs[0]} = {call};')}"
+
+
 class ReadReg(Node):
     def __init__(self, rf, index: Variable, var: Variable):
         self.rf = rf

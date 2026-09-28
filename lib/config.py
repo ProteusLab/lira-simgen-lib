@@ -15,6 +15,11 @@ class IConfig(ABC):
         return None
 
     @property
+    def fpu_model(self):
+        """Renders `fop` statements (None: not supported)."""
+        return None
+
+    @property
     @abstractmethod
     def excluded_instructions(self) -> Set[str]:
         pass

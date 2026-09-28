@@ -11,6 +11,7 @@ from lira.ir_std import (
     StmtConst,
     StmtDynConst,
     StmtEnv,
+    StmtFop,
     StmtInput,
     StmtOp,
     StmtOutput,
@@ -23,6 +24,7 @@ from lib.nodes import (
     CondEnv as CondEnvNode,
     ConstDef,
     EnvExec,
+    Fop,
     Input,
     Op,
     ReadMem,
@@ -156,9 +158,20 @@ class CodeBuilder(IBuilder, metaclass=BuilderMeta):
 
 
 class SemanticBuilder(CodeBuilder):
-    def __init__(self, index: ArchIndex, insn: LiraInstruction, interfaces, reg_files):
+    def __init__(
+        self,
+        index: ArchIndex,
+        insn: LiraInstruction,
+        interfaces,
+        reg_files,
+        fops=None,
+        fpu=None,
+    ):
         super().__init__(index)
         self.insn: LiraInstruction = insn
+        # float operations by name and the FPU model rendering them
+        self.fops = fops or {}
+        self.fpu = fpu
         self.interfaces = interfaces
         self.reg_files = reg_files
         self.read_operands: List[str] = []
@@ -304,6 +317,20 @@ class SemanticBuilder(CodeBuilder):
                     interface,
                 )
             )
+
+    @serves(StmtFop.kind)
+    class FopHandler(StmtHandler):
+        def build(self) -> None:
+            builder = self.builder
+            if self.stmt.shape.lanes_base != 1 or self.stmt.shape.lanes_mult:
+                raise NotImplementedError("vector 'fop' is not supported yet")
+            outs = [
+                builder.variable(name, width)
+                for name, width in zip(self.stmt.outputs, self.stmt.outputs_types)
+            ]
+            inputs = [builder.resolve_var(a) for a in self.stmt.inputs]
+            fop = builder.fops[self.stmt.specifier]
+            builder.nodes.append(Fop(outs, fop, inputs, builder.fpu))
 
     @serves(StmtDynConst.kind)
     class DynConst(StmtHandler):

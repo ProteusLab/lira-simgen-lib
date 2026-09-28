@@ -17,8 +17,8 @@ void ExecEngine::step(CPU &cpu, Memory &mem) {
     execute(cpu, mem, *instr_opt);
     cpu.increaseICount();
   } else {
-    fmt::println("DECODE FAIL pc={:#010x} inst={:#010x}", cpu.getPC(), bytes);
-    throw std::runtime_error{"decode failure"};
+    throw std::runtime_error{fmt::format("decode failure: pc={:#010x} inst={:#010x}",
+                                         cpu.getPC(), bytes)};
   }
 }
 } // namespace prot::engine

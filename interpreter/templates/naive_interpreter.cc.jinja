@@ -3,6 +3,9 @@
 #include "naive_interpreter.hh"
 #include "base_ops.hh"
 #include "snippets.hh"
+{%- if fpu_helpers %}
+#include "lira_fp.hh"
+{%- endif %}
 
 #include <tuple>
 
@@ -12,6 +15,10 @@ using namespace prot::isa;
 using namespace prot::memory;
 
 namespace {
+{%- if fpu_helpers %}
+
+{{ fpu_helpers }}
+{%- endif %}
 {%- for inst in insts %}{{ "\n\n" }}void do{{ inst.name }}(CPU &{{ cpu_var }}, Memory &{{ mem_var }}, const Instruction &insn) {
 {%- for operand in inst.regs %}
   {{ operand.type }} {{ operand.name }} = insn.operand{{ loop.index0 }};

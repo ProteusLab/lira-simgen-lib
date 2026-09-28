@@ -33,6 +33,12 @@ Consumers import the library as `lib`.
 
 ## Targets
 
+`fop` statements call the standard float operations of
+`interpreter/runtime/lira_fp.hh`, a C++ port of LIRA's reference
+(`lira/float_ops.py`: Arm FPU rules, exact rounding in every mode, FZ/FZ16/DN
+and exception flags). The FPU controls and flags live in the registers the
+description marks with `fpu.*` attributes.
+
 Each target lives in `interpreter/Target/<ARCH_TARGET>` (register-file models,
 environment interfaces, `target.cmake` with the IR path and runtime sources)
 and `interpreter/runtime/Target/<ARCH_TARGET>` (ELF loader, syscalls, `main`).
@@ -40,9 +46,8 @@ and `interpreter/runtime/Target/<ARCH_TARGET>` (ELF loader, syscalls, `main`).
 - `RISC_V` — RV32I (`data/RISC_V/RV32I.yaml`).
 - `AArch64` — A64 base integer instructions, MRS/MSR for NZCV/FPCR/FPSR and
   the scalar v8.x instructions without FP, including exclusives, LSE atomics,
-  load-acquire/store-release, barriers and hints, and the SIMD&FP register
-  file with the instructions that only move or load/store it
-  (`data/AArch64/aarch64.yaml`,
+  load-acquire/store-release, barriers and hints, the SIMD&FP register
+  file and scalar floating point (`data/AArch64/aarch64.yaml`,
   generated in the LIRA repository by
   `python -m archs.aarch64.gen --simgen <path>`). Linux-style
   `exit`/`write` syscalls via `SVC`; a misaligned atomic, ordered or

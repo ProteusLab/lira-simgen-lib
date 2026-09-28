@@ -44,7 +44,7 @@ class InterpEmitter:
             self.cfg.templates.render(self.cfg.decoder_cc_jinja, insts=insts),
         )
 
-    def interpreter(self, insts: List[Instruction]) -> Tuple[str, str]:
+    def interpreter(self, insts: List[Instruction], fpu_helpers=None) -> Tuple[str, str]:
         bodies = {inst.name: render_nodes(inst.sem) for inst in insts}
         return (
             self.cfg.templates.render(self.cfg.interpreter_hh_jinja),
@@ -52,6 +52,7 @@ class InterpEmitter:
                 self.cfg.interpreter_cc_jinja,
                 insts=insts,
                 bodies=bodies,
+                fpu_helpers=fpu_helpers,
                 cpu_var=self.cfg.CPU_VAR,
                 mem_var=self.cfg.MEM_VAR,
             ),

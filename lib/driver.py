@@ -26,6 +26,7 @@ class Driver:
         self.interfaces = InterfacesRegistry.from_arch(self.arch, self.attributes)
 
         self.config = config
+        self.fops = {f.name: f for f in self.arch.float_operations}
 
         supported = self.config.supported_instructions
         insns = [
@@ -82,7 +83,14 @@ class Driver:
     def process_instrs(self, insns) -> List[Instruction]:
         insts = []
         for i, insn in enumerate(insns):
-            sem = SemanticBuilder(self.index, insn, self.interfaces, self.reg_files)
+            sem = SemanticBuilder(
+                self.index,
+                insn,
+                self.interfaces,
+                self.reg_files,
+                self.fops,
+                self.config.fpu_model,
+            )
             body = sem.build(insn.semantic)
             insts.append(
                 Instruction(

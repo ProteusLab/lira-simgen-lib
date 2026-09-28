@@ -29,6 +29,12 @@ class SimpleInterpConfig(IConfig):
         return set()
 
     @property
+    def fpu_model(self):
+        from interpreter.fpu import FpuModel
+
+        return FpuModel()
+
+    @property
     def decoder_hh(self) -> Path:
         return Path("decoder.hh")
 
@@ -127,7 +133,8 @@ class SimpleInterpConfig(IConfig):
 
     def artifacts(self, driver) -> Dict[Path, str]:
         artifacts = super().artifacts(driver)
-        interp_hh, interp_cc = self.emitter.interpreter(driver.insts)
+        fpu = self.fpu_model.helpers(driver.arch, driver.reg_files) if driver.fops else None
+        interp_hh, interp_cc = self.emitter.interpreter(driver.insts, fpu)
         cpu_hh, cpu_cc = self.emitter.cpu_state(
             driver.arch, driver.interfaces, driver.reg_files
         )
