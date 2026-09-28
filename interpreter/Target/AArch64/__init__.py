@@ -17,5 +17,11 @@ TARGET = TargetInfo(
     m_pc = value;
     m_pcWritten = true;
   }
+
+  // Local exclusive monitor (single PE): address and size marked by the last
+  // load-exclusive
+  bool m_exclValid{false};
+  uint64_t m_exclAddr{0};
+  uint8_t m_exclSize{0};
 """,
 )

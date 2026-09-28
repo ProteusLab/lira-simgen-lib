@@ -3,6 +3,7 @@
 from typing import Optional
 
 from lib.interface import CpuInterface, serves
+from lib.types import OperandType
 
 from interpreter import config
 from interpreter.interface import ReadMem, WriteMem
@@ -37,24 +38,52 @@ class PcWrite(CpuInterface):
         return ""
 
 
-class SupervisorCall(CpuInterface):
-    """SVC #imm: served by the runtime (Linux-like syscalls)."""
+class RuntimeCall(CpuInterface):
+    """Environment function implemented by the `CPU` method of the same name
+    in the hand-written runtime (runtime/Target/AArch64/cpu_state_ext.cc)."""
+
+    # Pass the guest memory as the first argument
+    uses_mem: bool = False
 
     def __call__(self, inputs, out: Optional[str] = None) -> str:
-        return f"{CPU}.{self.name}({MEM}, {inputs[0]});"
+        args = ([MEM] if self.uses_mem else []) + [str(i) for i in inputs]
+        call = f"{CPU}.{self.name}({', '.join(args)})"
+        return f"{out} = {call};" if out else f"{call};"
 
     @property
     def declaration(self) -> str:
-        return f"void {self.name}(prot::memory::Memory &mem, uint16_t imm);"
+        ret = OperandType.gen(self.outputs[0]) if self.outputs else "void"
+        params = (["prot::memory::Memory &mem"] if self.uses_mem else []) + [
+            f"{OperandType.gen(w)} a{i}" for i, w in enumerate(self.inputs)
+        ]
+        return f"{ret} {self.name}({', '.join(params)});"
 
     @property
     def definition(self) -> str:
         return ""
 
 
+class MemRuntimeCall(RuntimeCall):
+    uses_mem = True
+
+
 serves("pc_read")(PcRead)
 serves("pc_write")(PcWrite)
-serves("supervisor_call")(SupervisorCall)
 for _n in (8, 16, 32, 64, 128):
     serves(f"mem_read_{_n}")(ReadMem)
     serves(f"mem_write_{_n}")(WriteMem)
+
+# SVC #imm: Linux-like syscalls
+serves("supervisor_call")(MemRuntimeCall)
+# Alignment faults, the exclusive monitor, barriers and hints
+for _name in (
+    "check_alignment",
+    "exclusive_mark",
+    "exclusive_check",
+    "exclusive_clear",
+    "barrier",
+    "hint",
+    "wait_timeout",
+    "branch_target",
+):
+    serves(_name)(RuntimeCall)

@@ -39,10 +39,13 @@ and `interpreter/runtime/Target/<ARCH_TARGET>` (ELF loader, syscalls, `main`).
 
 - `RISC_V` — RV32I (`data/RISC_V/RV32I.yaml`).
 - `AArch64` — A64 base integer instructions, MRS/MSR for NZCV/FPCR/FPSR and
-  the scalar v8.x instructions without FP (`data/AArch64/aarch64.yaml`,
+  the scalar v8.x instructions without FP, including exclusives, LSE atomics,
+  load-acquire/store-release, barriers and hints (`data/AArch64/aarch64.yaml`,
   generated in the LIRA repository by
   `python -m archs.aarch64.gen --simgen <path>`). Linux-style
-  `exit`/`write` syscalls via `SVC`. The `a64-capi` target builds
+  `exit`/`write` syscalls via `SVC`; a misaligned atomic, ordered or
+  exclusive access is an Alignment fault that stops the program. The
+  `a64-capi` target builds
   `liba64-capi` (single-instruction execution over host memory) used by the
   LIRA AArch64 tests.
 

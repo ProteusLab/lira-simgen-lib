@@ -38,4 +38,38 @@ void CPU::supervisor_call(memory::Memory &mem, uint16_t /*imm*/) {
   }
 }
 
+// Alignment rules of ordered, atomic and exclusive accesses: exclusives must
+// be naturally aligned, the others must not cross a 16-byte boundary
+// (FEAT_LSE2). A violation is an Alignment fault, which ends the program.
+void CPU::check_alignment(uint64_t addr, uint8_t size, bool exclusive) {
+  const bool ok = exclusive ? addr % size == 0 : addr % 16 + size <= 16;
+  if (!ok) {
+    throw std::runtime_error{
+        fmt::format("Alignment fault: {}-byte access at {:#x}", size, addr)};
+  }
+}
+
+void CPU::exclusive_mark(uint64_t addr, uint8_t size) {
+  m_exclValid = true;
+  m_exclAddr = addr;
+  m_exclSize = size;
+}
+
+// Store-exclusive: passes if the monitor holds the same address and size;
+// the monitor is cleared either way.
+bool CPU::exclusive_check(uint64_t addr, uint8_t size) {
+  const bool pass = m_exclValid && m_exclAddr == addr && m_exclSize == size;
+  m_exclValid = false;
+  return pass;
+}
+
+void CPU::exclusive_clear() { m_exclValid = false; }
+
+// A single PE with sequentially consistent memory: barriers, hints, wait
+// instructions and BTI landing pads have no effect.
+void CPU::barrier(uint8_t /*type*/, uint8_t /*option*/) {}
+void CPU::hint(uint8_t /*op*/) {}
+void CPU::wait_timeout(bool /*wfi*/, uint64_t /*timeout*/) {}
+void CPU::branch_target(uint8_t /*targets*/) {}
+
 } // namespace prot::state
