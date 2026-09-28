@@ -86,6 +86,36 @@ register_files:
       - name: nzcv
         attributes:
           - flags
+  - name: FPCR
+    attributes:
+      - sysreg
+    reg_size:
+      lanes_base: 32
+      lanes_mult:
+    regs:
+      - name: fpcr
+        attributes:
+          - fpu.control
+          - fpu.rmode@22+2
+          - fpu.fz@24
+          - fpu.fz16@19
+          - fpu.dn@25
+  - name: FPSR
+    attributes:
+      - sysreg
+    reg_size:
+      lanes_base: 32
+      lanes_mult:
+    regs:
+      - name: fpsr
+        attributes:
+          - fpu.status
+          - fpu.flag.invalid@0
+          - fpu.flag.divbyzero@1
+          - fpu.flag.overflow@2
+          - fpu.flag.underflow@3
+          - fpu.flag.inexact@4
+          - fpu.flag.input_denormal@7
 system_registers: []
 environment_functions:
   - name: pc_read
@@ -2008,6 +2038,461 @@ operations:
     semantic_func:
     semantic_func_128:
     semantic_table:
+  - name: extend_zero_4_to_64
+    attributes: []
+    inputs:
+      - 4
+    outputs:
+      - 64
+    semantic_base: extend_zero
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: sgt_64
+    attributes: []
+    inputs:
+      - 64
+      - 64
+    outputs:
+      - 1
+    semantic_base: sgt
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: ugt_64
+    attributes: []
+    inputs:
+      - 64
+      - 64
+    outputs:
+      - 1
+    semantic_base: ugt
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: slt_64
+    attributes: []
+    inputs:
+      - 64
+      - 64
+    outputs:
+      - 1
+    semantic_base: slt
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: eq_8
+    attributes: []
+    inputs:
+      - 8
+      - 8
+    outputs:
+      - 1
+    semantic_base: eq
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: and_5
+    attributes: []
+    inputs:
+      - 5
+      - 5
+    outputs:
+      - 5
+    semantic_base: and
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: eq_16
+    attributes: []
+    inputs:
+      - 16
+      - 16
+    outputs:
+      - 1
+    semantic_base: eq
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: sgt_32
+    attributes: []
+    inputs:
+      - 32
+      - 32
+    outputs:
+      - 1
+    semantic_base: sgt
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: slt_32
+    attributes: []
+    inputs:
+      - 32
+      - 32
+    outputs:
+      - 1
+    semantic_base: slt
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: ugt_32
+    attributes: []
+    inputs:
+      - 32
+      - 32
+    outputs:
+      - 1
+    semantic_base: ugt
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: extend_zero_32_to_40
+    attributes: []
+    inputs:
+      - 32
+    outputs:
+      - 40
+    semantic_base: extend_zero
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: lsl_40
+    attributes: []
+    inputs:
+      - 40
+      - 40
+    outputs:
+      - 40
+    semantic_base: lsl
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: reverse_8
+    attributes: []
+    inputs:
+      - 8
+    outputs:
+      - 8
+    semantic_base: reverse
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: extend_zero_8_to_40
+    attributes: []
+    inputs:
+      - 8
+    outputs:
+      - 40
+    semantic_base: extend_zero
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: xor_40
+    attributes: []
+    inputs:
+      - 40
+      - 40
+    outputs:
+      - 40
+    semantic_base: xor
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: lsr_40
+    attributes: []
+    inputs:
+      - 40
+      - 40
+    outputs:
+      - 40
+    semantic_base: lsr
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: extract_low_40_to_1
+    attributes: []
+    inputs:
+      - 40
+    outputs:
+      - 1
+    semantic_base: extract_low
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: select_40
+    attributes: []
+    inputs:
+      - 1
+      - 40
+      - 40
+    outputs:
+      - 40
+    semantic_base: select
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: extract_low_40_to_32
+    attributes: []
+    inputs:
+      - 40
+    outputs:
+      - 32
+    semantic_base: extract_low
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: extend_zero_32_to_48
+    attributes: []
+    inputs:
+      - 32
+    outputs:
+      - 48
+    semantic_base: extend_zero
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: lsl_48
+    attributes: []
+    inputs:
+      - 48
+      - 48
+    outputs:
+      - 48
+    semantic_base: lsl
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: reverse_16
+    attributes: []
+    inputs:
+      - 16
+    outputs:
+      - 16
+    semantic_base: reverse
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: extend_zero_16_to_48
+    attributes: []
+    inputs:
+      - 16
+    outputs:
+      - 48
+    semantic_base: extend_zero
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: xor_48
+    attributes: []
+    inputs:
+      - 48
+      - 48
+    outputs:
+      - 48
+    semantic_base: xor
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: lsr_48
+    attributes: []
+    inputs:
+      - 48
+      - 48
+    outputs:
+      - 48
+    semantic_base: lsr
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: extract_low_48_to_1
+    attributes: []
+    inputs:
+      - 48
+    outputs:
+      - 1
+    semantic_base: extract_low
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: select_48
+    attributes: []
+    inputs:
+      - 1
+      - 48
+      - 48
+    outputs:
+      - 48
+    semantic_base: select
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: extract_low_48_to_32
+    attributes: []
+    inputs:
+      - 48
+    outputs:
+      - 32
+    semantic_base: extract_low
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: extend_zero_32_to_96
+    attributes: []
+    inputs:
+      - 32
+    outputs:
+      - 96
+    semantic_base: extend_zero
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: lsl_96
+    attributes: []
+    inputs:
+      - 96
+      - 96
+    outputs:
+      - 96
+    semantic_base: lsl
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: extend_zero_64_to_96
+    attributes: []
+    inputs:
+      - 64
+    outputs:
+      - 96
+    semantic_base: extend_zero
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: xor_96
+    attributes: []
+    inputs:
+      - 96
+      - 96
+    outputs:
+      - 96
+    semantic_base: xor
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: lsr_96
+    attributes: []
+    inputs:
+      - 96
+      - 96
+    outputs:
+      - 96
+    semantic_base: lsr
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: extract_low_96_to_1
+    attributes: []
+    inputs:
+      - 96
+    outputs:
+      - 1
+    semantic_base: extract_low
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: select_96
+    attributes: []
+    inputs:
+      - 1
+      - 96
+      - 96
+    outputs:
+      - 96
+    semantic_base: select
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: extract_low_96_to_32
+    attributes: []
+    inputs:
+      - 96
+    outputs:
+      - 32
+    semantic_base: extract_low
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: popcnt_32
+    attributes: []
+    inputs:
+      - 32
+    outputs:
+      - 32
+    semantic_base: popcnt
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: popcnt_64
+    attributes: []
+    inputs:
+      - 64
+    outputs:
+      - 64
+    semantic_base: popcnt
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: ctz_32
+    attributes: []
+    inputs:
+      - 32
+    outputs:
+      - 32
+    semantic_base: ctz
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: ctz_64
+    attributes: []
+    inputs:
+      - 64
+    outputs:
+      - 64
+    semantic_base: ctz
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: extract_low_64_to_4
+    attributes: []
+    inputs:
+      - 64
+    outputs:
+      - 4
+    semantic_base: extract_low
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: and_4
+    attributes: []
+    inputs:
+      - 4
+      - 4
+    outputs:
+      - 4
+    semantic_base: and
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
+  - name: not_4
+    attributes: []
+    inputs:
+      - 4
+    outputs:
+      - 4
+    semantic_base: not
+    semantic_func:
+    semantic_func_128:
+    semantic_table:
 snippets:
   - name: decode_field_22_1
     seq: |
@@ -3343,17 +3828,41 @@ snippets:
       1 1 _t3 = input 2;
       1 5 _t4 = input 3;
       1 5 _t5 = input 4;
-      1 3 _t6 = const 7;
-      1 3 _t7 = op and_3 _t2 _t6;
-      1 3 _t8 = const 3;
-      1 1 _t9 = op eq_3 _t7 _t8;
-      1 3 _t10 = const 1;
-      1 3 _t11 = op lsr_3 _t2 _t10;
-      1 1 _t12 = op extract_low_3_to_1 _t11;
-      1 1 _t13 = op not_1 _t12;
-      1 1 _t14 = op orr_1 _t9 _t13;
-      1 1 _t15 = op not_1 _t14;
-      1 = output 0 _t15;
+      1 32 _t6 = const 0;
+      1 32 _t7 = op extend_zero_5_to_32 _t1;
+      1 32 _t8 = const 16;
+      1 32 _t9 = op lsl_32 _t7 _t8;
+      1 32 _t10 = op orr_32 _t6 _t9;
+      1 32 _t11 = op extend_zero_3_to_32 _t2;
+      1 32 _t12 = const 13;
+      1 32 _t13 = op lsl_32 _t11 _t12;
+      1 32 _t14 = op orr_32 _t10 _t13;
+      1 32 _t15 = op extend_zero_1_to_32 _t3;
+      1 32 _t16 = const 12;
+      1 32 _t17 = op lsl_32 _t15 _t16;
+      1 32 _t18 = op orr_32 _t14 _t17;
+      1 32 _t19 = op extend_zero_5_to_32 _t4;
+      1 32 _t20 = const 5;
+      1 32 _t21 = op lsl_32 _t19 _t20;
+      1 32 _t22 = op orr_32 _t18 _t21;
+      1 32 _t23 = op extend_zero_5_to_32 _t5;
+      1 32 _t24 = op orr_32 _t22 _t23;
+      1 32 _t25 = const 57344;
+      1 32 _t26 = op and_32 _t24 _t25;
+      1 32 _t27 = const 24576;
+      1 1 _t28 = op eq_32 _t26 _t27;
+      1 3 _t29 = const 7;
+      1 3 _t30 = op and_3 _t2 _t29;
+      1 3 _t31 = const 3;
+      1 1 _t32 = op eq_3 _t30 _t31;
+      1 3 _t33 = const 1;
+      1 3 _t34 = op lsr_3 _t2 _t33;
+      1 1 _t35 = op extract_low_3_to_1 _t34;
+      1 1 _t36 = op not_1 _t35;
+      1 1 _t37 = op orr_1 _t28 _t32;
+      1 1 _t38 = op orr_1 _t37 _t36;
+      1 1 _t39 = op not_1 _t38;
+      1 = output 0 _t39;
   - name: constraint_decode_LDRB_32B_ldst_regoff
     seq: |
       1 32 _t1 = input 0;
@@ -3370,17 +3879,41 @@ snippets:
       1 32 _t12 = op lsr_32 _t1 _t11;
       1 5 _t13 = op extract_low_32_to_5 _t12;
       1 5 _t14 = op extract_low_32_to_5 _t1;
-      1 3 _t15 = const 7;
-      1 3 _t16 = op and_3 _t7 _t15;
-      1 3 _t17 = const 3;
-      1 1 _t18 = op eq_3 _t16 _t17;
-      1 3 _t19 = const 1;
-      1 3 _t20 = op lsr_3 _t7 _t19;
-      1 1 _t21 = op extract_low_3_to_1 _t20;
-      1 1 _t22 = op not_1 _t21;
-      1 1 _t23 = op orr_1 _t18 _t22;
-      1 1 _t24 = op not_1 _t23;
-      1 = output 0 _t24;
+      1 32 _t15 = const 0;
+      1 32 _t16 = op extend_zero_5_to_32 _t4;
+      1 32 _t17 = const 16;
+      1 32 _t18 = op lsl_32 _t16 _t17;
+      1 32 _t19 = op orr_32 _t15 _t18;
+      1 32 _t20 = op extend_zero_3_to_32 _t7;
+      1 32 _t21 = const 13;
+      1 32 _t22 = op lsl_32 _t20 _t21;
+      1 32 _t23 = op orr_32 _t19 _t22;
+      1 32 _t24 = op extend_zero_1_to_32 _t10;
+      1 32 _t25 = const 12;
+      1 32 _t26 = op lsl_32 _t24 _t25;
+      1 32 _t27 = op orr_32 _t23 _t26;
+      1 32 _t28 = op extend_zero_5_to_32 _t13;
+      1 32 _t29 = const 5;
+      1 32 _t30 = op lsl_32 _t28 _t29;
+      1 32 _t31 = op orr_32 _t27 _t30;
+      1 32 _t32 = op extend_zero_5_to_32 _t14;
+      1 32 _t33 = op orr_32 _t31 _t32;
+      1 32 _t34 = const 57344;
+      1 32 _t35 = op and_32 _t33 _t34;
+      1 32 _t36 = const 24576;
+      1 1 _t37 = op eq_32 _t35 _t36;
+      1 3 _t38 = const 7;
+      1 3 _t39 = op and_3 _t7 _t38;
+      1 3 _t40 = const 3;
+      1 1 _t41 = op eq_3 _t39 _t40;
+      1 3 _t42 = const 1;
+      1 3 _t43 = op lsr_3 _t7 _t42;
+      1 1 _t44 = op extract_low_3_to_1 _t43;
+      1 1 _t45 = op not_1 _t44;
+      1 1 _t46 = op orr_1 _t37 _t41;
+      1 1 _t47 = op orr_1 _t46 _t45;
+      1 1 _t48 = op not_1 _t47;
+      1 = output 0 _t48;
   - name: constraint_encode_LDRB_32BL_ldst_regoff
     seq: |
       1 5 _t1 = input 0;
@@ -3478,6 +4011,392 @@ snippets:
       1 32 _t5 = op lsl_32 _t3 _t4;
       1 32 _t6 = op orr_32 _t1 _t5;
       1 = output 0 _t6;
+  - name: constraint_encode_PRFM_P_ldst_regoff
+    seq: |
+      1 5 _t1 = input 0;
+      1 3 _t2 = input 1;
+      1 1 _t3 = input 2;
+      1 5 _t4 = input 3;
+      1 5 _t5 = input 4;
+      1 3 _t6 = const 2;
+      1 3 _t7 = op and_3 _t2 _t6;
+      1 3 _t8 = const 2;
+      1 1 _t9 = op eq_3 _t7 _t8;
+      1 5 _t10 = const 24;
+      1 5 _t11 = op and_5 _t5 _t10;
+      1 5 _t12 = const 24;
+      1 1 _t13 = op eq_5 _t11 _t12;
+      1 1 _t14 = op not_1 _t13;
+      1 1 _t15 = op and_1 _t9 _t14;
+      1 = output 0 _t15;
+  - name: constraint_decode_PRFM_P_ldst_regoff
+    seq: |
+      1 32 _t1 = input 0;
+      1 32 _t2 = const 16;
+      1 32 _t3 = op lsr_32 _t1 _t2;
+      1 5 _t4 = op extract_low_32_to_5 _t3;
+      1 32 _t5 = const 13;
+      1 32 _t6 = op lsr_32 _t1 _t5;
+      1 3 _t7 = op extract_low_32_to_3 _t6;
+      1 32 _t8 = const 12;
+      1 32 _t9 = op lsr_32 _t1 _t8;
+      1 1 _t10 = op extract_low_32_to_1 _t9;
+      1 32 _t11 = const 5;
+      1 32 _t12 = op lsr_32 _t1 _t11;
+      1 5 _t13 = op extract_low_32_to_5 _t12;
+      1 5 _t14 = op extract_low_32_to_5 _t1;
+      1 5 _t15 = const 24;
+      1 5 _t16 = op and_5 _t14 _t15;
+      1 5 _t17 = const 24;
+      1 1 _t18 = op eq_5 _t16 _t17;
+      1 1 _t19 = op not_1 _t18;
+      1 = output 0 _t19;
+  - name: decode_field_8_4
+    seq: |
+      1 32 _t1 = input 0;
+      1 32 _t2 = const 8;
+      1 32 _t3 = op lsr_32 _t1 _t2;
+      1 4 _t4 = op extract_low_32_to_4 _t3;
+      1 = output 0 _t4;
+  - name: decode_field_10_8
+    seq: |
+      1 32 _t1 = input 0;
+      1 32 _t2 = const 10;
+      1 32 _t3 = op lsr_32 _t1 _t2;
+      1 8 _t4 = op extract_low_32_to_8 _t3;
+      1 = output 0 _t4;
+  - name: encode_10w8_5w5_0w5
+    seq: |
+      1 32 _t1 = dyn_const enc_base;
+      1 8 _t2 = input 0;
+      1 32 _t3 = op extend_zero_8_to_32 _t2;
+      1 32 _t4 = const 10;
+      1 32 _t5 = op lsl_32 _t3 _t4;
+      1 32 _t6 = op orr_32 _t1 _t5;
+      1 5 _t7 = input 1;
+      1 32 _t8 = op extend_zero_5_to_32 _t7;
+      1 32 _t9 = const 5;
+      1 32 _t10 = op lsl_32 _t8 _t9;
+      1 32 _t11 = op orr_32 _t6 _t10;
+      1 5 _t12 = input 2;
+      1 32 _t13 = op extend_zero_5_to_32 _t12;
+      1 32 _t14 = op orr_32 _t11 _t13;
+      1 = output 0 _t14;
+  - name: decode_field_15_6
+    seq: |
+      1 32 _t1 = input 0;
+      1 32 _t2 = const 15;
+      1 32 _t3 = op lsr_32 _t1 _t2;
+      1 6 _t4 = op extract_low_32_to_6 _t3;
+      1 = output 0 _t4;
+  - name: encode_15w6_5w5_0w4
+    seq: |
+      1 32 _t1 = dyn_const enc_base;
+      1 6 _t2 = input 0;
+      1 32 _t3 = op extend_zero_6_to_32 _t2;
+      1 32 _t4 = const 15;
+      1 32 _t5 = op lsl_32 _t3 _t4;
+      1 32 _t6 = op orr_32 _t1 _t5;
+      1 5 _t7 = input 1;
+      1 32 _t8 = op extend_zero_5_to_32 _t7;
+      1 32 _t9 = const 5;
+      1 32 _t10 = op lsl_32 _t8 _t9;
+      1 32 _t11 = op orr_32 _t6 _t10;
+      1 4 _t12 = input 2;
+      1 32 _t13 = op extend_zero_4_to_32 _t12;
+      1 32 _t14 = op orr_32 _t11 _t13;
+      1 = output 0 _t14;
+  - name: encode_0w5
+    seq: |
+      1 32 _t1 = dyn_const enc_base;
+      1 5 _t2 = input 0;
+      1 32 _t3 = op extend_zero_5_to_32 _t2;
+      1 32 _t4 = op orr_32 _t1 _t3;
+      1 = output 0 _t4;
+  - name: constraint_encode_HINT_HM_hints
+    seq: |
+      1 4 _t1 = input 0;
+      1 3 _t2 = input 1;
+      1 32 _t3 = const 0;
+      1 32 _t4 = op extend_zero_4_to_32 _t1;
+      1 32 _t5 = const 8;
+      1 32 _t6 = op lsl_32 _t4 _t5;
+      1 32 _t7 = op orr_32 _t3 _t6;
+      1 32 _t8 = op extend_zero_3_to_32 _t2;
+      1 32 _t9 = const 5;
+      1 32 _t10 = op lsl_32 _t8 _t9;
+      1 32 _t11 = op orr_32 _t7 _t10;
+      1 32 _t12 = const 4064;
+      1 32 _t13 = op and_32 _t11 _t12;
+      1 32 _t14 = const 0;
+      1 1 _t15 = op eq_32 _t13 _t14;
+      1 32 _t16 = const 4064;
+      1 32 _t17 = op and_32 _t11 _t16;
+      1 32 _t18 = const 256;
+      1 1 _t19 = op eq_32 _t17 _t18;
+      1 32 _t20 = const 4064;
+      1 32 _t21 = op and_32 _t11 _t20;
+      1 32 _t22 = const 800;
+      1 1 _t23 = op eq_32 _t21 _t22;
+      1 32 _t24 = const 4064;
+      1 32 _t25 = op and_32 _t11 _t24;
+      1 32 _t26 = const 768;
+      1 1 _t27 = op eq_32 _t25 _t26;
+      1 32 _t28 = const 4064;
+      1 32 _t29 = op and_32 _t11 _t28;
+      1 32 _t30 = const 320;
+      1 1 _t31 = op eq_32 _t29 _t30;
+      1 32 _t32 = const 4064;
+      1 32 _t33 = op and_32 _t11 _t32;
+      1 32 _t34 = const 864;
+      1 1 _t35 = op eq_32 _t33 _t34;
+      1 32 _t36 = const 4064;
+      1 32 _t37 = op and_32 _t11 _t36;
+      1 32 _t38 = const 832;
+      1 1 _t39 = op eq_32 _t37 _t38;
+      1 32 _t40 = const 4064;
+      1 32 _t41 = op and_32 _t11 _t40;
+      1 32 _t42 = const 384;
+      1 1 _t43 = op eq_32 _t41 _t42;
+      1 32 _t44 = const 4064;
+      1 32 _t45 = op and_32 _t11 _t44;
+      1 32 _t46 = const 928;
+      1 1 _t47 = op eq_32 _t45 _t46;
+      1 32 _t48 = const 4064;
+      1 32 _t49 = op and_32 _t11 _t48;
+      1 32 _t50 = const 896;
+      1 1 _t51 = op eq_32 _t49 _t50;
+      1 32 _t52 = const 4064;
+      1 32 _t53 = op and_32 _t11 _t52;
+      1 32 _t54 = const 448;
+      1 1 _t55 = op eq_32 _t53 _t54;
+      1 32 _t56 = const 4064;
+      1 32 _t57 = op and_32 _t11 _t56;
+      1 32 _t58 = const 992;
+      1 1 _t59 = op eq_32 _t57 _t58;
+      1 32 _t60 = const 4064;
+      1 32 _t61 = op and_32 _t11 _t60;
+      1 32 _t62 = const 960;
+      1 1 _t63 = op eq_32 _t61 _t62;
+      1 32 _t64 = const 4064;
+      1 32 _t65 = op and_32 _t11 _t64;
+      1 32 _t66 = const 224;
+      1 1 _t67 = op eq_32 _t65 _t66;
+      1 32 _t68 = const 4064;
+      1 32 _t69 = op and_32 _t11 _t68;
+      1 32 _t70 = const 32;
+      1 1 _t71 = op eq_32 _t69 _t70;
+      1 32 _t72 = const 4064;
+      1 32 _t73 = op and_32 _t11 _t72;
+      1 32 _t74 = const 64;
+      1 1 _t75 = op eq_32 _t73 _t74;
+      1 32 _t76 = const 4064;
+      1 32 _t77 = op and_32 _t11 _t76;
+      1 32 _t78 = const 96;
+      1 1 _t79 = op eq_32 _t77 _t78;
+      1 32 _t80 = const 4064;
+      1 32 _t81 = op and_32 _t11 _t80;
+      1 32 _t82 = const 128;
+      1 1 _t83 = op eq_32 _t81 _t82;
+      1 32 _t84 = const 4064;
+      1 32 _t85 = op and_32 _t11 _t84;
+      1 32 _t86 = const 160;
+      1 1 _t87 = op eq_32 _t85 _t86;
+      1 32 _t88 = const 4064;
+      1 32 _t89 = op and_32 _t11 _t88;
+      1 32 _t90 = const 640;
+      1 1 _t91 = op eq_32 _t89 _t90;
+      1 32 _t92 = const 4064;
+      1 32 _t93 = op and_32 _t11 _t92;
+      1 32 _t94 = const 512;
+      1 1 _t95 = op eq_32 _t93 _t94;
+      1 32 _t96 = const 4064;
+      1 32 _t97 = op and_32 _t11 _t96;
+      1 32 _t98 = const 704;
+      1 1 _t99 = op eq_32 _t97 _t98;
+      1 32 _t100 = const 3872;
+      1 32 _t101 = op and_32 _t11 _t100;
+      1 32 _t102 = const 1024;
+      1 1 _t103 = op eq_32 _t101 _t102;
+      1 1 _t104 = op orr_1 _t15 _t19;
+      1 1 _t105 = op orr_1 _t104 _t23;
+      1 1 _t106 = op orr_1 _t105 _t27;
+      1 1 _t107 = op orr_1 _t106 _t31;
+      1 1 _t108 = op orr_1 _t107 _t35;
+      1 1 _t109 = op orr_1 _t108 _t39;
+      1 1 _t110 = op orr_1 _t109 _t43;
+      1 1 _t111 = op orr_1 _t110 _t47;
+      1 1 _t112 = op orr_1 _t111 _t51;
+      1 1 _t113 = op orr_1 _t112 _t55;
+      1 1 _t114 = op orr_1 _t113 _t59;
+      1 1 _t115 = op orr_1 _t114 _t63;
+      1 1 _t116 = op orr_1 _t115 _t67;
+      1 1 _t117 = op orr_1 _t116 _t71;
+      1 1 _t118 = op orr_1 _t117 _t75;
+      1 1 _t119 = op orr_1 _t118 _t79;
+      1 1 _t120 = op orr_1 _t119 _t83;
+      1 1 _t121 = op orr_1 _t120 _t87;
+      1 1 _t122 = op orr_1 _t121 _t91;
+      1 1 _t123 = op orr_1 _t122 _t95;
+      1 1 _t124 = op orr_1 _t123 _t99;
+      1 1 _t125 = op orr_1 _t124 _t103;
+      1 1 _t126 = op not_1 _t125;
+      1 = output 0 _t126;
+  - name: constraint_decode_HINT_HM_hints
+    seq: |
+      1 32 _t1 = input 0;
+      1 32 _t2 = const 8;
+      1 32 _t3 = op lsr_32 _t1 _t2;
+      1 4 _t4 = op extract_low_32_to_4 _t3;
+      1 32 _t5 = const 5;
+      1 32 _t6 = op lsr_32 _t1 _t5;
+      1 3 _t7 = op extract_low_32_to_3 _t6;
+      1 32 _t8 = const 0;
+      1 32 _t9 = op extend_zero_4_to_32 _t4;
+      1 32 _t10 = const 8;
+      1 32 _t11 = op lsl_32 _t9 _t10;
+      1 32 _t12 = op orr_32 _t8 _t11;
+      1 32 _t13 = op extend_zero_3_to_32 _t7;
+      1 32 _t14 = const 5;
+      1 32 _t15 = op lsl_32 _t13 _t14;
+      1 32 _t16 = op orr_32 _t12 _t15;
+      1 32 _t17 = const 4064;
+      1 32 _t18 = op and_32 _t16 _t17;
+      1 32 _t19 = const 0;
+      1 1 _t20 = op eq_32 _t18 _t19;
+      1 32 _t21 = const 4064;
+      1 32 _t22 = op and_32 _t16 _t21;
+      1 32 _t23 = const 256;
+      1 1 _t24 = op eq_32 _t22 _t23;
+      1 32 _t25 = const 4064;
+      1 32 _t26 = op and_32 _t16 _t25;
+      1 32 _t27 = const 800;
+      1 1 _t28 = op eq_32 _t26 _t27;
+      1 32 _t29 = const 4064;
+      1 32 _t30 = op and_32 _t16 _t29;
+      1 32 _t31 = const 768;
+      1 1 _t32 = op eq_32 _t30 _t31;
+      1 32 _t33 = const 4064;
+      1 32 _t34 = op and_32 _t16 _t33;
+      1 32 _t35 = const 320;
+      1 1 _t36 = op eq_32 _t34 _t35;
+      1 32 _t37 = const 4064;
+      1 32 _t38 = op and_32 _t16 _t37;
+      1 32 _t39 = const 864;
+      1 1 _t40 = op eq_32 _t38 _t39;
+      1 32 _t41 = const 4064;
+      1 32 _t42 = op and_32 _t16 _t41;
+      1 32 _t43 = const 832;
+      1 1 _t44 = op eq_32 _t42 _t43;
+      1 32 _t45 = const 4064;
+      1 32 _t46 = op and_32 _t16 _t45;
+      1 32 _t47 = const 384;
+      1 1 _t48 = op eq_32 _t46 _t47;
+      1 32 _t49 = const 4064;
+      1 32 _t50 = op and_32 _t16 _t49;
+      1 32 _t51 = const 928;
+      1 1 _t52 = op eq_32 _t50 _t51;
+      1 32 _t53 = const 4064;
+      1 32 _t54 = op and_32 _t16 _t53;
+      1 32 _t55 = const 896;
+      1 1 _t56 = op eq_32 _t54 _t55;
+      1 32 _t57 = const 4064;
+      1 32 _t58 = op and_32 _t16 _t57;
+      1 32 _t59 = const 448;
+      1 1 _t60 = op eq_32 _t58 _t59;
+      1 32 _t61 = const 4064;
+      1 32 _t62 = op and_32 _t16 _t61;
+      1 32 _t63 = const 992;
+      1 1 _t64 = op eq_32 _t62 _t63;
+      1 32 _t65 = const 4064;
+      1 32 _t66 = op and_32 _t16 _t65;
+      1 32 _t67 = const 960;
+      1 1 _t68 = op eq_32 _t66 _t67;
+      1 32 _t69 = const 4064;
+      1 32 _t70 = op and_32 _t16 _t69;
+      1 32 _t71 = const 224;
+      1 1 _t72 = op eq_32 _t70 _t71;
+      1 32 _t73 = const 4064;
+      1 32 _t74 = op and_32 _t16 _t73;
+      1 32 _t75 = const 32;
+      1 1 _t76 = op eq_32 _t74 _t75;
+      1 32 _t77 = const 4064;
+      1 32 _t78 = op and_32 _t16 _t77;
+      1 32 _t79 = const 64;
+      1 1 _t80 = op eq_32 _t78 _t79;
+      1 32 _t81 = const 4064;
+      1 32 _t82 = op and_32 _t16 _t81;
+      1 32 _t83 = const 96;
+      1 1 _t84 = op eq_32 _t82 _t83;
+      1 32 _t85 = const 4064;
+      1 32 _t86 = op and_32 _t16 _t85;
+      1 32 _t87 = const 128;
+      1 1 _t88 = op eq_32 _t86 _t87;
+      1 32 _t89 = const 4064;
+      1 32 _t90 = op and_32 _t16 _t89;
+      1 32 _t91 = const 160;
+      1 1 _t92 = op eq_32 _t90 _t91;
+      1 32 _t93 = const 4064;
+      1 32 _t94 = op and_32 _t16 _t93;
+      1 32 _t95 = const 640;
+      1 1 _t96 = op eq_32 _t94 _t95;
+      1 32 _t97 = const 4064;
+      1 32 _t98 = op and_32 _t16 _t97;
+      1 32 _t99 = const 512;
+      1 1 _t100 = op eq_32 _t98 _t99;
+      1 32 _t101 = const 4064;
+      1 32 _t102 = op and_32 _t16 _t101;
+      1 32 _t103 = const 704;
+      1 1 _t104 = op eq_32 _t102 _t103;
+      1 32 _t105 = const 3872;
+      1 32 _t106 = op and_32 _t16 _t105;
+      1 32 _t107 = const 1024;
+      1 1 _t108 = op eq_32 _t106 _t107;
+      1 1 _t109 = op orr_1 _t20 _t24;
+      1 1 _t110 = op orr_1 _t109 _t28;
+      1 1 _t111 = op orr_1 _t110 _t32;
+      1 1 _t112 = op orr_1 _t111 _t36;
+      1 1 _t113 = op orr_1 _t112 _t40;
+      1 1 _t114 = op orr_1 _t113 _t44;
+      1 1 _t115 = op orr_1 _t114 _t48;
+      1 1 _t116 = op orr_1 _t115 _t52;
+      1 1 _t117 = op orr_1 _t116 _t56;
+      1 1 _t118 = op orr_1 _t117 _t60;
+      1 1 _t119 = op orr_1 _t118 _t64;
+      1 1 _t120 = op orr_1 _t119 _t68;
+      1 1 _t121 = op orr_1 _t120 _t72;
+      1 1 _t122 = op orr_1 _t121 _t76;
+      1 1 _t123 = op orr_1 _t122 _t80;
+      1 1 _t124 = op orr_1 _t123 _t84;
+      1 1 _t125 = op orr_1 _t124 _t88;
+      1 1 _t126 = op orr_1 _t125 _t92;
+      1 1 _t127 = op orr_1 _t126 _t96;
+      1 1 _t128 = op orr_1 _t127 _t100;
+      1 1 _t129 = op orr_1 _t128 _t104;
+      1 1 _t130 = op orr_1 _t129 _t108;
+      1 1 _t131 = op not_1 _t130;
+      1 = output 0 _t131;
+  - name: decode_field_5_3
+    seq: |
+      1 32 _t1 = input 0;
+      1 32 _t2 = const 5;
+      1 32 _t3 = op lsr_32 _t1 _t2;
+      1 3 _t4 = op extract_low_32_to_3 _t3;
+      1 = output 0 _t4;
+  - name: encode_8w4_5w3
+    seq: |
+      1 32 _t1 = dyn_const enc_base;
+      1 4 _t2 = input 0;
+      1 32 _t3 = op extend_zero_4_to_32 _t2;
+      1 32 _t4 = const 8;
+      1 32 _t5 = op lsl_32 _t3 _t4;
+      1 32 _t6 = op orr_32 _t1 _t5;
+      1 3 _t7 = input 1;
+      1 32 _t8 = op extend_zero_3_to_32 _t7;
+      1 32 _t9 = const 5;
+      1 32 _t10 = op lsl_32 _t8 _t9;
+      1 32 _t11 = op orr_32 _t6 _t10;
+      1 = output 0 _t11;
 instructions:
   - name: ADD_32_addsub_imm
     attributes:
@@ -14361,3 +15280,4247 @@ instructions:
     semantic: |
       1 16 _t1 = input 0;
       1 = env supervisor_call _t1;
+  - name: LDTR_32_ldst_unpriv
+    attributes:
+      - address-form.base-plus-offset
+      - datatype.32
+      - instr-class.general
+      - mnemonic.LDTR
+      - offset-type.off9s_u
+    operand_sizes:
+      - 9
+      - 5
+      - 5
+    operand_names:
+      - imm9
+      - Rn
+      - Rt
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 3091204096
+      const_mask: 4292873216
+      decode:
+        - decode_field_12_9
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_12w9_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 9 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = op extend_sign_9_to_64 _t1;
+      1 64 _t5 = read X _t2;
+      1 64 _t6 = op add_64 _t5 _t4;
+      1 32 _t7 = env mem_read_32 _t6;
+      1 64 _t8 = read X _t3;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t3 _t9;
+      1 64 _t11 = op extend_zero_32_to_64 _t7;
+      1 64 _t12 = op select_64 _t10 _t8 _t11;
+      1 = write X _t3 _t12;
+  - name: LDTR_64_ldst_unpriv
+    attributes:
+      - address-form.base-plus-offset
+      - datatype.64
+      - instr-class.general
+      - mnemonic.LDTR
+      - offset-type.off9s_u
+    operand_sizes:
+      - 9
+      - 5
+      - 5
+    operand_names:
+      - imm9
+      - Rn
+      - Rt
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 4164945920
+      const_mask: 4292873216
+      decode:
+        - decode_field_12_9
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_12w9_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 9 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = op extend_sign_9_to_64 _t1;
+      1 64 _t5 = read X _t2;
+      1 64 _t6 = op add_64 _t5 _t4;
+      1 64 _t7 = env mem_read_64 _t6;
+      1 64 _t8 = read X _t3;
+      1 5 _t9 = const 31;
+      1 1 _t10 = op eq_5 _t3 _t9;
+      1 64 _t11 = op select_64 _t10 _t8 _t7;
+      1 = write X _t3 _t11;
+  - name: STTR_32_ldst_unpriv
+    attributes:
+      - address-form.base-plus-offset
+      - datatype.32
+      - instr-class.general
+      - mnemonic.STTR
+      - offset-type.off9s_u
+    operand_sizes:
+      - 9
+      - 5
+      - 5
+    operand_names:
+      - imm9
+      - Rn
+      - Rt
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 3087009792
+      const_mask: 4292873216
+      decode:
+        - decode_field_12_9
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_12w9_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 9 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = op extend_sign_9_to_64 _t1;
+      1 64 _t5 = read X _t2;
+      1 64 _t6 = op add_64 _t5 _t4;
+      1 64 _t7 = read X _t3;
+      1 5 _t8 = const 31;
+      1 1 _t9 = op eq_5 _t3 _t8;
+      1 64 _t10 = const 0;
+      1 64 _t11 = op select_64 _t9 _t10 _t7;
+      1 32 _t12 = op extract_low_64_to_32 _t11;
+      1 = env mem_write_32 _t6 _t12;
+  - name: STTR_64_ldst_unpriv
+    attributes:
+      - address-form.base-plus-offset
+      - datatype.64
+      - instr-class.general
+      - mnemonic.STTR
+      - offset-type.off9s_u
+    operand_sizes:
+      - 9
+      - 5
+      - 5
+    operand_names:
+      - imm9
+      - Rn
+      - Rt
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 4160751616
+      const_mask: 4292873216
+      decode:
+        - decode_field_12_9
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_12w9_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 9 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = op extend_sign_9_to_64 _t1;
+      1 64 _t5 = read X _t2;
+      1 64 _t6 = op add_64 _t5 _t4;
+      1 64 _t7 = read X _t3;
+      1 5 _t8 = const 31;
+      1 1 _t9 = op eq_5 _t3 _t8;
+      1 64 _t10 = const 0;
+      1 64 _t11 = op select_64 _t9 _t10 _t7;
+      1 = env mem_write_64 _t6 _t11;
+  - name: LDTRB_32_ldst_unpriv
+    attributes:
+      - address-form.base-plus-offset
+      - datatype.32
+      - instr-class.general
+      - mnemonic.LDTRB
+      - offset-type.off9s_u
+    operand_sizes:
+      - 9
+      - 5
+      - 5
+    operand_names:
+      - imm9
+      - Rn
+      - Rt
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 943720448
+      const_mask: 4292873216
+      decode:
+        - decode_field_12_9
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_12w9_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 9 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = op extend_sign_9_to_64 _t1;
+      1 64 _t5 = read X _t2;
+      1 64 _t6 = op add_64 _t5 _t4;
+      1 8 _t7 = env mem_read_8 _t6;
+      1 32 _t8 = op extend_zero_8_to_32 _t7;
+      1 64 _t9 = read X _t3;
+      1 5 _t10 = const 31;
+      1 1 _t11 = op eq_5 _t3 _t10;
+      1 64 _t12 = op extend_zero_32_to_64 _t8;
+      1 64 _t13 = op select_64 _t11 _t9 _t12;
+      1 = write X _t3 _t13;
+  - name: STTRB_32_ldst_unpriv
+    attributes:
+      - address-form.base-plus-offset
+      - datatype.32
+      - instr-class.general
+      - mnemonic.STTRB
+      - offset-type.off9s_u
+    operand_sizes:
+      - 9
+      - 5
+      - 5
+    operand_names:
+      - imm9
+      - Rn
+      - Rt
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 939526144
+      const_mask: 4292873216
+      decode:
+        - decode_field_12_9
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_12w9_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 9 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = op extend_sign_9_to_64 _t1;
+      1 64 _t5 = read X _t2;
+      1 64 _t6 = op add_64 _t5 _t4;
+      1 64 _t7 = read X _t3;
+      1 5 _t8 = const 31;
+      1 1 _t9 = op eq_5 _t3 _t8;
+      1 64 _t10 = const 0;
+      1 64 _t11 = op select_64 _t9 _t10 _t7;
+      1 8 _t12 = op extract_low_64_to_8 _t11;
+      1 = env mem_write_8 _t6 _t12;
+  - name: LDTRH_32_ldst_unpriv
+    attributes:
+      - address-form.base-plus-offset
+      - datatype.32
+      - instr-class.general
+      - mnemonic.LDTRH
+      - offset-type.off9s_u
+    operand_sizes:
+      - 9
+      - 5
+      - 5
+    operand_names:
+      - imm9
+      - Rn
+      - Rt
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2017462272
+      const_mask: 4292873216
+      decode:
+        - decode_field_12_9
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_12w9_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 9 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = op extend_sign_9_to_64 _t1;
+      1 64 _t5 = read X _t2;
+      1 64 _t6 = op add_64 _t5 _t4;
+      1 16 _t7 = env mem_read_16 _t6;
+      1 32 _t8 = op extend_zero_16_to_32 _t7;
+      1 64 _t9 = read X _t3;
+      1 5 _t10 = const 31;
+      1 1 _t11 = op eq_5 _t3 _t10;
+      1 64 _t12 = op extend_zero_32_to_64 _t8;
+      1 64 _t13 = op select_64 _t11 _t9 _t12;
+      1 = write X _t3 _t13;
+  - name: STTRH_32_ldst_unpriv
+    attributes:
+      - address-form.base-plus-offset
+      - datatype.32
+      - instr-class.general
+      - mnemonic.STTRH
+      - offset-type.off9s_u
+    operand_sizes:
+      - 9
+      - 5
+      - 5
+    operand_names:
+      - imm9
+      - Rn
+      - Rt
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2013267968
+      const_mask: 4292873216
+      decode:
+        - decode_field_12_9
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_12w9_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 9 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = op extend_sign_9_to_64 _t1;
+      1 64 _t5 = read X _t2;
+      1 64 _t6 = op add_64 _t5 _t4;
+      1 64 _t7 = read X _t3;
+      1 5 _t8 = const 31;
+      1 1 _t9 = op eq_5 _t3 _t8;
+      1 64 _t10 = const 0;
+      1 64 _t11 = op select_64 _t9 _t10 _t7;
+      1 16 _t12 = op extract_low_64_to_16 _t11;
+      1 = env mem_write_16 _t6 _t12;
+  - name: LDTRSB_32_ldst_unpriv
+    attributes:
+      - address-form.base-plus-offset
+      - datatype.32
+      - instr-class.general
+      - mnemonic.LDTRSB
+      - offset-type.off9s_u
+    operand_sizes:
+      - 9
+      - 5
+      - 5
+    operand_names:
+      - imm9
+      - Rn
+      - Rt
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 952109056
+      const_mask: 4292873216
+      decode:
+        - decode_field_12_9
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_12w9_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 9 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = op extend_sign_9_to_64 _t1;
+      1 64 _t5 = read X _t2;
+      1 64 _t6 = op add_64 _t5 _t4;
+      1 8 _t7 = env mem_read_8 _t6;
+      1 32 _t8 = op extend_sign_8_to_32 _t7;
+      1 64 _t9 = read X _t3;
+      1 5 _t10 = const 31;
+      1 1 _t11 = op eq_5 _t3 _t10;
+      1 64 _t12 = op extend_zero_32_to_64 _t8;
+      1 64 _t13 = op select_64 _t11 _t9 _t12;
+      1 = write X _t3 _t13;
+  - name: LDTRSB_64_ldst_unpriv
+    attributes:
+      - address-form.base-plus-offset
+      - datatype.64
+      - instr-class.general
+      - mnemonic.LDTRSB
+      - offset-type.off9s_u
+    operand_sizes:
+      - 9
+      - 5
+      - 5
+    operand_names:
+      - imm9
+      - Rn
+      - Rt
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 947914752
+      const_mask: 4292873216
+      decode:
+        - decode_field_12_9
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_12w9_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 9 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = op extend_sign_9_to_64 _t1;
+      1 64 _t5 = read X _t2;
+      1 64 _t6 = op add_64 _t5 _t4;
+      1 8 _t7 = env mem_read_8 _t6;
+      1 64 _t8 = op extend_sign_8_to_64 _t7;
+      1 64 _t9 = read X _t3;
+      1 5 _t10 = const 31;
+      1 1 _t11 = op eq_5 _t3 _t10;
+      1 64 _t12 = op select_64 _t11 _t9 _t8;
+      1 = write X _t3 _t12;
+  - name: LDTRSH_32_ldst_unpriv
+    attributes:
+      - address-form.base-plus-offset
+      - datatype.32
+      - instr-class.general
+      - mnemonic.LDTRSH
+      - offset-type.off9s_u
+    operand_sizes:
+      - 9
+      - 5
+      - 5
+    operand_names:
+      - imm9
+      - Rn
+      - Rt
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2025850880
+      const_mask: 4292873216
+      decode:
+        - decode_field_12_9
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_12w9_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 9 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = op extend_sign_9_to_64 _t1;
+      1 64 _t5 = read X _t2;
+      1 64 _t6 = op add_64 _t5 _t4;
+      1 16 _t7 = env mem_read_16 _t6;
+      1 32 _t8 = op extend_sign_16_to_32 _t7;
+      1 64 _t9 = read X _t3;
+      1 5 _t10 = const 31;
+      1 1 _t11 = op eq_5 _t3 _t10;
+      1 64 _t12 = op extend_zero_32_to_64 _t8;
+      1 64 _t13 = op select_64 _t11 _t9 _t12;
+      1 = write X _t3 _t13;
+  - name: LDTRSH_64_ldst_unpriv
+    attributes:
+      - address-form.base-plus-offset
+      - datatype.64
+      - instr-class.general
+      - mnemonic.LDTRSH
+      - offset-type.off9s_u
+    operand_sizes:
+      - 9
+      - 5
+      - 5
+    operand_names:
+      - imm9
+      - Rn
+      - Rt
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2021656576
+      const_mask: 4292873216
+      decode:
+        - decode_field_12_9
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_12w9_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 9 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = op extend_sign_9_to_64 _t1;
+      1 64 _t5 = read X _t2;
+      1 64 _t6 = op add_64 _t5 _t4;
+      1 16 _t7 = env mem_read_16 _t6;
+      1 64 _t8 = op extend_sign_16_to_64 _t7;
+      1 64 _t9 = read X _t3;
+      1 5 _t10 = const 31;
+      1 1 _t11 = op eq_5 _t3 _t10;
+      1 64 _t12 = op select_64 _t11 _t9 _t8;
+      1 = write X _t3 _t12;
+  - name: LDTRSW_64_ldst_unpriv
+    attributes:
+      - address-form.base-plus-offset
+      - datatype.64
+      - instr-class.general
+      - mnemonic.LDTRSW
+      - offset-type.off9s_u
+    operand_sizes:
+      - 9
+      - 5
+      - 5
+    operand_names:
+      - imm9
+      - Rn
+      - Rt
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 3095398400
+      const_mask: 4292873216
+      decode:
+        - decode_field_12_9
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_12w9_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 9 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = op extend_sign_9_to_64 _t1;
+      1 64 _t5 = read X _t2;
+      1 64 _t6 = op add_64 _t5 _t4;
+      1 32 _t7 = env mem_read_32 _t6;
+      1 64 _t8 = op extend_sign_32_to_64 _t7;
+      1 64 _t9 = read X _t3;
+      1 5 _t10 = const 31;
+      1 1 _t11 = op eq_5 _t3 _t10;
+      1 64 _t12 = op select_64 _t11 _t9 _t8;
+      1 = write X _t3 _t12;
+  - name: LDNP_32_ldstnapair_offs
+    attributes:
+      - address-form.signed-scaled-offset
+      - address-form-reg-type.signed-scaled-offset-pair-32
+      - atomic-ops.LDNP-pair-32
+      - instr-class.general
+      - mnemonic.LDNP
+      - offset-type.off7s_s
+      - reg-type.pair-32
+    operand_sizes:
+      - 7
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - imm7
+      - Rt2
+      - Rn
+      - Rt
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 675282944
+      const_mask: 4290772992
+      decode:
+        - decode_field_15_7
+        - decode_field_10_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_15w7_10w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 7 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 5 _t4 = input 3;
+      1 64 _t5 = op extend_sign_7_to_64 _t1;
+      1 64 _t6 = const 2;
+      1 64 _t7 = op lsl_64 _t5 _t6;
+      1 64 _t8 = read X _t3;
+      1 64 _t9 = op add_64 _t8 _t7;
+      1 64 _t10 = env mem_read_64 _t9;
+      1 32 _t11 = op extract_low_64_to_32 _t10;
+      1 64 _t12 = const 32;
+      1 64 _t13 = op lsr_64 _t10 _t12;
+      1 32 _t14 = op extract_low_64_to_32 _t13;
+      1 64 _t15 = read X _t4;
+      1 5 _t16 = const 31;
+      1 1 _t17 = op eq_5 _t4 _t16;
+      1 64 _t18 = op extend_zero_32_to_64 _t11;
+      1 64 _t19 = op select_64 _t17 _t15 _t18;
+      1 = write X _t4 _t19;
+      1 64 _t20 = read X _t2;
+      1 5 _t21 = const 31;
+      1 1 _t22 = op eq_5 _t2 _t21;
+      1 64 _t23 = op extend_zero_32_to_64 _t14;
+      1 64 _t24 = op select_64 _t22 _t20 _t23;
+      1 = write X _t2 _t24;
+  - name: LDNP_64_ldstnapair_offs
+    attributes:
+      - address-form.signed-scaled-offset
+      - address-form-reg-type.signed-scaled-offset-pair-64
+      - atomic-ops.LDNP-pair-64
+      - instr-class.general
+      - mnemonic.LDNP
+      - offset-type.off7s_s
+      - reg-type.pair-64
+    operand_sizes:
+      - 7
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - imm7
+      - Rt2
+      - Rn
+      - Rt
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2822766592
+      const_mask: 4290772992
+      decode:
+        - decode_field_15_7
+        - decode_field_10_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_15w7_10w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 7 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 5 _t4 = input 3;
+      1 64 _t5 = op extend_sign_7_to_64 _t1;
+      1 64 _t6 = const 3;
+      1 64 _t7 = op lsl_64 _t5 _t6;
+      1 64 _t8 = read X _t3;
+      1 64 _t9 = op add_64 _t8 _t7;
+      1 128 _t10 = env mem_read_128 _t9;
+      1 64 _t11 = op extract_low_128_to_64 _t10;
+      1 128 _t12 = const 64;
+      1 128 _t13 = op lsr_128 _t10 _t12;
+      1 64 _t14 = op extract_low_128_to_64 _t13;
+      1 64 _t15 = read X _t4;
+      1 5 _t16 = const 31;
+      1 1 _t17 = op eq_5 _t4 _t16;
+      1 64 _t18 = op select_64 _t17 _t15 _t11;
+      1 = write X _t4 _t18;
+      1 64 _t19 = read X _t2;
+      1 5 _t20 = const 31;
+      1 1 _t21 = op eq_5 _t2 _t20;
+      1 64 _t22 = op select_64 _t21 _t19 _t14;
+      1 = write X _t2 _t22;
+  - name: STNP_32_ldstnapair_offs
+    attributes:
+      - address-form.signed-scaled-offset
+      - address-form-reg-type.signed-scaled-offset-pair-32
+      - atomic-ops.STNP-pair-32
+      - instr-class.general
+      - mnemonic.STNP
+      - offset-type.off7s_s
+      - reg-type.pair-32
+    operand_sizes:
+      - 7
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - imm7
+      - Rt2
+      - Rn
+      - Rt
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 671088640
+      const_mask: 4290772992
+      decode:
+        - decode_field_15_7
+        - decode_field_10_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_15w7_10w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 7 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 5 _t4 = input 3;
+      1 64 _t5 = op extend_sign_7_to_64 _t1;
+      1 64 _t6 = const 2;
+      1 64 _t7 = op lsl_64 _t5 _t6;
+      1 64 _t8 = read X _t3;
+      1 64 _t9 = op add_64 _t8 _t7;
+      1 64 _t10 = read X _t2;
+      1 5 _t11 = const 31;
+      1 1 _t12 = op eq_5 _t2 _t11;
+      1 64 _t13 = const 0;
+      1 64 _t14 = op select_64 _t12 _t13 _t10;
+      1 32 _t15 = op extract_low_64_to_32 _t14;
+      1 64 _t16 = read X _t4;
+      1 5 _t17 = const 31;
+      1 1 _t18 = op eq_5 _t4 _t17;
+      1 64 _t19 = const 0;
+      1 64 _t20 = op select_64 _t18 _t19 _t16;
+      1 32 _t21 = op extract_low_64_to_32 _t20;
+      1 64 _t22 = op extend_zero_32_to_64 _t21;
+      1 64 _t23 = op extend_zero_32_to_64 _t15;
+      1 64 _t24 = const 32;
+      1 64 _t25 = op lsl_64 _t23 _t24;
+      1 64 _t26 = op orr_64 _t22 _t25;
+      1 = env mem_write_64 _t9 _t26;
+  - name: STNP_64_ldstnapair_offs
+    attributes:
+      - address-form.signed-scaled-offset
+      - address-form-reg-type.signed-scaled-offset-pair-64
+      - atomic-ops.STNP-pair-64
+      - instr-class.general
+      - mnemonic.STNP
+      - offset-type.off7s_s
+      - reg-type.pair-64
+    operand_sizes:
+      - 7
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - imm7
+      - Rt2
+      - Rn
+      - Rt
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2818572288
+      const_mask: 4290772992
+      decode:
+        - decode_field_15_7
+        - decode_field_10_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_15w7_10w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 7 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 5 _t4 = input 3;
+      1 64 _t5 = op extend_sign_7_to_64 _t1;
+      1 64 _t6 = const 3;
+      1 64 _t7 = op lsl_64 _t5 _t6;
+      1 64 _t8 = read X _t3;
+      1 64 _t9 = op add_64 _t8 _t7;
+      1 64 _t10 = read X _t2;
+      1 5 _t11 = const 31;
+      1 1 _t12 = op eq_5 _t2 _t11;
+      1 64 _t13 = const 0;
+      1 64 _t14 = op select_64 _t12 _t13 _t10;
+      1 64 _t15 = read X _t4;
+      1 5 _t16 = const 31;
+      1 1 _t17 = op eq_5 _t4 _t16;
+      1 64 _t18 = const 0;
+      1 64 _t19 = op select_64 _t17 _t18 _t15;
+      1 128 _t20 = op extend_zero_64_to_128 _t19;
+      1 128 _t21 = op extend_zero_64_to_128 _t14;
+      1 128 _t22 = const 64;
+      1 128 _t23 = op lsl_128 _t21 _t22;
+      1 128 _t24 = op orr_128 _t20 _t23;
+      1 = env mem_write_128 _t9 _t24;
+  - name: PRFM_P_ldst_pos
+    attributes:
+      - address-form.unsigned-scaled-offset
+      - instr-class.general
+      - mnemonic.PRFM
+      - offset-type.off12u_s
+    operand_sizes:
+      - 12
+      - 5
+      - 5
+    operand_names:
+      - imm12
+      - Rn
+      - Rt
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 4185915392
+      const_mask: 4290772992
+      decode:
+        - decode_field_10_12
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w12_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 12 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+  - name: PRFM_P_loadlit
+    attributes:
+      - address-form.literal
+      - instr-class.general
+      - mnemonic.PRFM
+      - offset-type.off19s
+    operand_sizes:
+      - 19
+      - 5
+    operand_names:
+      - imm19
+      - Rt
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 3623878656
+      const_mask: 4278190080
+      decode:
+        - decode_field_5_19
+        - decode_field_0_5
+      encode: encode_5w19_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 19 _t1 = input 0;
+      1 5 _t2 = input 1;
+  - name: PRFM_P_ldst_regoff
+    attributes:
+      - instr-class.general
+      - mnemonic.PRFM
+      - offset-type.off-reg
+    operand_sizes:
+      - 5
+      - 3
+      - 1
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - option
+      - S
+      - Rn
+      - Rt
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 4171253760
+      const_mask: 4292889600
+      decode:
+        - decode_field_16_5
+        - decode_field_13_3
+        - decode_field_12_1
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_13w3_12w1_5w5_0w5
+      constraint_decode: constraint_decode_PRFM_P_ldst_regoff
+      constraint_encode: constraint_encode_PRFM_P_ldst_regoff
+    semantic: |
+      1 5 _t1 = input 0;
+      1 3 _t2 = input 1;
+      1 1 _t3 = input 2;
+      1 5 _t4 = input 3;
+      1 5 _t5 = input 4;
+  - name: PRFUM_P_ldst_unscaled
+    attributes:
+      - address-form.base-plus-offset
+      - instr-class.general
+      - mnemonic.PRFUM
+      - offset-type.off9s_u
+    operand_sizes:
+      - 9
+      - 5
+      - 5
+    operand_names:
+      - imm9
+      - Rn
+      - Rt
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 4169138176
+      const_mask: 4292873216
+      decode:
+        - decode_field_12_9
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_12w9_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 9 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+  - name: CRC32B_32C_dp_2src
+    attributes:
+      - datatype.32
+      - feature.crc
+      - instr-class.general
+      - mnemonic.CRC32B
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 448806912
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 32 _t9 = op extract_low_64_to_32 _t8;
+      1 64 _t10 = read X _t1;
+      1 5 _t11 = const 31;
+      1 1 _t12 = op eq_5 _t1 _t11;
+      1 64 _t13 = const 0;
+      1 64 _t14 = op select_64 _t12 _t13 _t10;
+      1 8 _t15 = op extract_low_64_to_8 _t14;
+      1 32 _t16 = op reverse_32 _t9;
+      1 40 _t17 = op extend_zero_32_to_40 _t16;
+      1 40 _t18 = const 8;
+      1 40 _t19 = op lsl_40 _t17 _t18;
+      1 8 _t20 = op reverse_8 _t15;
+      1 40 _t21 = op extend_zero_8_to_40 _t20;
+      1 40 _t22 = const 32;
+      1 40 _t23 = op lsl_40 _t21 _t22;
+      1 40 _t24 = op xor_40 _t19 _t23;
+      1 40 _t25 = const 10209909632;
+      1 40 _t26 = op xor_40 _t24 _t25;
+      1 40 _t27 = const 39;
+      1 40 _t28 = op lsr_40 _t24 _t27;
+      1 1 _t29 = op extract_low_40_to_1 _t28;
+      1 40 _t30 = op select_40 _t29 _t26 _t24;
+      1 40 _t31 = const 5104954816;
+      1 40 _t32 = op xor_40 _t30 _t31;
+      1 40 _t33 = const 38;
+      1 40 _t34 = op lsr_40 _t30 _t33;
+      1 1 _t35 = op extract_low_40_to_1 _t34;
+      1 40 _t36 = op select_40 _t35 _t32 _t30;
+      1 40 _t37 = const 2552477408;
+      1 40 _t38 = op xor_40 _t36 _t37;
+      1 40 _t39 = const 37;
+      1 40 _t40 = op lsr_40 _t36 _t39;
+      1 1 _t41 = op extract_low_40_to_1 _t40;
+      1 40 _t42 = op select_40 _t41 _t38 _t36;
+      1 40 _t43 = const 1276238704;
+      1 40 _t44 = op xor_40 _t42 _t43;
+      1 40 _t45 = const 36;
+      1 40 _t46 = op lsr_40 _t42 _t45;
+      1 1 _t47 = op extract_low_40_to_1 _t46;
+      1 40 _t48 = op select_40 _t47 _t44 _t42;
+      1 40 _t49 = const 638119352;
+      1 40 _t50 = op xor_40 _t48 _t49;
+      1 40 _t51 = const 35;
+      1 40 _t52 = op lsr_40 _t48 _t51;
+      1 1 _t53 = op extract_low_40_to_1 _t52;
+      1 40 _t54 = op select_40 _t53 _t50 _t48;
+      1 40 _t55 = const 319059676;
+      1 40 _t56 = op xor_40 _t54 _t55;
+      1 40 _t57 = const 34;
+      1 40 _t58 = op lsr_40 _t54 _t57;
+      1 1 _t59 = op extract_low_40_to_1 _t58;
+      1 40 _t60 = op select_40 _t59 _t56 _t54;
+      1 40 _t61 = const 159529838;
+      1 40 _t62 = op xor_40 _t60 _t61;
+      1 40 _t63 = const 33;
+      1 40 _t64 = op lsr_40 _t60 _t63;
+      1 1 _t65 = op extract_low_40_to_1 _t64;
+      1 40 _t66 = op select_40 _t65 _t62 _t60;
+      1 40 _t67 = const 79764919;
+      1 40 _t68 = op xor_40 _t66 _t67;
+      1 40 _t69 = const 32;
+      1 40 _t70 = op lsr_40 _t66 _t69;
+      1 1 _t71 = op extract_low_40_to_1 _t70;
+      1 40 _t72 = op select_40 _t71 _t68 _t66;
+      1 32 _t73 = op extract_low_40_to_32 _t72;
+      1 32 _t74 = op reverse_32 _t73;
+      1 64 _t75 = read X _t3;
+      1 5 _t76 = const 31;
+      1 1 _t77 = op eq_5 _t3 _t76;
+      1 64 _t78 = op extend_zero_32_to_64 _t74;
+      1 64 _t79 = op select_64 _t77 _t75 _t78;
+      1 = write X _t3 _t79;
+  - name: CRC32H_32C_dp_2src
+    attributes:
+      - datatype.32
+      - feature.crc
+      - instr-class.general
+      - mnemonic.CRC32H
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 448807936
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 32 _t9 = op extract_low_64_to_32 _t8;
+      1 64 _t10 = read X _t1;
+      1 5 _t11 = const 31;
+      1 1 _t12 = op eq_5 _t1 _t11;
+      1 64 _t13 = const 0;
+      1 64 _t14 = op select_64 _t12 _t13 _t10;
+      1 16 _t15 = op extract_low_64_to_16 _t14;
+      1 32 _t16 = op reverse_32 _t9;
+      1 48 _t17 = op extend_zero_32_to_48 _t16;
+      1 48 _t18 = const 16;
+      1 48 _t19 = op lsl_48 _t17 _t18;
+      1 16 _t20 = op reverse_16 _t15;
+      1 48 _t21 = op extend_zero_16_to_48 _t20;
+      1 48 _t22 = const 32;
+      1 48 _t23 = op lsl_48 _t21 _t22;
+      1 48 _t24 = op xor_48 _t19 _t23;
+      1 48 _t25 = const 2613736865792;
+      1 48 _t26 = op xor_48 _t24 _t25;
+      1 48 _t27 = const 47;
+      1 48 _t28 = op lsr_48 _t24 _t27;
+      1 1 _t29 = op extract_low_48_to_1 _t28;
+      1 48 _t30 = op select_48 _t29 _t26 _t24;
+      1 48 _t31 = const 1306868432896;
+      1 48 _t32 = op xor_48 _t30 _t31;
+      1 48 _t33 = const 46;
+      1 48 _t34 = op lsr_48 _t30 _t33;
+      1 1 _t35 = op extract_low_48_to_1 _t34;
+      1 48 _t36 = op select_48 _t35 _t32 _t30;
+      1 48 _t37 = const 653434216448;
+      1 48 _t38 = op xor_48 _t36 _t37;
+      1 48 _t39 = const 45;
+      1 48 _t40 = op lsr_48 _t36 _t39;
+      1 1 _t41 = op extract_low_48_to_1 _t40;
+      1 48 _t42 = op select_48 _t41 _t38 _t36;
+      1 48 _t43 = const 326717108224;
+      1 48 _t44 = op xor_48 _t42 _t43;
+      1 48 _t45 = const 44;
+      1 48 _t46 = op lsr_48 _t42 _t45;
+      1 1 _t47 = op extract_low_48_to_1 _t46;
+      1 48 _t48 = op select_48 _t47 _t44 _t42;
+      1 48 _t49 = const 163358554112;
+      1 48 _t50 = op xor_48 _t48 _t49;
+      1 48 _t51 = const 43;
+      1 48 _t52 = op lsr_48 _t48 _t51;
+      1 1 _t53 = op extract_low_48_to_1 _t52;
+      1 48 _t54 = op select_48 _t53 _t50 _t48;
+      1 48 _t55 = const 81679277056;
+      1 48 _t56 = op xor_48 _t54 _t55;
+      1 48 _t57 = const 42;
+      1 48 _t58 = op lsr_48 _t54 _t57;
+      1 1 _t59 = op extract_low_48_to_1 _t58;
+      1 48 _t60 = op select_48 _t59 _t56 _t54;
+      1 48 _t61 = const 40839638528;
+      1 48 _t62 = op xor_48 _t60 _t61;
+      1 48 _t63 = const 41;
+      1 48 _t64 = op lsr_48 _t60 _t63;
+      1 1 _t65 = op extract_low_48_to_1 _t64;
+      1 48 _t66 = op select_48 _t65 _t62 _t60;
+      1 48 _t67 = const 20419819264;
+      1 48 _t68 = op xor_48 _t66 _t67;
+      1 48 _t69 = const 40;
+      1 48 _t70 = op lsr_48 _t66 _t69;
+      1 1 _t71 = op extract_low_48_to_1 _t70;
+      1 48 _t72 = op select_48 _t71 _t68 _t66;
+      1 48 _t73 = const 10209909632;
+      1 48 _t74 = op xor_48 _t72 _t73;
+      1 48 _t75 = const 39;
+      1 48 _t76 = op lsr_48 _t72 _t75;
+      1 1 _t77 = op extract_low_48_to_1 _t76;
+      1 48 _t78 = op select_48 _t77 _t74 _t72;
+      1 48 _t79 = const 5104954816;
+      1 48 _t80 = op xor_48 _t78 _t79;
+      1 48 _t81 = const 38;
+      1 48 _t82 = op lsr_48 _t78 _t81;
+      1 1 _t83 = op extract_low_48_to_1 _t82;
+      1 48 _t84 = op select_48 _t83 _t80 _t78;
+      1 48 _t85 = const 2552477408;
+      1 48 _t86 = op xor_48 _t84 _t85;
+      1 48 _t87 = const 37;
+      1 48 _t88 = op lsr_48 _t84 _t87;
+      1 1 _t89 = op extract_low_48_to_1 _t88;
+      1 48 _t90 = op select_48 _t89 _t86 _t84;
+      1 48 _t91 = const 1276238704;
+      1 48 _t92 = op xor_48 _t90 _t91;
+      1 48 _t93 = const 36;
+      1 48 _t94 = op lsr_48 _t90 _t93;
+      1 1 _t95 = op extract_low_48_to_1 _t94;
+      1 48 _t96 = op select_48 _t95 _t92 _t90;
+      1 48 _t97 = const 638119352;
+      1 48 _t98 = op xor_48 _t96 _t97;
+      1 48 _t99 = const 35;
+      1 48 _t100 = op lsr_48 _t96 _t99;
+      1 1 _t101 = op extract_low_48_to_1 _t100;
+      1 48 _t102 = op select_48 _t101 _t98 _t96;
+      1 48 _t103 = const 319059676;
+      1 48 _t104 = op xor_48 _t102 _t103;
+      1 48 _t105 = const 34;
+      1 48 _t106 = op lsr_48 _t102 _t105;
+      1 1 _t107 = op extract_low_48_to_1 _t106;
+      1 48 _t108 = op select_48 _t107 _t104 _t102;
+      1 48 _t109 = const 159529838;
+      1 48 _t110 = op xor_48 _t108 _t109;
+      1 48 _t111 = const 33;
+      1 48 _t112 = op lsr_48 _t108 _t111;
+      1 1 _t113 = op extract_low_48_to_1 _t112;
+      1 48 _t114 = op select_48 _t113 _t110 _t108;
+      1 48 _t115 = const 79764919;
+      1 48 _t116 = op xor_48 _t114 _t115;
+      1 48 _t117 = const 32;
+      1 48 _t118 = op lsr_48 _t114 _t117;
+      1 1 _t119 = op extract_low_48_to_1 _t118;
+      1 48 _t120 = op select_48 _t119 _t116 _t114;
+      1 32 _t121 = op extract_low_48_to_32 _t120;
+      1 32 _t122 = op reverse_32 _t121;
+      1 64 _t123 = read X _t3;
+      1 5 _t124 = const 31;
+      1 1 _t125 = op eq_5 _t3 _t124;
+      1 64 _t126 = op extend_zero_32_to_64 _t122;
+      1 64 _t127 = op select_64 _t125 _t123 _t126;
+      1 = write X _t3 _t127;
+  - name: CRC32W_32C_dp_2src
+    attributes:
+      - datatype.32
+      - feature.crc
+      - instr-class.general
+      - mnemonic.CRC32W
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 448808960
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 32 _t9 = op extract_low_64_to_32 _t8;
+      1 64 _t10 = read X _t1;
+      1 5 _t11 = const 31;
+      1 1 _t12 = op eq_5 _t1 _t11;
+      1 64 _t13 = const 0;
+      1 64 _t14 = op select_64 _t12 _t13 _t10;
+      1 32 _t15 = op extract_low_64_to_32 _t14;
+      1 32 _t16 = op reverse_32 _t9;
+      1 64 _t17 = op extend_zero_32_to_64 _t16;
+      1 64 _t18 = const 32;
+      1 64 _t19 = op lsl_64 _t17 _t18;
+      1 32 _t20 = op reverse_32 _t15;
+      1 64 _t21 = op extend_zero_32_to_64 _t20;
+      1 64 _t22 = const 32;
+      1 64 _t23 = op lsl_64 _t21 _t22;
+      1 64 _t24 = op xor_64 _t19 _t23;
+      1 64 _t25 = const 171293859236544512;
+      1 64 _t26 = op xor_64 _t24 _t25;
+      1 64 _t27 = const 63;
+      1 64 _t28 = op lsr_64 _t24 _t27;
+      1 1 _t29 = op extract_low_64_to_1 _t28;
+      1 64 _t30 = op select_64 _t29 _t26 _t24;
+      1 64 _t31 = const 85646929618272256;
+      1 64 _t32 = op xor_64 _t30 _t31;
+      1 64 _t33 = const 62;
+      1 64 _t34 = op lsr_64 _t30 _t33;
+      1 1 _t35 = op extract_low_64_to_1 _t34;
+      1 64 _t36 = op select_64 _t35 _t32 _t30;
+      1 64 _t37 = const 42823464809136128;
+      1 64 _t38 = op xor_64 _t36 _t37;
+      1 64 _t39 = const 61;
+      1 64 _t40 = op lsr_64 _t36 _t39;
+      1 1 _t41 = op extract_low_64_to_1 _t40;
+      1 64 _t42 = op select_64 _t41 _t38 _t36;
+      1 64 _t43 = const 21411732404568064;
+      1 64 _t44 = op xor_64 _t42 _t43;
+      1 64 _t45 = const 60;
+      1 64 _t46 = op lsr_64 _t42 _t45;
+      1 1 _t47 = op extract_low_64_to_1 _t46;
+      1 64 _t48 = op select_64 _t47 _t44 _t42;
+      1 64 _t49 = const 10705866202284032;
+      1 64 _t50 = op xor_64 _t48 _t49;
+      1 64 _t51 = const 59;
+      1 64 _t52 = op lsr_64 _t48 _t51;
+      1 1 _t53 = op extract_low_64_to_1 _t52;
+      1 64 _t54 = op select_64 _t53 _t50 _t48;
+      1 64 _t55 = const 5352933101142016;
+      1 64 _t56 = op xor_64 _t54 _t55;
+      1 64 _t57 = const 58;
+      1 64 _t58 = op lsr_64 _t54 _t57;
+      1 1 _t59 = op extract_low_64_to_1 _t58;
+      1 64 _t60 = op select_64 _t59 _t56 _t54;
+      1 64 _t61 = const 2676466550571008;
+      1 64 _t62 = op xor_64 _t60 _t61;
+      1 64 _t63 = const 57;
+      1 64 _t64 = op lsr_64 _t60 _t63;
+      1 1 _t65 = op extract_low_64_to_1 _t64;
+      1 64 _t66 = op select_64 _t65 _t62 _t60;
+      1 64 _t67 = const 1338233275285504;
+      1 64 _t68 = op xor_64 _t66 _t67;
+      1 64 _t69 = const 56;
+      1 64 _t70 = op lsr_64 _t66 _t69;
+      1 1 _t71 = op extract_low_64_to_1 _t70;
+      1 64 _t72 = op select_64 _t71 _t68 _t66;
+      1 64 _t73 = const 669116637642752;
+      1 64 _t74 = op xor_64 _t72 _t73;
+      1 64 _t75 = const 55;
+      1 64 _t76 = op lsr_64 _t72 _t75;
+      1 1 _t77 = op extract_low_64_to_1 _t76;
+      1 64 _t78 = op select_64 _t77 _t74 _t72;
+      1 64 _t79 = const 334558318821376;
+      1 64 _t80 = op xor_64 _t78 _t79;
+      1 64 _t81 = const 54;
+      1 64 _t82 = op lsr_64 _t78 _t81;
+      1 1 _t83 = op extract_low_64_to_1 _t82;
+      1 64 _t84 = op select_64 _t83 _t80 _t78;
+      1 64 _t85 = const 167279159410688;
+      1 64 _t86 = op xor_64 _t84 _t85;
+      1 64 _t87 = const 53;
+      1 64 _t88 = op lsr_64 _t84 _t87;
+      1 1 _t89 = op extract_low_64_to_1 _t88;
+      1 64 _t90 = op select_64 _t89 _t86 _t84;
+      1 64 _t91 = const 83639579705344;
+      1 64 _t92 = op xor_64 _t90 _t91;
+      1 64 _t93 = const 52;
+      1 64 _t94 = op lsr_64 _t90 _t93;
+      1 1 _t95 = op extract_low_64_to_1 _t94;
+      1 64 _t96 = op select_64 _t95 _t92 _t90;
+      1 64 _t97 = const 41819789852672;
+      1 64 _t98 = op xor_64 _t96 _t97;
+      1 64 _t99 = const 51;
+      1 64 _t100 = op lsr_64 _t96 _t99;
+      1 1 _t101 = op extract_low_64_to_1 _t100;
+      1 64 _t102 = op select_64 _t101 _t98 _t96;
+      1 64 _t103 = const 20909894926336;
+      1 64 _t104 = op xor_64 _t102 _t103;
+      1 64 _t105 = const 50;
+      1 64 _t106 = op lsr_64 _t102 _t105;
+      1 1 _t107 = op extract_low_64_to_1 _t106;
+      1 64 _t108 = op select_64 _t107 _t104 _t102;
+      1 64 _t109 = const 10454947463168;
+      1 64 _t110 = op xor_64 _t108 _t109;
+      1 64 _t111 = const 49;
+      1 64 _t112 = op lsr_64 _t108 _t111;
+      1 1 _t113 = op extract_low_64_to_1 _t112;
+      1 64 _t114 = op select_64 _t113 _t110 _t108;
+      1 64 _t115 = const 5227473731584;
+      1 64 _t116 = op xor_64 _t114 _t115;
+      1 64 _t117 = const 48;
+      1 64 _t118 = op lsr_64 _t114 _t117;
+      1 1 _t119 = op extract_low_64_to_1 _t118;
+      1 64 _t120 = op select_64 _t119 _t116 _t114;
+      1 64 _t121 = const 2613736865792;
+      1 64 _t122 = op xor_64 _t120 _t121;
+      1 64 _t123 = const 47;
+      1 64 _t124 = op lsr_64 _t120 _t123;
+      1 1 _t125 = op extract_low_64_to_1 _t124;
+      1 64 _t126 = op select_64 _t125 _t122 _t120;
+      1 64 _t127 = const 1306868432896;
+      1 64 _t128 = op xor_64 _t126 _t127;
+      1 64 _t129 = const 46;
+      1 64 _t130 = op lsr_64 _t126 _t129;
+      1 1 _t131 = op extract_low_64_to_1 _t130;
+      1 64 _t132 = op select_64 _t131 _t128 _t126;
+      1 64 _t133 = const 653434216448;
+      1 64 _t134 = op xor_64 _t132 _t133;
+      1 64 _t135 = const 45;
+      1 64 _t136 = op lsr_64 _t132 _t135;
+      1 1 _t137 = op extract_low_64_to_1 _t136;
+      1 64 _t138 = op select_64 _t137 _t134 _t132;
+      1 64 _t139 = const 326717108224;
+      1 64 _t140 = op xor_64 _t138 _t139;
+      1 64 _t141 = const 44;
+      1 64 _t142 = op lsr_64 _t138 _t141;
+      1 1 _t143 = op extract_low_64_to_1 _t142;
+      1 64 _t144 = op select_64 _t143 _t140 _t138;
+      1 64 _t145 = const 163358554112;
+      1 64 _t146 = op xor_64 _t144 _t145;
+      1 64 _t147 = const 43;
+      1 64 _t148 = op lsr_64 _t144 _t147;
+      1 1 _t149 = op extract_low_64_to_1 _t148;
+      1 64 _t150 = op select_64 _t149 _t146 _t144;
+      1 64 _t151 = const 81679277056;
+      1 64 _t152 = op xor_64 _t150 _t151;
+      1 64 _t153 = const 42;
+      1 64 _t154 = op lsr_64 _t150 _t153;
+      1 1 _t155 = op extract_low_64_to_1 _t154;
+      1 64 _t156 = op select_64 _t155 _t152 _t150;
+      1 64 _t157 = const 40839638528;
+      1 64 _t158 = op xor_64 _t156 _t157;
+      1 64 _t159 = const 41;
+      1 64 _t160 = op lsr_64 _t156 _t159;
+      1 1 _t161 = op extract_low_64_to_1 _t160;
+      1 64 _t162 = op select_64 _t161 _t158 _t156;
+      1 64 _t163 = const 20419819264;
+      1 64 _t164 = op xor_64 _t162 _t163;
+      1 64 _t165 = const 40;
+      1 64 _t166 = op lsr_64 _t162 _t165;
+      1 1 _t167 = op extract_low_64_to_1 _t166;
+      1 64 _t168 = op select_64 _t167 _t164 _t162;
+      1 64 _t169 = const 10209909632;
+      1 64 _t170 = op xor_64 _t168 _t169;
+      1 64 _t171 = const 39;
+      1 64 _t172 = op lsr_64 _t168 _t171;
+      1 1 _t173 = op extract_low_64_to_1 _t172;
+      1 64 _t174 = op select_64 _t173 _t170 _t168;
+      1 64 _t175 = const 5104954816;
+      1 64 _t176 = op xor_64 _t174 _t175;
+      1 64 _t177 = const 38;
+      1 64 _t178 = op lsr_64 _t174 _t177;
+      1 1 _t179 = op extract_low_64_to_1 _t178;
+      1 64 _t180 = op select_64 _t179 _t176 _t174;
+      1 64 _t181 = const 2552477408;
+      1 64 _t182 = op xor_64 _t180 _t181;
+      1 64 _t183 = const 37;
+      1 64 _t184 = op lsr_64 _t180 _t183;
+      1 1 _t185 = op extract_low_64_to_1 _t184;
+      1 64 _t186 = op select_64 _t185 _t182 _t180;
+      1 64 _t187 = const 1276238704;
+      1 64 _t188 = op xor_64 _t186 _t187;
+      1 64 _t189 = const 36;
+      1 64 _t190 = op lsr_64 _t186 _t189;
+      1 1 _t191 = op extract_low_64_to_1 _t190;
+      1 64 _t192 = op select_64 _t191 _t188 _t186;
+      1 64 _t193 = const 638119352;
+      1 64 _t194 = op xor_64 _t192 _t193;
+      1 64 _t195 = const 35;
+      1 64 _t196 = op lsr_64 _t192 _t195;
+      1 1 _t197 = op extract_low_64_to_1 _t196;
+      1 64 _t198 = op select_64 _t197 _t194 _t192;
+      1 64 _t199 = const 319059676;
+      1 64 _t200 = op xor_64 _t198 _t199;
+      1 64 _t201 = const 34;
+      1 64 _t202 = op lsr_64 _t198 _t201;
+      1 1 _t203 = op extract_low_64_to_1 _t202;
+      1 64 _t204 = op select_64 _t203 _t200 _t198;
+      1 64 _t205 = const 159529838;
+      1 64 _t206 = op xor_64 _t204 _t205;
+      1 64 _t207 = const 33;
+      1 64 _t208 = op lsr_64 _t204 _t207;
+      1 1 _t209 = op extract_low_64_to_1 _t208;
+      1 64 _t210 = op select_64 _t209 _t206 _t204;
+      1 64 _t211 = const 79764919;
+      1 64 _t212 = op xor_64 _t210 _t211;
+      1 64 _t213 = const 32;
+      1 64 _t214 = op lsr_64 _t210 _t213;
+      1 1 _t215 = op extract_low_64_to_1 _t214;
+      1 64 _t216 = op select_64 _t215 _t212 _t210;
+      1 32 _t217 = op extract_low_64_to_32 _t216;
+      1 32 _t218 = op reverse_32 _t217;
+      1 64 _t219 = read X _t3;
+      1 5 _t220 = const 31;
+      1 1 _t221 = op eq_5 _t3 _t220;
+      1 64 _t222 = op extend_zero_32_to_64 _t218;
+      1 64 _t223 = op select_64 _t221 _t219 _t222;
+      1 = write X _t3 _t223;
+  - name: CRC32X_64C_dp_2src
+    attributes:
+      - datatype.64
+      - feature.crc
+      - instr-class.general
+      - mnemonic.CRC32X
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2596293632
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 32 _t9 = op extract_low_64_to_32 _t8;
+      1 64 _t10 = read X _t1;
+      1 5 _t11 = const 31;
+      1 1 _t12 = op eq_5 _t1 _t11;
+      1 64 _t13 = const 0;
+      1 64 _t14 = op select_64 _t12 _t13 _t10;
+      1 32 _t15 = op reverse_32 _t9;
+      1 96 _t16 = op extend_zero_32_to_96 _t15;
+      1 96 _t17 = const 64;
+      1 96 _t18 = op lsl_96 _t16 _t17;
+      1 64 _t19 = op reverse_64 _t14;
+      1 96 _t20 = op extend_zero_64_to_96 _t19;
+      1 96 _t21 = const 32;
+      1 96 _t22 = op lsl_96 _t20 _t21;
+      1 96 _t23 = op xor_96 _t18 _t22;
+      1 96 _t24 = const 735701523426586207088279552;
+      1 96 _t25 = op xor_96 _t23 _t24;
+      1 96 _t26 = const 95;
+      1 96 _t27 = op lsr_96 _t23 _t26;
+      1 1 _t28 = op extract_low_96_to_1 _t27;
+      1 96 _t29 = op select_96 _t28 _t25 _t23;
+      1 96 _t30 = const 367850761713293103544139776;
+      1 96 _t31 = op xor_96 _t29 _t30;
+      1 96 _t32 = const 94;
+      1 96 _t33 = op lsr_96 _t29 _t32;
+      1 1 _t34 = op extract_low_96_to_1 _t33;
+      1 96 _t35 = op select_96 _t34 _t31 _t29;
+      1 96 _t36 = const 183925380856646551772069888;
+      1 96 _t37 = op xor_96 _t35 _t36;
+      1 96 _t38 = const 93;
+      1 96 _t39 = op lsr_96 _t35 _t38;
+      1 1 _t40 = op extract_low_96_to_1 _t39;
+      1 96 _t41 = op select_96 _t40 _t37 _t35;
+      1 96 _t42 = const 91962690428323275886034944;
+      1 96 _t43 = op xor_96 _t41 _t42;
+      1 96 _t44 = const 92;
+      1 96 _t45 = op lsr_96 _t41 _t44;
+      1 1 _t46 = op extract_low_96_to_1 _t45;
+      1 96 _t47 = op select_96 _t46 _t43 _t41;
+      1 96 _t48 = const 45981345214161637943017472;
+      1 96 _t49 = op xor_96 _t47 _t48;
+      1 96 _t50 = const 91;
+      1 96 _t51 = op lsr_96 _t47 _t50;
+      1 1 _t52 = op extract_low_96_to_1 _t51;
+      1 96 _t53 = op select_96 _t52 _t49 _t47;
+      1 96 _t54 = const 22990672607080818971508736;
+      1 96 _t55 = op xor_96 _t53 _t54;
+      1 96 _t56 = const 90;
+      1 96 _t57 = op lsr_96 _t53 _t56;
+      1 1 _t58 = op extract_low_96_to_1 _t57;
+      1 96 _t59 = op select_96 _t58 _t55 _t53;
+      1 96 _t60 = const 11495336303540409485754368;
+      1 96 _t61 = op xor_96 _t59 _t60;
+      1 96 _t62 = const 89;
+      1 96 _t63 = op lsr_96 _t59 _t62;
+      1 1 _t64 = op extract_low_96_to_1 _t63;
+      1 96 _t65 = op select_96 _t64 _t61 _t59;
+      1 96 _t66 = const 5747668151770204742877184;
+      1 96 _t67 = op xor_96 _t65 _t66;
+      1 96 _t68 = const 88;
+      1 96 _t69 = op lsr_96 _t65 _t68;
+      1 1 _t70 = op extract_low_96_to_1 _t69;
+      1 96 _t71 = op select_96 _t70 _t67 _t65;
+      1 96 _t72 = const 2873834075885102371438592;
+      1 96 _t73 = op xor_96 _t71 _t72;
+      1 96 _t74 = const 87;
+      1 96 _t75 = op lsr_96 _t71 _t74;
+      1 1 _t76 = op extract_low_96_to_1 _t75;
+      1 96 _t77 = op select_96 _t76 _t73 _t71;
+      1 96 _t78 = const 1436917037942551185719296;
+      1 96 _t79 = op xor_96 _t77 _t78;
+      1 96 _t80 = const 86;
+      1 96 _t81 = op lsr_96 _t77 _t80;
+      1 1 _t82 = op extract_low_96_to_1 _t81;
+      1 96 _t83 = op select_96 _t82 _t79 _t77;
+      1 96 _t84 = const 718458518971275592859648;
+      1 96 _t85 = op xor_96 _t83 _t84;
+      1 96 _t86 = const 85;
+      1 96 _t87 = op lsr_96 _t83 _t86;
+      1 1 _t88 = op extract_low_96_to_1 _t87;
+      1 96 _t89 = op select_96 _t88 _t85 _t83;
+      1 96 _t90 = const 359229259485637796429824;
+      1 96 _t91 = op xor_96 _t89 _t90;
+      1 96 _t92 = const 84;
+      1 96 _t93 = op lsr_96 _t89 _t92;
+      1 1 _t94 = op extract_low_96_to_1 _t93;
+      1 96 _t95 = op select_96 _t94 _t91 _t89;
+      1 96 _t96 = const 179614629742818898214912;
+      1 96 _t97 = op xor_96 _t95 _t96;
+      1 96 _t98 = const 83;
+      1 96 _t99 = op lsr_96 _t95 _t98;
+      1 1 _t100 = op extract_low_96_to_1 _t99;
+      1 96 _t101 = op select_96 _t100 _t97 _t95;
+      1 96 _t102 = const 89807314871409449107456;
+      1 96 _t103 = op xor_96 _t101 _t102;
+      1 96 _t104 = const 82;
+      1 96 _t105 = op lsr_96 _t101 _t104;
+      1 1 _t106 = op extract_low_96_to_1 _t105;
+      1 96 _t107 = op select_96 _t106 _t103 _t101;
+      1 96 _t108 = const 44903657435704724553728;
+      1 96 _t109 = op xor_96 _t107 _t108;
+      1 96 _t110 = const 81;
+      1 96 _t111 = op lsr_96 _t107 _t110;
+      1 1 _t112 = op extract_low_96_to_1 _t111;
+      1 96 _t113 = op select_96 _t112 _t109 _t107;
+      1 96 _t114 = const 22451828717852362276864;
+      1 96 _t115 = op xor_96 _t113 _t114;
+      1 96 _t116 = const 80;
+      1 96 _t117 = op lsr_96 _t113 _t116;
+      1 1 _t118 = op extract_low_96_to_1 _t117;
+      1 96 _t119 = op select_96 _t118 _t115 _t113;
+      1 96 _t120 = const 11225914358926181138432;
+      1 96 _t121 = op xor_96 _t119 _t120;
+      1 96 _t122 = const 79;
+      1 96 _t123 = op lsr_96 _t119 _t122;
+      1 1 _t124 = op extract_low_96_to_1 _t123;
+      1 96 _t125 = op select_96 _t124 _t121 _t119;
+      1 96 _t126 = const 5612957179463090569216;
+      1 96 _t127 = op xor_96 _t125 _t126;
+      1 96 _t128 = const 78;
+      1 96 _t129 = op lsr_96 _t125 _t128;
+      1 1 _t130 = op extract_low_96_to_1 _t129;
+      1 96 _t131 = op select_96 _t130 _t127 _t125;
+      1 96 _t132 = const 2806478589731545284608;
+      1 96 _t133 = op xor_96 _t131 _t132;
+      1 96 _t134 = const 77;
+      1 96 _t135 = op lsr_96 _t131 _t134;
+      1 1 _t136 = op extract_low_96_to_1 _t135;
+      1 96 _t137 = op select_96 _t136 _t133 _t131;
+      1 96 _t138 = const 1403239294865772642304;
+      1 96 _t139 = op xor_96 _t137 _t138;
+      1 96 _t140 = const 76;
+      1 96 _t141 = op lsr_96 _t137 _t140;
+      1 1 _t142 = op extract_low_96_to_1 _t141;
+      1 96 _t143 = op select_96 _t142 _t139 _t137;
+      1 96 _t144 = const 701619647432886321152;
+      1 96 _t145 = op xor_96 _t143 _t144;
+      1 96 _t146 = const 75;
+      1 96 _t147 = op lsr_96 _t143 _t146;
+      1 1 _t148 = op extract_low_96_to_1 _t147;
+      1 96 _t149 = op select_96 _t148 _t145 _t143;
+      1 96 _t150 = const 350809823716443160576;
+      1 96 _t151 = op xor_96 _t149 _t150;
+      1 96 _t152 = const 74;
+      1 96 _t153 = op lsr_96 _t149 _t152;
+      1 1 _t154 = op extract_low_96_to_1 _t153;
+      1 96 _t155 = op select_96 _t154 _t151 _t149;
+      1 96 _t156 = const 175404911858221580288;
+      1 96 _t157 = op xor_96 _t155 _t156;
+      1 96 _t158 = const 73;
+      1 96 _t159 = op lsr_96 _t155 _t158;
+      1 1 _t160 = op extract_low_96_to_1 _t159;
+      1 96 _t161 = op select_96 _t160 _t157 _t155;
+      1 96 _t162 = const 87702455929110790144;
+      1 96 _t163 = op xor_96 _t161 _t162;
+      1 96 _t164 = const 72;
+      1 96 _t165 = op lsr_96 _t161 _t164;
+      1 1 _t166 = op extract_low_96_to_1 _t165;
+      1 96 _t167 = op select_96 _t166 _t163 _t161;
+      1 96 _t168 = const 43851227964555395072;
+      1 96 _t169 = op xor_96 _t167 _t168;
+      1 96 _t170 = const 71;
+      1 96 _t171 = op lsr_96 _t167 _t170;
+      1 1 _t172 = op extract_low_96_to_1 _t171;
+      1 96 _t173 = op select_96 _t172 _t169 _t167;
+      1 96 _t174 = const 21925613982277697536;
+      1 96 _t175 = op xor_96 _t173 _t174;
+      1 96 _t176 = const 70;
+      1 96 _t177 = op lsr_96 _t173 _t176;
+      1 1 _t178 = op extract_low_96_to_1 _t177;
+      1 96 _t179 = op select_96 _t178 _t175 _t173;
+      1 96 _t180 = const 10962806991138848768;
+      1 96 _t181 = op xor_96 _t179 _t180;
+      1 96 _t182 = const 69;
+      1 96 _t183 = op lsr_96 _t179 _t182;
+      1 1 _t184 = op extract_low_96_to_1 _t183;
+      1 96 _t185 = op select_96 _t184 _t181 _t179;
+      1 96 _t186 = const 5481403495569424384;
+      1 96 _t187 = op xor_96 _t185 _t186;
+      1 96 _t188 = const 68;
+      1 96 _t189 = op lsr_96 _t185 _t188;
+      1 1 _t190 = op extract_low_96_to_1 _t189;
+      1 96 _t191 = op select_96 _t190 _t187 _t185;
+      1 96 _t192 = const 2740701747784712192;
+      1 96 _t193 = op xor_96 _t191 _t192;
+      1 96 _t194 = const 67;
+      1 96 _t195 = op lsr_96 _t191 _t194;
+      1 1 _t196 = op extract_low_96_to_1 _t195;
+      1 96 _t197 = op select_96 _t196 _t193 _t191;
+      1 96 _t198 = const 1370350873892356096;
+      1 96 _t199 = op xor_96 _t197 _t198;
+      1 96 _t200 = const 66;
+      1 96 _t201 = op lsr_96 _t197 _t200;
+      1 1 _t202 = op extract_low_96_to_1 _t201;
+      1 96 _t203 = op select_96 _t202 _t199 _t197;
+      1 96 _t204 = const 685175436946178048;
+      1 96 _t205 = op xor_96 _t203 _t204;
+      1 96 _t206 = const 65;
+      1 96 _t207 = op lsr_96 _t203 _t206;
+      1 1 _t208 = op extract_low_96_to_1 _t207;
+      1 96 _t209 = op select_96 _t208 _t205 _t203;
+      1 96 _t210 = const 342587718473089024;
+      1 96 _t211 = op xor_96 _t209 _t210;
+      1 96 _t212 = const 64;
+      1 96 _t213 = op lsr_96 _t209 _t212;
+      1 1 _t214 = op extract_low_96_to_1 _t213;
+      1 96 _t215 = op select_96 _t214 _t211 _t209;
+      1 96 _t216 = const 171293859236544512;
+      1 96 _t217 = op xor_96 _t215 _t216;
+      1 96 _t218 = const 63;
+      1 96 _t219 = op lsr_96 _t215 _t218;
+      1 1 _t220 = op extract_low_96_to_1 _t219;
+      1 96 _t221 = op select_96 _t220 _t217 _t215;
+      1 96 _t222 = const 85646929618272256;
+      1 96 _t223 = op xor_96 _t221 _t222;
+      1 96 _t224 = const 62;
+      1 96 _t225 = op lsr_96 _t221 _t224;
+      1 1 _t226 = op extract_low_96_to_1 _t225;
+      1 96 _t227 = op select_96 _t226 _t223 _t221;
+      1 96 _t228 = const 42823464809136128;
+      1 96 _t229 = op xor_96 _t227 _t228;
+      1 96 _t230 = const 61;
+      1 96 _t231 = op lsr_96 _t227 _t230;
+      1 1 _t232 = op extract_low_96_to_1 _t231;
+      1 96 _t233 = op select_96 _t232 _t229 _t227;
+      1 96 _t234 = const 21411732404568064;
+      1 96 _t235 = op xor_96 _t233 _t234;
+      1 96 _t236 = const 60;
+      1 96 _t237 = op lsr_96 _t233 _t236;
+      1 1 _t238 = op extract_low_96_to_1 _t237;
+      1 96 _t239 = op select_96 _t238 _t235 _t233;
+      1 96 _t240 = const 10705866202284032;
+      1 96 _t241 = op xor_96 _t239 _t240;
+      1 96 _t242 = const 59;
+      1 96 _t243 = op lsr_96 _t239 _t242;
+      1 1 _t244 = op extract_low_96_to_1 _t243;
+      1 96 _t245 = op select_96 _t244 _t241 _t239;
+      1 96 _t246 = const 5352933101142016;
+      1 96 _t247 = op xor_96 _t245 _t246;
+      1 96 _t248 = const 58;
+      1 96 _t249 = op lsr_96 _t245 _t248;
+      1 1 _t250 = op extract_low_96_to_1 _t249;
+      1 96 _t251 = op select_96 _t250 _t247 _t245;
+      1 96 _t252 = const 2676466550571008;
+      1 96 _t253 = op xor_96 _t251 _t252;
+      1 96 _t254 = const 57;
+      1 96 _t255 = op lsr_96 _t251 _t254;
+      1 1 _t256 = op extract_low_96_to_1 _t255;
+      1 96 _t257 = op select_96 _t256 _t253 _t251;
+      1 96 _t258 = const 1338233275285504;
+      1 96 _t259 = op xor_96 _t257 _t258;
+      1 96 _t260 = const 56;
+      1 96 _t261 = op lsr_96 _t257 _t260;
+      1 1 _t262 = op extract_low_96_to_1 _t261;
+      1 96 _t263 = op select_96 _t262 _t259 _t257;
+      1 96 _t264 = const 669116637642752;
+      1 96 _t265 = op xor_96 _t263 _t264;
+      1 96 _t266 = const 55;
+      1 96 _t267 = op lsr_96 _t263 _t266;
+      1 1 _t268 = op extract_low_96_to_1 _t267;
+      1 96 _t269 = op select_96 _t268 _t265 _t263;
+      1 96 _t270 = const 334558318821376;
+      1 96 _t271 = op xor_96 _t269 _t270;
+      1 96 _t272 = const 54;
+      1 96 _t273 = op lsr_96 _t269 _t272;
+      1 1 _t274 = op extract_low_96_to_1 _t273;
+      1 96 _t275 = op select_96 _t274 _t271 _t269;
+      1 96 _t276 = const 167279159410688;
+      1 96 _t277 = op xor_96 _t275 _t276;
+      1 96 _t278 = const 53;
+      1 96 _t279 = op lsr_96 _t275 _t278;
+      1 1 _t280 = op extract_low_96_to_1 _t279;
+      1 96 _t281 = op select_96 _t280 _t277 _t275;
+      1 96 _t282 = const 83639579705344;
+      1 96 _t283 = op xor_96 _t281 _t282;
+      1 96 _t284 = const 52;
+      1 96 _t285 = op lsr_96 _t281 _t284;
+      1 1 _t286 = op extract_low_96_to_1 _t285;
+      1 96 _t287 = op select_96 _t286 _t283 _t281;
+      1 96 _t288 = const 41819789852672;
+      1 96 _t289 = op xor_96 _t287 _t288;
+      1 96 _t290 = const 51;
+      1 96 _t291 = op lsr_96 _t287 _t290;
+      1 1 _t292 = op extract_low_96_to_1 _t291;
+      1 96 _t293 = op select_96 _t292 _t289 _t287;
+      1 96 _t294 = const 20909894926336;
+      1 96 _t295 = op xor_96 _t293 _t294;
+      1 96 _t296 = const 50;
+      1 96 _t297 = op lsr_96 _t293 _t296;
+      1 1 _t298 = op extract_low_96_to_1 _t297;
+      1 96 _t299 = op select_96 _t298 _t295 _t293;
+      1 96 _t300 = const 10454947463168;
+      1 96 _t301 = op xor_96 _t299 _t300;
+      1 96 _t302 = const 49;
+      1 96 _t303 = op lsr_96 _t299 _t302;
+      1 1 _t304 = op extract_low_96_to_1 _t303;
+      1 96 _t305 = op select_96 _t304 _t301 _t299;
+      1 96 _t306 = const 5227473731584;
+      1 96 _t307 = op xor_96 _t305 _t306;
+      1 96 _t308 = const 48;
+      1 96 _t309 = op lsr_96 _t305 _t308;
+      1 1 _t310 = op extract_low_96_to_1 _t309;
+      1 96 _t311 = op select_96 _t310 _t307 _t305;
+      1 96 _t312 = const 2613736865792;
+      1 96 _t313 = op xor_96 _t311 _t312;
+      1 96 _t314 = const 47;
+      1 96 _t315 = op lsr_96 _t311 _t314;
+      1 1 _t316 = op extract_low_96_to_1 _t315;
+      1 96 _t317 = op select_96 _t316 _t313 _t311;
+      1 96 _t318 = const 1306868432896;
+      1 96 _t319 = op xor_96 _t317 _t318;
+      1 96 _t320 = const 46;
+      1 96 _t321 = op lsr_96 _t317 _t320;
+      1 1 _t322 = op extract_low_96_to_1 _t321;
+      1 96 _t323 = op select_96 _t322 _t319 _t317;
+      1 96 _t324 = const 653434216448;
+      1 96 _t325 = op xor_96 _t323 _t324;
+      1 96 _t326 = const 45;
+      1 96 _t327 = op lsr_96 _t323 _t326;
+      1 1 _t328 = op extract_low_96_to_1 _t327;
+      1 96 _t329 = op select_96 _t328 _t325 _t323;
+      1 96 _t330 = const 326717108224;
+      1 96 _t331 = op xor_96 _t329 _t330;
+      1 96 _t332 = const 44;
+      1 96 _t333 = op lsr_96 _t329 _t332;
+      1 1 _t334 = op extract_low_96_to_1 _t333;
+      1 96 _t335 = op select_96 _t334 _t331 _t329;
+      1 96 _t336 = const 163358554112;
+      1 96 _t337 = op xor_96 _t335 _t336;
+      1 96 _t338 = const 43;
+      1 96 _t339 = op lsr_96 _t335 _t338;
+      1 1 _t340 = op extract_low_96_to_1 _t339;
+      1 96 _t341 = op select_96 _t340 _t337 _t335;
+      1 96 _t342 = const 81679277056;
+      1 96 _t343 = op xor_96 _t341 _t342;
+      1 96 _t344 = const 42;
+      1 96 _t345 = op lsr_96 _t341 _t344;
+      1 1 _t346 = op extract_low_96_to_1 _t345;
+      1 96 _t347 = op select_96 _t346 _t343 _t341;
+      1 96 _t348 = const 40839638528;
+      1 96 _t349 = op xor_96 _t347 _t348;
+      1 96 _t350 = const 41;
+      1 96 _t351 = op lsr_96 _t347 _t350;
+      1 1 _t352 = op extract_low_96_to_1 _t351;
+      1 96 _t353 = op select_96 _t352 _t349 _t347;
+      1 96 _t354 = const 20419819264;
+      1 96 _t355 = op xor_96 _t353 _t354;
+      1 96 _t356 = const 40;
+      1 96 _t357 = op lsr_96 _t353 _t356;
+      1 1 _t358 = op extract_low_96_to_1 _t357;
+      1 96 _t359 = op select_96 _t358 _t355 _t353;
+      1 96 _t360 = const 10209909632;
+      1 96 _t361 = op xor_96 _t359 _t360;
+      1 96 _t362 = const 39;
+      1 96 _t363 = op lsr_96 _t359 _t362;
+      1 1 _t364 = op extract_low_96_to_1 _t363;
+      1 96 _t365 = op select_96 _t364 _t361 _t359;
+      1 96 _t366 = const 5104954816;
+      1 96 _t367 = op xor_96 _t365 _t366;
+      1 96 _t368 = const 38;
+      1 96 _t369 = op lsr_96 _t365 _t368;
+      1 1 _t370 = op extract_low_96_to_1 _t369;
+      1 96 _t371 = op select_96 _t370 _t367 _t365;
+      1 96 _t372 = const 2552477408;
+      1 96 _t373 = op xor_96 _t371 _t372;
+      1 96 _t374 = const 37;
+      1 96 _t375 = op lsr_96 _t371 _t374;
+      1 1 _t376 = op extract_low_96_to_1 _t375;
+      1 96 _t377 = op select_96 _t376 _t373 _t371;
+      1 96 _t378 = const 1276238704;
+      1 96 _t379 = op xor_96 _t377 _t378;
+      1 96 _t380 = const 36;
+      1 96 _t381 = op lsr_96 _t377 _t380;
+      1 1 _t382 = op extract_low_96_to_1 _t381;
+      1 96 _t383 = op select_96 _t382 _t379 _t377;
+      1 96 _t384 = const 638119352;
+      1 96 _t385 = op xor_96 _t383 _t384;
+      1 96 _t386 = const 35;
+      1 96 _t387 = op lsr_96 _t383 _t386;
+      1 1 _t388 = op extract_low_96_to_1 _t387;
+      1 96 _t389 = op select_96 _t388 _t385 _t383;
+      1 96 _t390 = const 319059676;
+      1 96 _t391 = op xor_96 _t389 _t390;
+      1 96 _t392 = const 34;
+      1 96 _t393 = op lsr_96 _t389 _t392;
+      1 1 _t394 = op extract_low_96_to_1 _t393;
+      1 96 _t395 = op select_96 _t394 _t391 _t389;
+      1 96 _t396 = const 159529838;
+      1 96 _t397 = op xor_96 _t395 _t396;
+      1 96 _t398 = const 33;
+      1 96 _t399 = op lsr_96 _t395 _t398;
+      1 1 _t400 = op extract_low_96_to_1 _t399;
+      1 96 _t401 = op select_96 _t400 _t397 _t395;
+      1 96 _t402 = const 79764919;
+      1 96 _t403 = op xor_96 _t401 _t402;
+      1 96 _t404 = const 32;
+      1 96 _t405 = op lsr_96 _t401 _t404;
+      1 1 _t406 = op extract_low_96_to_1 _t405;
+      1 96 _t407 = op select_96 _t406 _t403 _t401;
+      1 32 _t408 = op extract_low_96_to_32 _t407;
+      1 32 _t409 = op reverse_32 _t408;
+      1 64 _t410 = read X _t3;
+      1 5 _t411 = const 31;
+      1 1 _t412 = op eq_5 _t3 _t411;
+      1 64 _t413 = op extend_zero_32_to_64 _t409;
+      1 64 _t414 = op select_64 _t412 _t410 _t413;
+      1 = write X _t3 _t414;
+  - name: CRC32CB_32C_dp_2src
+    attributes:
+      - datatype.32
+      - feature.crc
+      - instr-class.general
+      - mnemonic.CRC32CB
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 448811008
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 32 _t9 = op extract_low_64_to_32 _t8;
+      1 64 _t10 = read X _t1;
+      1 5 _t11 = const 31;
+      1 1 _t12 = op eq_5 _t1 _t11;
+      1 64 _t13 = const 0;
+      1 64 _t14 = op select_64 _t12 _t13 _t10;
+      1 8 _t15 = op extract_low_64_to_8 _t14;
+      1 32 _t16 = op reverse_32 _t9;
+      1 40 _t17 = op extend_zero_32_to_40 _t16;
+      1 40 _t18 = const 8;
+      1 40 _t19 = op lsl_40 _t17 _t18;
+      1 8 _t20 = op reverse_8 _t15;
+      1 40 _t21 = op extend_zero_8_to_40 _t20;
+      1 40 _t22 = const 32;
+      1 40 _t23 = op lsl_40 _t21 _t22;
+      1 40 _t24 = op xor_40 _t19 _t23;
+      1 40 _t25 = const 66273648768;
+      1 40 _t26 = op xor_40 _t24 _t25;
+      1 40 _t27 = const 39;
+      1 40 _t28 = op lsr_40 _t24 _t27;
+      1 1 _t29 = op extract_low_40_to_1 _t28;
+      1 40 _t30 = op select_40 _t29 _t26 _t24;
+      1 40 _t31 = const 33136824384;
+      1 40 _t32 = op xor_40 _t30 _t31;
+      1 40 _t33 = const 38;
+      1 40 _t34 = op lsr_40 _t30 _t33;
+      1 1 _t35 = op extract_low_40_to_1 _t34;
+      1 40 _t36 = op select_40 _t35 _t32 _t30;
+      1 40 _t37 = const 16568412192;
+      1 40 _t38 = op xor_40 _t36 _t37;
+      1 40 _t39 = const 37;
+      1 40 _t40 = op lsr_40 _t36 _t39;
+      1 1 _t41 = op extract_low_40_to_1 _t40;
+      1 40 _t42 = op select_40 _t41 _t38 _t36;
+      1 40 _t43 = const 8284206096;
+      1 40 _t44 = op xor_40 _t42 _t43;
+      1 40 _t45 = const 36;
+      1 40 _t46 = op lsr_40 _t42 _t45;
+      1 1 _t47 = op extract_low_40_to_1 _t46;
+      1 40 _t48 = op select_40 _t47 _t44 _t42;
+      1 40 _t49 = const 4142103048;
+      1 40 _t50 = op xor_40 _t48 _t49;
+      1 40 _t51 = const 35;
+      1 40 _t52 = op lsr_40 _t48 _t51;
+      1 1 _t53 = op extract_low_40_to_1 _t52;
+      1 40 _t54 = op select_40 _t53 _t50 _t48;
+      1 40 _t55 = const 2071051524;
+      1 40 _t56 = op xor_40 _t54 _t55;
+      1 40 _t57 = const 34;
+      1 40 _t58 = op lsr_40 _t54 _t57;
+      1 1 _t59 = op extract_low_40_to_1 _t58;
+      1 40 _t60 = op select_40 _t59 _t56 _t54;
+      1 40 _t61 = const 1035525762;
+      1 40 _t62 = op xor_40 _t60 _t61;
+      1 40 _t63 = const 33;
+      1 40 _t64 = op lsr_40 _t60 _t63;
+      1 1 _t65 = op extract_low_40_to_1 _t64;
+      1 40 _t66 = op select_40 _t65 _t62 _t60;
+      1 40 _t67 = const 517762881;
+      1 40 _t68 = op xor_40 _t66 _t67;
+      1 40 _t69 = const 32;
+      1 40 _t70 = op lsr_40 _t66 _t69;
+      1 1 _t71 = op extract_low_40_to_1 _t70;
+      1 40 _t72 = op select_40 _t71 _t68 _t66;
+      1 32 _t73 = op extract_low_40_to_32 _t72;
+      1 32 _t74 = op reverse_32 _t73;
+      1 64 _t75 = read X _t3;
+      1 5 _t76 = const 31;
+      1 1 _t77 = op eq_5 _t3 _t76;
+      1 64 _t78 = op extend_zero_32_to_64 _t74;
+      1 64 _t79 = op select_64 _t77 _t75 _t78;
+      1 = write X _t3 _t79;
+  - name: CRC32CH_32C_dp_2src
+    attributes:
+      - datatype.32
+      - feature.crc
+      - instr-class.general
+      - mnemonic.CRC32CH
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 448812032
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 32 _t9 = op extract_low_64_to_32 _t8;
+      1 64 _t10 = read X _t1;
+      1 5 _t11 = const 31;
+      1 1 _t12 = op eq_5 _t1 _t11;
+      1 64 _t13 = const 0;
+      1 64 _t14 = op select_64 _t12 _t13 _t10;
+      1 16 _t15 = op extract_low_64_to_16 _t14;
+      1 32 _t16 = op reverse_32 _t9;
+      1 48 _t17 = op extend_zero_32_to_48 _t16;
+      1 48 _t18 = const 16;
+      1 48 _t19 = op lsl_48 _t17 _t18;
+      1 16 _t20 = op reverse_16 _t15;
+      1 48 _t21 = op extend_zero_16_to_48 _t20;
+      1 48 _t22 = const 32;
+      1 48 _t23 = op lsl_48 _t21 _t22;
+      1 48 _t24 = op xor_48 _t19 _t23;
+      1 48 _t25 = const 16966054084608;
+      1 48 _t26 = op xor_48 _t24 _t25;
+      1 48 _t27 = const 47;
+      1 48 _t28 = op lsr_48 _t24 _t27;
+      1 1 _t29 = op extract_low_48_to_1 _t28;
+      1 48 _t30 = op select_48 _t29 _t26 _t24;
+      1 48 _t31 = const 8483027042304;
+      1 48 _t32 = op xor_48 _t30 _t31;
+      1 48 _t33 = const 46;
+      1 48 _t34 = op lsr_48 _t30 _t33;
+      1 1 _t35 = op extract_low_48_to_1 _t34;
+      1 48 _t36 = op select_48 _t35 _t32 _t30;
+      1 48 _t37 = const 4241513521152;
+      1 48 _t38 = op xor_48 _t36 _t37;
+      1 48 _t39 = const 45;
+      1 48 _t40 = op lsr_48 _t36 _t39;
+      1 1 _t41 = op extract_low_48_to_1 _t40;
+      1 48 _t42 = op select_48 _t41 _t38 _t36;
+      1 48 _t43 = const 2120756760576;
+      1 48 _t44 = op xor_48 _t42 _t43;
+      1 48 _t45 = const 44;
+      1 48 _t46 = op lsr_48 _t42 _t45;
+      1 1 _t47 = op extract_low_48_to_1 _t46;
+      1 48 _t48 = op select_48 _t47 _t44 _t42;
+      1 48 _t49 = const 1060378380288;
+      1 48 _t50 = op xor_48 _t48 _t49;
+      1 48 _t51 = const 43;
+      1 48 _t52 = op lsr_48 _t48 _t51;
+      1 1 _t53 = op extract_low_48_to_1 _t52;
+      1 48 _t54 = op select_48 _t53 _t50 _t48;
+      1 48 _t55 = const 530189190144;
+      1 48 _t56 = op xor_48 _t54 _t55;
+      1 48 _t57 = const 42;
+      1 48 _t58 = op lsr_48 _t54 _t57;
+      1 1 _t59 = op extract_low_48_to_1 _t58;
+      1 48 _t60 = op select_48 _t59 _t56 _t54;
+      1 48 _t61 = const 265094595072;
+      1 48 _t62 = op xor_48 _t60 _t61;
+      1 48 _t63 = const 41;
+      1 48 _t64 = op lsr_48 _t60 _t63;
+      1 1 _t65 = op extract_low_48_to_1 _t64;
+      1 48 _t66 = op select_48 _t65 _t62 _t60;
+      1 48 _t67 = const 132547297536;
+      1 48 _t68 = op xor_48 _t66 _t67;
+      1 48 _t69 = const 40;
+      1 48 _t70 = op lsr_48 _t66 _t69;
+      1 1 _t71 = op extract_low_48_to_1 _t70;
+      1 48 _t72 = op select_48 _t71 _t68 _t66;
+      1 48 _t73 = const 66273648768;
+      1 48 _t74 = op xor_48 _t72 _t73;
+      1 48 _t75 = const 39;
+      1 48 _t76 = op lsr_48 _t72 _t75;
+      1 1 _t77 = op extract_low_48_to_1 _t76;
+      1 48 _t78 = op select_48 _t77 _t74 _t72;
+      1 48 _t79 = const 33136824384;
+      1 48 _t80 = op xor_48 _t78 _t79;
+      1 48 _t81 = const 38;
+      1 48 _t82 = op lsr_48 _t78 _t81;
+      1 1 _t83 = op extract_low_48_to_1 _t82;
+      1 48 _t84 = op select_48 _t83 _t80 _t78;
+      1 48 _t85 = const 16568412192;
+      1 48 _t86 = op xor_48 _t84 _t85;
+      1 48 _t87 = const 37;
+      1 48 _t88 = op lsr_48 _t84 _t87;
+      1 1 _t89 = op extract_low_48_to_1 _t88;
+      1 48 _t90 = op select_48 _t89 _t86 _t84;
+      1 48 _t91 = const 8284206096;
+      1 48 _t92 = op xor_48 _t90 _t91;
+      1 48 _t93 = const 36;
+      1 48 _t94 = op lsr_48 _t90 _t93;
+      1 1 _t95 = op extract_low_48_to_1 _t94;
+      1 48 _t96 = op select_48 _t95 _t92 _t90;
+      1 48 _t97 = const 4142103048;
+      1 48 _t98 = op xor_48 _t96 _t97;
+      1 48 _t99 = const 35;
+      1 48 _t100 = op lsr_48 _t96 _t99;
+      1 1 _t101 = op extract_low_48_to_1 _t100;
+      1 48 _t102 = op select_48 _t101 _t98 _t96;
+      1 48 _t103 = const 2071051524;
+      1 48 _t104 = op xor_48 _t102 _t103;
+      1 48 _t105 = const 34;
+      1 48 _t106 = op lsr_48 _t102 _t105;
+      1 1 _t107 = op extract_low_48_to_1 _t106;
+      1 48 _t108 = op select_48 _t107 _t104 _t102;
+      1 48 _t109 = const 1035525762;
+      1 48 _t110 = op xor_48 _t108 _t109;
+      1 48 _t111 = const 33;
+      1 48 _t112 = op lsr_48 _t108 _t111;
+      1 1 _t113 = op extract_low_48_to_1 _t112;
+      1 48 _t114 = op select_48 _t113 _t110 _t108;
+      1 48 _t115 = const 517762881;
+      1 48 _t116 = op xor_48 _t114 _t115;
+      1 48 _t117 = const 32;
+      1 48 _t118 = op lsr_48 _t114 _t117;
+      1 1 _t119 = op extract_low_48_to_1 _t118;
+      1 48 _t120 = op select_48 _t119 _t116 _t114;
+      1 32 _t121 = op extract_low_48_to_32 _t120;
+      1 32 _t122 = op reverse_32 _t121;
+      1 64 _t123 = read X _t3;
+      1 5 _t124 = const 31;
+      1 1 _t125 = op eq_5 _t3 _t124;
+      1 64 _t126 = op extend_zero_32_to_64 _t122;
+      1 64 _t127 = op select_64 _t125 _t123 _t126;
+      1 = write X _t3 _t127;
+  - name: CRC32CW_32C_dp_2src
+    attributes:
+      - datatype.32
+      - feature.crc
+      - instr-class.general
+      - mnemonic.CRC32CW
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 448813056
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 32 _t9 = op extract_low_64_to_32 _t8;
+      1 64 _t10 = read X _t1;
+      1 5 _t11 = const 31;
+      1 1 _t12 = op eq_5 _t1 _t11;
+      1 64 _t13 = const 0;
+      1 64 _t14 = op select_64 _t12 _t13 _t10;
+      1 32 _t15 = op extract_low_64_to_32 _t14;
+      1 32 _t16 = op reverse_32 _t9;
+      1 64 _t17 = op extend_zero_32_to_64 _t16;
+      1 64 _t18 = const 32;
+      1 64 _t19 = op lsl_64 _t17 _t18;
+      1 32 _t20 = op reverse_32 _t15;
+      1 64 _t21 = op extend_zero_32_to_64 _t20;
+      1 64 _t22 = const 32;
+      1 64 _t23 = op lsl_64 _t21 _t22;
+      1 64 _t24 = op xor_64 _t19 _t23;
+      1 64 _t25 = const 1111887320488869888;
+      1 64 _t26 = op xor_64 _t24 _t25;
+      1 64 _t27 = const 63;
+      1 64 _t28 = op lsr_64 _t24 _t27;
+      1 1 _t29 = op extract_low_64_to_1 _t28;
+      1 64 _t30 = op select_64 _t29 _t26 _t24;
+      1 64 _t31 = const 555943660244434944;
+      1 64 _t32 = op xor_64 _t30 _t31;
+      1 64 _t33 = const 62;
+      1 64 _t34 = op lsr_64 _t30 _t33;
+      1 1 _t35 = op extract_low_64_to_1 _t34;
+      1 64 _t36 = op select_64 _t35 _t32 _t30;
+      1 64 _t37 = const 277971830122217472;
+      1 64 _t38 = op xor_64 _t36 _t37;
+      1 64 _t39 = const 61;
+      1 64 _t40 = op lsr_64 _t36 _t39;
+      1 1 _t41 = op extract_low_64_to_1 _t40;
+      1 64 _t42 = op select_64 _t41 _t38 _t36;
+      1 64 _t43 = const 138985915061108736;
+      1 64 _t44 = op xor_64 _t42 _t43;
+      1 64 _t45 = const 60;
+      1 64 _t46 = op lsr_64 _t42 _t45;
+      1 1 _t47 = op extract_low_64_to_1 _t46;
+      1 64 _t48 = op select_64 _t47 _t44 _t42;
+      1 64 _t49 = const 69492957530554368;
+      1 64 _t50 = op xor_64 _t48 _t49;
+      1 64 _t51 = const 59;
+      1 64 _t52 = op lsr_64 _t48 _t51;
+      1 1 _t53 = op extract_low_64_to_1 _t52;
+      1 64 _t54 = op select_64 _t53 _t50 _t48;
+      1 64 _t55 = const 34746478765277184;
+      1 64 _t56 = op xor_64 _t54 _t55;
+      1 64 _t57 = const 58;
+      1 64 _t58 = op lsr_64 _t54 _t57;
+      1 1 _t59 = op extract_low_64_to_1 _t58;
+      1 64 _t60 = op select_64 _t59 _t56 _t54;
+      1 64 _t61 = const 17373239382638592;
+      1 64 _t62 = op xor_64 _t60 _t61;
+      1 64 _t63 = const 57;
+      1 64 _t64 = op lsr_64 _t60 _t63;
+      1 1 _t65 = op extract_low_64_to_1 _t64;
+      1 64 _t66 = op select_64 _t65 _t62 _t60;
+      1 64 _t67 = const 8686619691319296;
+      1 64 _t68 = op xor_64 _t66 _t67;
+      1 64 _t69 = const 56;
+      1 64 _t70 = op lsr_64 _t66 _t69;
+      1 1 _t71 = op extract_low_64_to_1 _t70;
+      1 64 _t72 = op select_64 _t71 _t68 _t66;
+      1 64 _t73 = const 4343309845659648;
+      1 64 _t74 = op xor_64 _t72 _t73;
+      1 64 _t75 = const 55;
+      1 64 _t76 = op lsr_64 _t72 _t75;
+      1 1 _t77 = op extract_low_64_to_1 _t76;
+      1 64 _t78 = op select_64 _t77 _t74 _t72;
+      1 64 _t79 = const 2171654922829824;
+      1 64 _t80 = op xor_64 _t78 _t79;
+      1 64 _t81 = const 54;
+      1 64 _t82 = op lsr_64 _t78 _t81;
+      1 1 _t83 = op extract_low_64_to_1 _t82;
+      1 64 _t84 = op select_64 _t83 _t80 _t78;
+      1 64 _t85 = const 1085827461414912;
+      1 64 _t86 = op xor_64 _t84 _t85;
+      1 64 _t87 = const 53;
+      1 64 _t88 = op lsr_64 _t84 _t87;
+      1 1 _t89 = op extract_low_64_to_1 _t88;
+      1 64 _t90 = op select_64 _t89 _t86 _t84;
+      1 64 _t91 = const 542913730707456;
+      1 64 _t92 = op xor_64 _t90 _t91;
+      1 64 _t93 = const 52;
+      1 64 _t94 = op lsr_64 _t90 _t93;
+      1 1 _t95 = op extract_low_64_to_1 _t94;
+      1 64 _t96 = op select_64 _t95 _t92 _t90;
+      1 64 _t97 = const 271456865353728;
+      1 64 _t98 = op xor_64 _t96 _t97;
+      1 64 _t99 = const 51;
+      1 64 _t100 = op lsr_64 _t96 _t99;
+      1 1 _t101 = op extract_low_64_to_1 _t100;
+      1 64 _t102 = op select_64 _t101 _t98 _t96;
+      1 64 _t103 = const 135728432676864;
+      1 64 _t104 = op xor_64 _t102 _t103;
+      1 64 _t105 = const 50;
+      1 64 _t106 = op lsr_64 _t102 _t105;
+      1 1 _t107 = op extract_low_64_to_1 _t106;
+      1 64 _t108 = op select_64 _t107 _t104 _t102;
+      1 64 _t109 = const 67864216338432;
+      1 64 _t110 = op xor_64 _t108 _t109;
+      1 64 _t111 = const 49;
+      1 64 _t112 = op lsr_64 _t108 _t111;
+      1 1 _t113 = op extract_low_64_to_1 _t112;
+      1 64 _t114 = op select_64 _t113 _t110 _t108;
+      1 64 _t115 = const 33932108169216;
+      1 64 _t116 = op xor_64 _t114 _t115;
+      1 64 _t117 = const 48;
+      1 64 _t118 = op lsr_64 _t114 _t117;
+      1 1 _t119 = op extract_low_64_to_1 _t118;
+      1 64 _t120 = op select_64 _t119 _t116 _t114;
+      1 64 _t121 = const 16966054084608;
+      1 64 _t122 = op xor_64 _t120 _t121;
+      1 64 _t123 = const 47;
+      1 64 _t124 = op lsr_64 _t120 _t123;
+      1 1 _t125 = op extract_low_64_to_1 _t124;
+      1 64 _t126 = op select_64 _t125 _t122 _t120;
+      1 64 _t127 = const 8483027042304;
+      1 64 _t128 = op xor_64 _t126 _t127;
+      1 64 _t129 = const 46;
+      1 64 _t130 = op lsr_64 _t126 _t129;
+      1 1 _t131 = op extract_low_64_to_1 _t130;
+      1 64 _t132 = op select_64 _t131 _t128 _t126;
+      1 64 _t133 = const 4241513521152;
+      1 64 _t134 = op xor_64 _t132 _t133;
+      1 64 _t135 = const 45;
+      1 64 _t136 = op lsr_64 _t132 _t135;
+      1 1 _t137 = op extract_low_64_to_1 _t136;
+      1 64 _t138 = op select_64 _t137 _t134 _t132;
+      1 64 _t139 = const 2120756760576;
+      1 64 _t140 = op xor_64 _t138 _t139;
+      1 64 _t141 = const 44;
+      1 64 _t142 = op lsr_64 _t138 _t141;
+      1 1 _t143 = op extract_low_64_to_1 _t142;
+      1 64 _t144 = op select_64 _t143 _t140 _t138;
+      1 64 _t145 = const 1060378380288;
+      1 64 _t146 = op xor_64 _t144 _t145;
+      1 64 _t147 = const 43;
+      1 64 _t148 = op lsr_64 _t144 _t147;
+      1 1 _t149 = op extract_low_64_to_1 _t148;
+      1 64 _t150 = op select_64 _t149 _t146 _t144;
+      1 64 _t151 = const 530189190144;
+      1 64 _t152 = op xor_64 _t150 _t151;
+      1 64 _t153 = const 42;
+      1 64 _t154 = op lsr_64 _t150 _t153;
+      1 1 _t155 = op extract_low_64_to_1 _t154;
+      1 64 _t156 = op select_64 _t155 _t152 _t150;
+      1 64 _t157 = const 265094595072;
+      1 64 _t158 = op xor_64 _t156 _t157;
+      1 64 _t159 = const 41;
+      1 64 _t160 = op lsr_64 _t156 _t159;
+      1 1 _t161 = op extract_low_64_to_1 _t160;
+      1 64 _t162 = op select_64 _t161 _t158 _t156;
+      1 64 _t163 = const 132547297536;
+      1 64 _t164 = op xor_64 _t162 _t163;
+      1 64 _t165 = const 40;
+      1 64 _t166 = op lsr_64 _t162 _t165;
+      1 1 _t167 = op extract_low_64_to_1 _t166;
+      1 64 _t168 = op select_64 _t167 _t164 _t162;
+      1 64 _t169 = const 66273648768;
+      1 64 _t170 = op xor_64 _t168 _t169;
+      1 64 _t171 = const 39;
+      1 64 _t172 = op lsr_64 _t168 _t171;
+      1 1 _t173 = op extract_low_64_to_1 _t172;
+      1 64 _t174 = op select_64 _t173 _t170 _t168;
+      1 64 _t175 = const 33136824384;
+      1 64 _t176 = op xor_64 _t174 _t175;
+      1 64 _t177 = const 38;
+      1 64 _t178 = op lsr_64 _t174 _t177;
+      1 1 _t179 = op extract_low_64_to_1 _t178;
+      1 64 _t180 = op select_64 _t179 _t176 _t174;
+      1 64 _t181 = const 16568412192;
+      1 64 _t182 = op xor_64 _t180 _t181;
+      1 64 _t183 = const 37;
+      1 64 _t184 = op lsr_64 _t180 _t183;
+      1 1 _t185 = op extract_low_64_to_1 _t184;
+      1 64 _t186 = op select_64 _t185 _t182 _t180;
+      1 64 _t187 = const 8284206096;
+      1 64 _t188 = op xor_64 _t186 _t187;
+      1 64 _t189 = const 36;
+      1 64 _t190 = op lsr_64 _t186 _t189;
+      1 1 _t191 = op extract_low_64_to_1 _t190;
+      1 64 _t192 = op select_64 _t191 _t188 _t186;
+      1 64 _t193 = const 4142103048;
+      1 64 _t194 = op xor_64 _t192 _t193;
+      1 64 _t195 = const 35;
+      1 64 _t196 = op lsr_64 _t192 _t195;
+      1 1 _t197 = op extract_low_64_to_1 _t196;
+      1 64 _t198 = op select_64 _t197 _t194 _t192;
+      1 64 _t199 = const 2071051524;
+      1 64 _t200 = op xor_64 _t198 _t199;
+      1 64 _t201 = const 34;
+      1 64 _t202 = op lsr_64 _t198 _t201;
+      1 1 _t203 = op extract_low_64_to_1 _t202;
+      1 64 _t204 = op select_64 _t203 _t200 _t198;
+      1 64 _t205 = const 1035525762;
+      1 64 _t206 = op xor_64 _t204 _t205;
+      1 64 _t207 = const 33;
+      1 64 _t208 = op lsr_64 _t204 _t207;
+      1 1 _t209 = op extract_low_64_to_1 _t208;
+      1 64 _t210 = op select_64 _t209 _t206 _t204;
+      1 64 _t211 = const 517762881;
+      1 64 _t212 = op xor_64 _t210 _t211;
+      1 64 _t213 = const 32;
+      1 64 _t214 = op lsr_64 _t210 _t213;
+      1 1 _t215 = op extract_low_64_to_1 _t214;
+      1 64 _t216 = op select_64 _t215 _t212 _t210;
+      1 32 _t217 = op extract_low_64_to_32 _t216;
+      1 32 _t218 = op reverse_32 _t217;
+      1 64 _t219 = read X _t3;
+      1 5 _t220 = const 31;
+      1 1 _t221 = op eq_5 _t3 _t220;
+      1 64 _t222 = op extend_zero_32_to_64 _t218;
+      1 64 _t223 = op select_64 _t221 _t219 _t222;
+      1 = write X _t3 _t223;
+  - name: CRC32CX_64C_dp_2src
+    attributes:
+      - datatype.64
+      - feature.crc
+      - instr-class.general
+      - mnemonic.CRC32CX
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2596297728
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 32 _t9 = op extract_low_64_to_32 _t8;
+      1 64 _t10 = read X _t1;
+      1 5 _t11 = const 31;
+      1 1 _t12 = op eq_5 _t1 _t11;
+      1 64 _t13 = const 0;
+      1 64 _t14 = op select_64 _t12 _t13 _t10;
+      1 32 _t15 = op reverse_32 _t9;
+      1 96 _t16 = op extend_zero_32_to_96 _t15;
+      1 96 _t17 = const 64;
+      1 96 _t18 = op lsl_96 _t16 _t17;
+      1 64 _t19 = op reverse_64 _t14;
+      1 96 _t20 = op extend_zero_64_to_96 _t19;
+      1 96 _t21 = const 32;
+      1 96 _t22 = op lsl_96 _t20 _t21;
+      1 96 _t23 = op xor_96 _t18 _t22;
+      1 96 _t24 = const 4775519678336766900959182848;
+      1 96 _t25 = op xor_96 _t23 _t24;
+      1 96 _t26 = const 95;
+      1 96 _t27 = op lsr_96 _t23 _t26;
+      1 1 _t28 = op extract_low_96_to_1 _t27;
+      1 96 _t29 = op select_96 _t28 _t25 _t23;
+      1 96 _t30 = const 2387759839168383450479591424;
+      1 96 _t31 = op xor_96 _t29 _t30;
+      1 96 _t32 = const 94;
+      1 96 _t33 = op lsr_96 _t29 _t32;
+      1 1 _t34 = op extract_low_96_to_1 _t33;
+      1 96 _t35 = op select_96 _t34 _t31 _t29;
+      1 96 _t36 = const 1193879919584191725239795712;
+      1 96 _t37 = op xor_96 _t35 _t36;
+      1 96 _t38 = const 93;
+      1 96 _t39 = op lsr_96 _t35 _t38;
+      1 1 _t40 = op extract_low_96_to_1 _t39;
+      1 96 _t41 = op select_96 _t40 _t37 _t35;
+      1 96 _t42 = const 596939959792095862619897856;
+      1 96 _t43 = op xor_96 _t41 _t42;
+      1 96 _t44 = const 92;
+      1 96 _t45 = op lsr_96 _t41 _t44;
+      1 1 _t46 = op extract_low_96_to_1 _t45;
+      1 96 _t47 = op select_96 _t46 _t43 _t41;
+      1 96 _t48 = const 298469979896047931309948928;
+      1 96 _t49 = op xor_96 _t47 _t48;
+      1 96 _t50 = const 91;
+      1 96 _t51 = op lsr_96 _t47 _t50;
+      1 1 _t52 = op extract_low_96_to_1 _t51;
+      1 96 _t53 = op select_96 _t52 _t49 _t47;
+      1 96 _t54 = const 149234989948023965654974464;
+      1 96 _t55 = op xor_96 _t53 _t54;
+      1 96 _t56 = const 90;
+      1 96 _t57 = op lsr_96 _t53 _t56;
+      1 1 _t58 = op extract_low_96_to_1 _t57;
+      1 96 _t59 = op select_96 _t58 _t55 _t53;
+      1 96 _t60 = const 74617494974011982827487232;
+      1 96 _t61 = op xor_96 _t59 _t60;
+      1 96 _t62 = const 89;
+      1 96 _t63 = op lsr_96 _t59 _t62;
+      1 1 _t64 = op extract_low_96_to_1 _t63;
+      1 96 _t65 = op select_96 _t64 _t61 _t59;
+      1 96 _t66 = const 37308747487005991413743616;
+      1 96 _t67 = op xor_96 _t65 _t66;
+      1 96 _t68 = const 88;
+      1 96 _t69 = op lsr_96 _t65 _t68;
+      1 1 _t70 = op extract_low_96_to_1 _t69;
+      1 96 _t71 = op select_96 _t70 _t67 _t65;
+      1 96 _t72 = const 18654373743502995706871808;
+      1 96 _t73 = op xor_96 _t71 _t72;
+      1 96 _t74 = const 87;
+      1 96 _t75 = op lsr_96 _t71 _t74;
+      1 1 _t76 = op extract_low_96_to_1 _t75;
+      1 96 _t77 = op select_96 _t76 _t73 _t71;
+      1 96 _t78 = const 9327186871751497853435904;
+      1 96 _t79 = op xor_96 _t77 _t78;
+      1 96 _t80 = const 86;
+      1 96 _t81 = op lsr_96 _t77 _t80;
+      1 1 _t82 = op extract_low_96_to_1 _t81;
+      1 96 _t83 = op select_96 _t82 _t79 _t77;
+      1 96 _t84 = const 4663593435875748926717952;
+      1 96 _t85 = op xor_96 _t83 _t84;
+      1 96 _t86 = const 85;
+      1 96 _t87 = op lsr_96 _t83 _t86;
+      1 1 _t88 = op extract_low_96_to_1 _t87;
+      1 96 _t89 = op select_96 _t88 _t85 _t83;
+      1 96 _t90 = const 2331796717937874463358976;
+      1 96 _t91 = op xor_96 _t89 _t90;
+      1 96 _t92 = const 84;
+      1 96 _t93 = op lsr_96 _t89 _t92;
+      1 1 _t94 = op extract_low_96_to_1 _t93;
+      1 96 _t95 = op select_96 _t94 _t91 _t89;
+      1 96 _t96 = const 1165898358968937231679488;
+      1 96 _t97 = op xor_96 _t95 _t96;
+      1 96 _t98 = const 83;
+      1 96 _t99 = op lsr_96 _t95 _t98;
+      1 1 _t100 = op extract_low_96_to_1 _t99;
+      1 96 _t101 = op select_96 _t100 _t97 _t95;
+      1 96 _t102 = const 582949179484468615839744;
+      1 96 _t103 = op xor_96 _t101 _t102;
+      1 96 _t104 = const 82;
+      1 96 _t105 = op lsr_96 _t101 _t104;
+      1 1 _t106 = op extract_low_96_to_1 _t105;
+      1 96 _t107 = op select_96 _t106 _t103 _t101;
+      1 96 _t108 = const 291474589742234307919872;
+      1 96 _t109 = op xor_96 _t107 _t108;
+      1 96 _t110 = const 81;
+      1 96 _t111 = op lsr_96 _t107 _t110;
+      1 1 _t112 = op extract_low_96_to_1 _t111;
+      1 96 _t113 = op select_96 _t112 _t109 _t107;
+      1 96 _t114 = const 145737294871117153959936;
+      1 96 _t115 = op xor_96 _t113 _t114;
+      1 96 _t116 = const 80;
+      1 96 _t117 = op lsr_96 _t113 _t116;
+      1 1 _t118 = op extract_low_96_to_1 _t117;
+      1 96 _t119 = op select_96 _t118 _t115 _t113;
+      1 96 _t120 = const 72868647435558576979968;
+      1 96 _t121 = op xor_96 _t119 _t120;
+      1 96 _t122 = const 79;
+      1 96 _t123 = op lsr_96 _t119 _t122;
+      1 1 _t124 = op extract_low_96_to_1 _t123;
+      1 96 _t125 = op select_96 _t124 _t121 _t119;
+      1 96 _t126 = const 36434323717779288489984;
+      1 96 _t127 = op xor_96 _t125 _t126;
+      1 96 _t128 = const 78;
+      1 96 _t129 = op lsr_96 _t125 _t128;
+      1 1 _t130 = op extract_low_96_to_1 _t129;
+      1 96 _t131 = op select_96 _t130 _t127 _t125;
+      1 96 _t132 = const 18217161858889644244992;
+      1 96 _t133 = op xor_96 _t131 _t132;
+      1 96 _t134 = const 77;
+      1 96 _t135 = op lsr_96 _t131 _t134;
+      1 1 _t136 = op extract_low_96_to_1 _t135;
+      1 96 _t137 = op select_96 _t136 _t133 _t131;
+      1 96 _t138 = const 9108580929444822122496;
+      1 96 _t139 = op xor_96 _t137 _t138;
+      1 96 _t140 = const 76;
+      1 96 _t141 = op lsr_96 _t137 _t140;
+      1 1 _t142 = op extract_low_96_to_1 _t141;
+      1 96 _t143 = op select_96 _t142 _t139 _t137;
+      1 96 _t144 = const 4554290464722411061248;
+      1 96 _t145 = op xor_96 _t143 _t144;
+      1 96 _t146 = const 75;
+      1 96 _t147 = op lsr_96 _t143 _t146;
+      1 1 _t148 = op extract_low_96_to_1 _t147;
+      1 96 _t149 = op select_96 _t148 _t145 _t143;
+      1 96 _t150 = const 2277145232361205530624;
+      1 96 _t151 = op xor_96 _t149 _t150;
+      1 96 _t152 = const 74;
+      1 96 _t153 = op lsr_96 _t149 _t152;
+      1 1 _t154 = op extract_low_96_to_1 _t153;
+      1 96 _t155 = op select_96 _t154 _t151 _t149;
+      1 96 _t156 = const 1138572616180602765312;
+      1 96 _t157 = op xor_96 _t155 _t156;
+      1 96 _t158 = const 73;
+      1 96 _t159 = op lsr_96 _t155 _t158;
+      1 1 _t160 = op extract_low_96_to_1 _t159;
+      1 96 _t161 = op select_96 _t160 _t157 _t155;
+      1 96 _t162 = const 569286308090301382656;
+      1 96 _t163 = op xor_96 _t161 _t162;
+      1 96 _t164 = const 72;
+      1 96 _t165 = op lsr_96 _t161 _t164;
+      1 1 _t166 = op extract_low_96_to_1 _t165;
+      1 96 _t167 = op select_96 _t166 _t163 _t161;
+      1 96 _t168 = const 284643154045150691328;
+      1 96 _t169 = op xor_96 _t167 _t168;
+      1 96 _t170 = const 71;
+      1 96 _t171 = op lsr_96 _t167 _t170;
+      1 1 _t172 = op extract_low_96_to_1 _t171;
+      1 96 _t173 = op select_96 _t172 _t169 _t167;
+      1 96 _t174 = const 142321577022575345664;
+      1 96 _t175 = op xor_96 _t173 _t174;
+      1 96 _t176 = const 70;
+      1 96 _t177 = op lsr_96 _t173 _t176;
+      1 1 _t178 = op extract_low_96_to_1 _t177;
+      1 96 _t179 = op select_96 _t178 _t175 _t173;
+      1 96 _t180 = const 71160788511287672832;
+      1 96 _t181 = op xor_96 _t179 _t180;
+      1 96 _t182 = const 69;
+      1 96 _t183 = op lsr_96 _t179 _t182;
+      1 1 _t184 = op extract_low_96_to_1 _t183;
+      1 96 _t185 = op select_96 _t184 _t181 _t179;
+      1 96 _t186 = const 35580394255643836416;
+      1 96 _t187 = op xor_96 _t185 _t186;
+      1 96 _t188 = const 68;
+      1 96 _t189 = op lsr_96 _t185 _t188;
+      1 1 _t190 = op extract_low_96_to_1 _t189;
+      1 96 _t191 = op select_96 _t190 _t187 _t185;
+      1 96 _t192 = const 17790197127821918208;
+      1 96 _t193 = op xor_96 _t191 _t192;
+      1 96 _t194 = const 67;
+      1 96 _t195 = op lsr_96 _t191 _t194;
+      1 1 _t196 = op extract_low_96_to_1 _t195;
+      1 96 _t197 = op select_96 _t196 _t193 _t191;
+      1 96 _t198 = const 8895098563910959104;
+      1 96 _t199 = op xor_96 _t197 _t198;
+      1 96 _t200 = const 66;
+      1 96 _t201 = op lsr_96 _t197 _t200;
+      1 1 _t202 = op extract_low_96_to_1 _t201;
+      1 96 _t203 = op select_96 _t202 _t199 _t197;
+      1 96 _t204 = const 4447549281955479552;
+      1 96 _t205 = op xor_96 _t203 _t204;
+      1 96 _t206 = const 65;
+      1 96 _t207 = op lsr_96 _t203 _t206;
+      1 1 _t208 = op extract_low_96_to_1 _t207;
+      1 96 _t209 = op select_96 _t208 _t205 _t203;
+      1 96 _t210 = const 2223774640977739776;
+      1 96 _t211 = op xor_96 _t209 _t210;
+      1 96 _t212 = const 64;
+      1 96 _t213 = op lsr_96 _t209 _t212;
+      1 1 _t214 = op extract_low_96_to_1 _t213;
+      1 96 _t215 = op select_96 _t214 _t211 _t209;
+      1 96 _t216 = const 1111887320488869888;
+      1 96 _t217 = op xor_96 _t215 _t216;
+      1 96 _t218 = const 63;
+      1 96 _t219 = op lsr_96 _t215 _t218;
+      1 1 _t220 = op extract_low_96_to_1 _t219;
+      1 96 _t221 = op select_96 _t220 _t217 _t215;
+      1 96 _t222 = const 555943660244434944;
+      1 96 _t223 = op xor_96 _t221 _t222;
+      1 96 _t224 = const 62;
+      1 96 _t225 = op lsr_96 _t221 _t224;
+      1 1 _t226 = op extract_low_96_to_1 _t225;
+      1 96 _t227 = op select_96 _t226 _t223 _t221;
+      1 96 _t228 = const 277971830122217472;
+      1 96 _t229 = op xor_96 _t227 _t228;
+      1 96 _t230 = const 61;
+      1 96 _t231 = op lsr_96 _t227 _t230;
+      1 1 _t232 = op extract_low_96_to_1 _t231;
+      1 96 _t233 = op select_96 _t232 _t229 _t227;
+      1 96 _t234 = const 138985915061108736;
+      1 96 _t235 = op xor_96 _t233 _t234;
+      1 96 _t236 = const 60;
+      1 96 _t237 = op lsr_96 _t233 _t236;
+      1 1 _t238 = op extract_low_96_to_1 _t237;
+      1 96 _t239 = op select_96 _t238 _t235 _t233;
+      1 96 _t240 = const 69492957530554368;
+      1 96 _t241 = op xor_96 _t239 _t240;
+      1 96 _t242 = const 59;
+      1 96 _t243 = op lsr_96 _t239 _t242;
+      1 1 _t244 = op extract_low_96_to_1 _t243;
+      1 96 _t245 = op select_96 _t244 _t241 _t239;
+      1 96 _t246 = const 34746478765277184;
+      1 96 _t247 = op xor_96 _t245 _t246;
+      1 96 _t248 = const 58;
+      1 96 _t249 = op lsr_96 _t245 _t248;
+      1 1 _t250 = op extract_low_96_to_1 _t249;
+      1 96 _t251 = op select_96 _t250 _t247 _t245;
+      1 96 _t252 = const 17373239382638592;
+      1 96 _t253 = op xor_96 _t251 _t252;
+      1 96 _t254 = const 57;
+      1 96 _t255 = op lsr_96 _t251 _t254;
+      1 1 _t256 = op extract_low_96_to_1 _t255;
+      1 96 _t257 = op select_96 _t256 _t253 _t251;
+      1 96 _t258 = const 8686619691319296;
+      1 96 _t259 = op xor_96 _t257 _t258;
+      1 96 _t260 = const 56;
+      1 96 _t261 = op lsr_96 _t257 _t260;
+      1 1 _t262 = op extract_low_96_to_1 _t261;
+      1 96 _t263 = op select_96 _t262 _t259 _t257;
+      1 96 _t264 = const 4343309845659648;
+      1 96 _t265 = op xor_96 _t263 _t264;
+      1 96 _t266 = const 55;
+      1 96 _t267 = op lsr_96 _t263 _t266;
+      1 1 _t268 = op extract_low_96_to_1 _t267;
+      1 96 _t269 = op select_96 _t268 _t265 _t263;
+      1 96 _t270 = const 2171654922829824;
+      1 96 _t271 = op xor_96 _t269 _t270;
+      1 96 _t272 = const 54;
+      1 96 _t273 = op lsr_96 _t269 _t272;
+      1 1 _t274 = op extract_low_96_to_1 _t273;
+      1 96 _t275 = op select_96 _t274 _t271 _t269;
+      1 96 _t276 = const 1085827461414912;
+      1 96 _t277 = op xor_96 _t275 _t276;
+      1 96 _t278 = const 53;
+      1 96 _t279 = op lsr_96 _t275 _t278;
+      1 1 _t280 = op extract_low_96_to_1 _t279;
+      1 96 _t281 = op select_96 _t280 _t277 _t275;
+      1 96 _t282 = const 542913730707456;
+      1 96 _t283 = op xor_96 _t281 _t282;
+      1 96 _t284 = const 52;
+      1 96 _t285 = op lsr_96 _t281 _t284;
+      1 1 _t286 = op extract_low_96_to_1 _t285;
+      1 96 _t287 = op select_96 _t286 _t283 _t281;
+      1 96 _t288 = const 271456865353728;
+      1 96 _t289 = op xor_96 _t287 _t288;
+      1 96 _t290 = const 51;
+      1 96 _t291 = op lsr_96 _t287 _t290;
+      1 1 _t292 = op extract_low_96_to_1 _t291;
+      1 96 _t293 = op select_96 _t292 _t289 _t287;
+      1 96 _t294 = const 135728432676864;
+      1 96 _t295 = op xor_96 _t293 _t294;
+      1 96 _t296 = const 50;
+      1 96 _t297 = op lsr_96 _t293 _t296;
+      1 1 _t298 = op extract_low_96_to_1 _t297;
+      1 96 _t299 = op select_96 _t298 _t295 _t293;
+      1 96 _t300 = const 67864216338432;
+      1 96 _t301 = op xor_96 _t299 _t300;
+      1 96 _t302 = const 49;
+      1 96 _t303 = op lsr_96 _t299 _t302;
+      1 1 _t304 = op extract_low_96_to_1 _t303;
+      1 96 _t305 = op select_96 _t304 _t301 _t299;
+      1 96 _t306 = const 33932108169216;
+      1 96 _t307 = op xor_96 _t305 _t306;
+      1 96 _t308 = const 48;
+      1 96 _t309 = op lsr_96 _t305 _t308;
+      1 1 _t310 = op extract_low_96_to_1 _t309;
+      1 96 _t311 = op select_96 _t310 _t307 _t305;
+      1 96 _t312 = const 16966054084608;
+      1 96 _t313 = op xor_96 _t311 _t312;
+      1 96 _t314 = const 47;
+      1 96 _t315 = op lsr_96 _t311 _t314;
+      1 1 _t316 = op extract_low_96_to_1 _t315;
+      1 96 _t317 = op select_96 _t316 _t313 _t311;
+      1 96 _t318 = const 8483027042304;
+      1 96 _t319 = op xor_96 _t317 _t318;
+      1 96 _t320 = const 46;
+      1 96 _t321 = op lsr_96 _t317 _t320;
+      1 1 _t322 = op extract_low_96_to_1 _t321;
+      1 96 _t323 = op select_96 _t322 _t319 _t317;
+      1 96 _t324 = const 4241513521152;
+      1 96 _t325 = op xor_96 _t323 _t324;
+      1 96 _t326 = const 45;
+      1 96 _t327 = op lsr_96 _t323 _t326;
+      1 1 _t328 = op extract_low_96_to_1 _t327;
+      1 96 _t329 = op select_96 _t328 _t325 _t323;
+      1 96 _t330 = const 2120756760576;
+      1 96 _t331 = op xor_96 _t329 _t330;
+      1 96 _t332 = const 44;
+      1 96 _t333 = op lsr_96 _t329 _t332;
+      1 1 _t334 = op extract_low_96_to_1 _t333;
+      1 96 _t335 = op select_96 _t334 _t331 _t329;
+      1 96 _t336 = const 1060378380288;
+      1 96 _t337 = op xor_96 _t335 _t336;
+      1 96 _t338 = const 43;
+      1 96 _t339 = op lsr_96 _t335 _t338;
+      1 1 _t340 = op extract_low_96_to_1 _t339;
+      1 96 _t341 = op select_96 _t340 _t337 _t335;
+      1 96 _t342 = const 530189190144;
+      1 96 _t343 = op xor_96 _t341 _t342;
+      1 96 _t344 = const 42;
+      1 96 _t345 = op lsr_96 _t341 _t344;
+      1 1 _t346 = op extract_low_96_to_1 _t345;
+      1 96 _t347 = op select_96 _t346 _t343 _t341;
+      1 96 _t348 = const 265094595072;
+      1 96 _t349 = op xor_96 _t347 _t348;
+      1 96 _t350 = const 41;
+      1 96 _t351 = op lsr_96 _t347 _t350;
+      1 1 _t352 = op extract_low_96_to_1 _t351;
+      1 96 _t353 = op select_96 _t352 _t349 _t347;
+      1 96 _t354 = const 132547297536;
+      1 96 _t355 = op xor_96 _t353 _t354;
+      1 96 _t356 = const 40;
+      1 96 _t357 = op lsr_96 _t353 _t356;
+      1 1 _t358 = op extract_low_96_to_1 _t357;
+      1 96 _t359 = op select_96 _t358 _t355 _t353;
+      1 96 _t360 = const 66273648768;
+      1 96 _t361 = op xor_96 _t359 _t360;
+      1 96 _t362 = const 39;
+      1 96 _t363 = op lsr_96 _t359 _t362;
+      1 1 _t364 = op extract_low_96_to_1 _t363;
+      1 96 _t365 = op select_96 _t364 _t361 _t359;
+      1 96 _t366 = const 33136824384;
+      1 96 _t367 = op xor_96 _t365 _t366;
+      1 96 _t368 = const 38;
+      1 96 _t369 = op lsr_96 _t365 _t368;
+      1 1 _t370 = op extract_low_96_to_1 _t369;
+      1 96 _t371 = op select_96 _t370 _t367 _t365;
+      1 96 _t372 = const 16568412192;
+      1 96 _t373 = op xor_96 _t371 _t372;
+      1 96 _t374 = const 37;
+      1 96 _t375 = op lsr_96 _t371 _t374;
+      1 1 _t376 = op extract_low_96_to_1 _t375;
+      1 96 _t377 = op select_96 _t376 _t373 _t371;
+      1 96 _t378 = const 8284206096;
+      1 96 _t379 = op xor_96 _t377 _t378;
+      1 96 _t380 = const 36;
+      1 96 _t381 = op lsr_96 _t377 _t380;
+      1 1 _t382 = op extract_low_96_to_1 _t381;
+      1 96 _t383 = op select_96 _t382 _t379 _t377;
+      1 96 _t384 = const 4142103048;
+      1 96 _t385 = op xor_96 _t383 _t384;
+      1 96 _t386 = const 35;
+      1 96 _t387 = op lsr_96 _t383 _t386;
+      1 1 _t388 = op extract_low_96_to_1 _t387;
+      1 96 _t389 = op select_96 _t388 _t385 _t383;
+      1 96 _t390 = const 2071051524;
+      1 96 _t391 = op xor_96 _t389 _t390;
+      1 96 _t392 = const 34;
+      1 96 _t393 = op lsr_96 _t389 _t392;
+      1 1 _t394 = op extract_low_96_to_1 _t393;
+      1 96 _t395 = op select_96 _t394 _t391 _t389;
+      1 96 _t396 = const 1035525762;
+      1 96 _t397 = op xor_96 _t395 _t396;
+      1 96 _t398 = const 33;
+      1 96 _t399 = op lsr_96 _t395 _t398;
+      1 1 _t400 = op extract_low_96_to_1 _t399;
+      1 96 _t401 = op select_96 _t400 _t397 _t395;
+      1 96 _t402 = const 517762881;
+      1 96 _t403 = op xor_96 _t401 _t402;
+      1 96 _t404 = const 32;
+      1 96 _t405 = op lsr_96 _t401 _t404;
+      1 1 _t406 = op extract_low_96_to_1 _t405;
+      1 96 _t407 = op select_96 _t406 _t403 _t401;
+      1 32 _t408 = op extract_low_96_to_32 _t407;
+      1 32 _t409 = op reverse_32 _t408;
+      1 64 _t410 = read X _t3;
+      1 5 _t411 = const 31;
+      1 1 _t412 = op eq_5 _t3 _t411;
+      1 64 _t413 = op extend_zero_32_to_64 _t409;
+      1 64 _t414 = op select_64 _t412 _t410 _t413;
+      1 = write X _t3 _t414;
+  - name: ABS_32_dp_1src
+    attributes:
+      - datatype.32
+      - instr-class.general
+      - mnemonic.ABS
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 1522540544
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 64 _t3 = read X _t1;
+      1 5 _t4 = const 31;
+      1 1 _t5 = op eq_5 _t1 _t4;
+      1 64 _t6 = const 0;
+      1 64 _t7 = op select_64 _t5 _t6 _t3;
+      1 32 _t8 = op extract_low_64_to_32 _t7;
+      1 32 _t9 = const 0;
+      1 1 _t10 = op slt_32 _t8 _t9;
+      1 32 _t11 = op neg_32 _t8;
+      1 32 _t12 = op select_32 _t10 _t11 _t8;
+      1 64 _t13 = read X _t2;
+      1 5 _t14 = const 31;
+      1 1 _t15 = op eq_5 _t2 _t14;
+      1 64 _t16 = op extend_zero_32_to_64 _t12;
+      1 64 _t17 = op select_64 _t15 _t13 _t16;
+      1 = write X _t2 _t17;
+  - name: ABS_64_dp_1src
+    attributes:
+      - datatype.64
+      - instr-class.general
+      - mnemonic.ABS
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 3670024192
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 64 _t3 = read X _t1;
+      1 5 _t4 = const 31;
+      1 1 _t5 = op eq_5 _t1 _t4;
+      1 64 _t6 = const 0;
+      1 64 _t7 = op select_64 _t5 _t6 _t3;
+      1 64 _t8 = const 0;
+      1 1 _t9 = op slt_64 _t7 _t8;
+      1 64 _t10 = op neg_64 _t7;
+      1 64 _t11 = op select_64 _t9 _t10 _t7;
+      1 64 _t12 = read X _t2;
+      1 5 _t13 = const 31;
+      1 1 _t14 = op eq_5 _t2 _t13;
+      1 64 _t15 = op select_64 _t14 _t12 _t11;
+      1 = write X _t2 _t15;
+  - name: CNT_32_dp_1src
+    attributes:
+      - datatype.32
+      - instr-class.general
+      - mnemonic.CNT
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 1522539520
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 64 _t3 = read X _t1;
+      1 5 _t4 = const 31;
+      1 1 _t5 = op eq_5 _t1 _t4;
+      1 64 _t6 = const 0;
+      1 64 _t7 = op select_64 _t5 _t6 _t3;
+      1 32 _t8 = op extract_low_64_to_32 _t7;
+      1 32 _t9 = op popcnt_32 _t8;
+      1 64 _t10 = read X _t2;
+      1 5 _t11 = const 31;
+      1 1 _t12 = op eq_5 _t2 _t11;
+      1 64 _t13 = op extend_zero_32_to_64 _t9;
+      1 64 _t14 = op select_64 _t12 _t10 _t13;
+      1 = write X _t2 _t14;
+  - name: CNT_64_dp_1src
+    attributes:
+      - datatype.64
+      - instr-class.general
+      - mnemonic.CNT
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 3670023168
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 64 _t3 = read X _t1;
+      1 5 _t4 = const 31;
+      1 1 _t5 = op eq_5 _t1 _t4;
+      1 64 _t6 = const 0;
+      1 64 _t7 = op select_64 _t5 _t6 _t3;
+      1 64 _t8 = op popcnt_64 _t7;
+      1 64 _t9 = read X _t2;
+      1 5 _t10 = const 31;
+      1 1 _t11 = op eq_5 _t2 _t10;
+      1 64 _t12 = op select_64 _t11 _t9 _t8;
+      1 = write X _t2 _t12;
+  - name: CTZ_32_dp_1src
+    attributes:
+      - datatype.32
+      - instr-class.general
+      - mnemonic.CTZ
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 1522538496
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 64 _t3 = read X _t1;
+      1 5 _t4 = const 31;
+      1 1 _t5 = op eq_5 _t1 _t4;
+      1 64 _t6 = const 0;
+      1 64 _t7 = op select_64 _t5 _t6 _t3;
+      1 32 _t8 = op extract_low_64_to_32 _t7;
+      1 32 _t9 = op ctz_32 _t8;
+      1 64 _t10 = read X _t2;
+      1 5 _t11 = const 31;
+      1 1 _t12 = op eq_5 _t2 _t11;
+      1 64 _t13 = op extend_zero_32_to_64 _t9;
+      1 64 _t14 = op select_64 _t12 _t10 _t13;
+      1 = write X _t2 _t14;
+  - name: CTZ_64_dp_1src
+    attributes:
+      - datatype.64
+      - instr-class.general
+      - mnemonic.CTZ
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 3670022144
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 64 _t3 = read X _t1;
+      1 5 _t4 = const 31;
+      1 1 _t5 = op eq_5 _t1 _t4;
+      1 64 _t6 = const 0;
+      1 64 _t7 = op select_64 _t5 _t6 _t3;
+      1 64 _t8 = op ctz_64 _t7;
+      1 64 _t9 = read X _t2;
+      1 5 _t10 = const 31;
+      1 1 _t11 = op eq_5 _t2 _t10;
+      1 64 _t12 = op select_64 _t11 _t9 _t8;
+      1 = write X _t2 _t12;
+  - name: SMAX_32_minmax_imm
+    attributes:
+      - datatype.32
+      - instr-class.general
+      - mnemonic.SMAX
+    operand_sizes:
+      - 8
+      - 5
+      - 5
+    operand_names:
+      - imm8
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 297795584
+      const_mask: 4294705152
+      decode:
+        - decode_field_10_8
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w8_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 8 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 32 _t9 = op extract_low_64_to_32 _t8;
+      1 32 _t10 = op extend_sign_8_to_32 _t1;
+      1 1 _t11 = op sgt_32 _t9 _t10;
+      1 32 _t12 = op select_32 _t11 _t9 _t10;
+      1 64 _t13 = read X _t3;
+      1 5 _t14 = const 31;
+      1 1 _t15 = op eq_5 _t3 _t14;
+      1 64 _t16 = op extend_zero_32_to_64 _t12;
+      1 64 _t17 = op select_64 _t15 _t13 _t16;
+      1 = write X _t3 _t17;
+  - name: SMAX_64_minmax_imm
+    attributes:
+      - datatype.64
+      - instr-class.general
+      - mnemonic.SMAX
+    operand_sizes:
+      - 8
+      - 5
+      - 5
+    operand_names:
+      - imm8
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2445279232
+      const_mask: 4294705152
+      decode:
+        - decode_field_10_8
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w8_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 8 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 64 _t9 = op extend_sign_8_to_64 _t1;
+      1 1 _t10 = op sgt_64 _t8 _t9;
+      1 64 _t11 = op select_64 _t10 _t8 _t9;
+      1 64 _t12 = read X _t3;
+      1 5 _t13 = const 31;
+      1 1 _t14 = op eq_5 _t3 _t13;
+      1 64 _t15 = op select_64 _t14 _t12 _t11;
+      1 = write X _t3 _t15;
+  - name: SMIN_32_minmax_imm
+    attributes:
+      - datatype.32
+      - instr-class.general
+      - mnemonic.SMIN
+    operand_sizes:
+      - 8
+      - 5
+      - 5
+    operand_names:
+      - imm8
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 298319872
+      const_mask: 4294705152
+      decode:
+        - decode_field_10_8
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w8_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 8 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 32 _t9 = op extract_low_64_to_32 _t8;
+      1 32 _t10 = op extend_sign_8_to_32 _t1;
+      1 1 _t11 = op slt_32 _t9 _t10;
+      1 32 _t12 = op select_32 _t11 _t9 _t10;
+      1 64 _t13 = read X _t3;
+      1 5 _t14 = const 31;
+      1 1 _t15 = op eq_5 _t3 _t14;
+      1 64 _t16 = op extend_zero_32_to_64 _t12;
+      1 64 _t17 = op select_64 _t15 _t13 _t16;
+      1 = write X _t3 _t17;
+  - name: SMIN_64_minmax_imm
+    attributes:
+      - datatype.64
+      - instr-class.general
+      - mnemonic.SMIN
+    operand_sizes:
+      - 8
+      - 5
+      - 5
+    operand_names:
+      - imm8
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2445803520
+      const_mask: 4294705152
+      decode:
+        - decode_field_10_8
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w8_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 8 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 64 _t9 = op extend_sign_8_to_64 _t1;
+      1 1 _t10 = op slt_64 _t8 _t9;
+      1 64 _t11 = op select_64 _t10 _t8 _t9;
+      1 64 _t12 = read X _t3;
+      1 5 _t13 = const 31;
+      1 1 _t14 = op eq_5 _t3 _t13;
+      1 64 _t15 = op select_64 _t14 _t12 _t11;
+      1 = write X _t3 _t15;
+  - name: UMAX_32U_minmax_imm
+    attributes:
+      - datatype.32
+      - instr-class.general
+      - mnemonic.UMAX
+    operand_sizes:
+      - 8
+      - 5
+      - 5
+    operand_names:
+      - imm8
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 298057728
+      const_mask: 4294705152
+      decode:
+        - decode_field_10_8
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w8_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 8 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 32 _t9 = op extract_low_64_to_32 _t8;
+      1 32 _t10 = op extend_zero_8_to_32 _t1;
+      1 1 _t11 = op ugt_32 _t9 _t10;
+      1 32 _t12 = op select_32 _t11 _t9 _t10;
+      1 64 _t13 = read X _t3;
+      1 5 _t14 = const 31;
+      1 1 _t15 = op eq_5 _t3 _t14;
+      1 64 _t16 = op extend_zero_32_to_64 _t12;
+      1 64 _t17 = op select_64 _t15 _t13 _t16;
+      1 = write X _t3 _t17;
+  - name: UMAX_64U_minmax_imm
+    attributes:
+      - datatype.64
+      - instr-class.general
+      - mnemonic.UMAX
+    operand_sizes:
+      - 8
+      - 5
+      - 5
+    operand_names:
+      - imm8
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2445541376
+      const_mask: 4294705152
+      decode:
+        - decode_field_10_8
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w8_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 8 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 64 _t9 = op extend_zero_8_to_64 _t1;
+      1 1 _t10 = op ugt_64 _t8 _t9;
+      1 64 _t11 = op select_64 _t10 _t8 _t9;
+      1 64 _t12 = read X _t3;
+      1 5 _t13 = const 31;
+      1 1 _t14 = op eq_5 _t3 _t13;
+      1 64 _t15 = op select_64 _t14 _t12 _t11;
+      1 = write X _t3 _t15;
+  - name: UMIN_32U_minmax_imm
+    attributes:
+      - datatype.32
+      - instr-class.general
+      - mnemonic.UMIN
+    operand_sizes:
+      - 8
+      - 5
+      - 5
+    operand_names:
+      - imm8
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 298582016
+      const_mask: 4294705152
+      decode:
+        - decode_field_10_8
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w8_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 8 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 32 _t9 = op extract_low_64_to_32 _t8;
+      1 32 _t10 = op extend_zero_8_to_32 _t1;
+      1 1 _t11 = op ult_32 _t9 _t10;
+      1 32 _t12 = op select_32 _t11 _t9 _t10;
+      1 64 _t13 = read X _t3;
+      1 5 _t14 = const 31;
+      1 1 _t15 = op eq_5 _t3 _t14;
+      1 64 _t16 = op extend_zero_32_to_64 _t12;
+      1 64 _t17 = op select_64 _t15 _t13 _t16;
+      1 = write X _t3 _t17;
+  - name: UMIN_64U_minmax_imm
+    attributes:
+      - datatype.64
+      - instr-class.general
+      - mnemonic.UMIN
+    operand_sizes:
+      - 8
+      - 5
+      - 5
+    operand_names:
+      - imm8
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2446065664
+      const_mask: 4294705152
+      decode:
+        - decode_field_10_8
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w8_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 8 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 64 _t9 = op extend_zero_8_to_64 _t1;
+      1 1 _t10 = op ult_64 _t8 _t9;
+      1 64 _t11 = op select_64 _t10 _t8 _t9;
+      1 64 _t12 = read X _t3;
+      1 5 _t13 = const 31;
+      1 1 _t14 = op eq_5 _t3 _t13;
+      1 64 _t15 = op select_64 _t14 _t12 _t11;
+      1 = write X _t3 _t15;
+  - name: SMAX_32_dp_2src
+    attributes:
+      - datatype.32
+      - instr-class.general
+      - mnemonic.SMAX
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 448815104
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 32 _t9 = op extract_low_64_to_32 _t8;
+      1 64 _t10 = read X _t1;
+      1 5 _t11 = const 31;
+      1 1 _t12 = op eq_5 _t1 _t11;
+      1 64 _t13 = const 0;
+      1 64 _t14 = op select_64 _t12 _t13 _t10;
+      1 32 _t15 = op extract_low_64_to_32 _t14;
+      1 1 _t16 = op sgt_32 _t9 _t15;
+      1 32 _t17 = op select_32 _t16 _t9 _t15;
+      1 64 _t18 = read X _t3;
+      1 5 _t19 = const 31;
+      1 1 _t20 = op eq_5 _t3 _t19;
+      1 64 _t21 = op extend_zero_32_to_64 _t17;
+      1 64 _t22 = op select_64 _t20 _t18 _t21;
+      1 = write X _t3 _t22;
+  - name: SMAX_64_dp_2src
+    attributes:
+      - datatype.64
+      - instr-class.general
+      - mnemonic.SMAX
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2596298752
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 64 _t9 = read X _t1;
+      1 5 _t10 = const 31;
+      1 1 _t11 = op eq_5 _t1 _t10;
+      1 64 _t12 = const 0;
+      1 64 _t13 = op select_64 _t11 _t12 _t9;
+      1 1 _t14 = op sgt_64 _t8 _t13;
+      1 64 _t15 = op select_64 _t14 _t8 _t13;
+      1 64 _t16 = read X _t3;
+      1 5 _t17 = const 31;
+      1 1 _t18 = op eq_5 _t3 _t17;
+      1 64 _t19 = op select_64 _t18 _t16 _t15;
+      1 = write X _t3 _t19;
+  - name: SMIN_32_dp_2src
+    attributes:
+      - datatype.32
+      - instr-class.general
+      - mnemonic.SMIN
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 448817152
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 32 _t9 = op extract_low_64_to_32 _t8;
+      1 64 _t10 = read X _t1;
+      1 5 _t11 = const 31;
+      1 1 _t12 = op eq_5 _t1 _t11;
+      1 64 _t13 = const 0;
+      1 64 _t14 = op select_64 _t12 _t13 _t10;
+      1 32 _t15 = op extract_low_64_to_32 _t14;
+      1 1 _t16 = op slt_32 _t9 _t15;
+      1 32 _t17 = op select_32 _t16 _t9 _t15;
+      1 64 _t18 = read X _t3;
+      1 5 _t19 = const 31;
+      1 1 _t20 = op eq_5 _t3 _t19;
+      1 64 _t21 = op extend_zero_32_to_64 _t17;
+      1 64 _t22 = op select_64 _t20 _t18 _t21;
+      1 = write X _t3 _t22;
+  - name: SMIN_64_dp_2src
+    attributes:
+      - datatype.64
+      - instr-class.general
+      - mnemonic.SMIN
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2596300800
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 64 _t9 = read X _t1;
+      1 5 _t10 = const 31;
+      1 1 _t11 = op eq_5 _t1 _t10;
+      1 64 _t12 = const 0;
+      1 64 _t13 = op select_64 _t11 _t12 _t9;
+      1 1 _t14 = op slt_64 _t8 _t13;
+      1 64 _t15 = op select_64 _t14 _t8 _t13;
+      1 64 _t16 = read X _t3;
+      1 5 _t17 = const 31;
+      1 1 _t18 = op eq_5 _t3 _t17;
+      1 64 _t19 = op select_64 _t18 _t16 _t15;
+      1 = write X _t3 _t19;
+  - name: UMAX_32_dp_2src
+    attributes:
+      - datatype.32
+      - instr-class.general
+      - mnemonic.UMAX
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 448816128
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 32 _t9 = op extract_low_64_to_32 _t8;
+      1 64 _t10 = read X _t1;
+      1 5 _t11 = const 31;
+      1 1 _t12 = op eq_5 _t1 _t11;
+      1 64 _t13 = const 0;
+      1 64 _t14 = op select_64 _t12 _t13 _t10;
+      1 32 _t15 = op extract_low_64_to_32 _t14;
+      1 1 _t16 = op ugt_32 _t9 _t15;
+      1 32 _t17 = op select_32 _t16 _t9 _t15;
+      1 64 _t18 = read X _t3;
+      1 5 _t19 = const 31;
+      1 1 _t20 = op eq_5 _t3 _t19;
+      1 64 _t21 = op extend_zero_32_to_64 _t17;
+      1 64 _t22 = op select_64 _t20 _t18 _t21;
+      1 = write X _t3 _t22;
+  - name: UMAX_64_dp_2src
+    attributes:
+      - datatype.64
+      - instr-class.general
+      - mnemonic.UMAX
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2596299776
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 64 _t9 = read X _t1;
+      1 5 _t10 = const 31;
+      1 1 _t11 = op eq_5 _t1 _t10;
+      1 64 _t12 = const 0;
+      1 64 _t13 = op select_64 _t11 _t12 _t9;
+      1 1 _t14 = op ugt_64 _t8 _t13;
+      1 64 _t15 = op select_64 _t14 _t8 _t13;
+      1 64 _t16 = read X _t3;
+      1 5 _t17 = const 31;
+      1 1 _t18 = op eq_5 _t3 _t17;
+      1 64 _t19 = op select_64 _t18 _t16 _t15;
+      1 = write X _t3 _t19;
+  - name: UMIN_32_dp_2src
+    attributes:
+      - datatype.32
+      - instr-class.general
+      - mnemonic.UMIN
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 448818176
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 32 _t9 = op extract_low_64_to_32 _t8;
+      1 64 _t10 = read X _t1;
+      1 5 _t11 = const 31;
+      1 1 _t12 = op eq_5 _t1 _t11;
+      1 64 _t13 = const 0;
+      1 64 _t14 = op select_64 _t12 _t13 _t10;
+      1 32 _t15 = op extract_low_64_to_32 _t14;
+      1 1 _t16 = op ult_32 _t9 _t15;
+      1 32 _t17 = op select_32 _t16 _t9 _t15;
+      1 64 _t18 = read X _t3;
+      1 5 _t19 = const 31;
+      1 1 _t20 = op eq_5 _t3 _t19;
+      1 64 _t21 = op extend_zero_32_to_64 _t17;
+      1 64 _t22 = op select_64 _t20 _t18 _t21;
+      1 = write X _t3 _t22;
+  - name: UMIN_64_dp_2src
+    attributes:
+      - datatype.64
+      - instr-class.general
+      - mnemonic.UMIN
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Rm
+      - Rn
+      - Rd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 2596301824
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 64 _t9 = read X _t1;
+      1 5 _t10 = const 31;
+      1 1 _t11 = op eq_5 _t1 _t10;
+      1 64 _t12 = const 0;
+      1 64 _t13 = op select_64 _t11 _t12 _t9;
+      1 1 _t14 = op ult_64 _t8 _t13;
+      1 64 _t15 = op select_64 _t14 _t8 _t13;
+      1 64 _t16 = read X _t3;
+      1 5 _t17 = const 31;
+      1 1 _t18 = op eq_5 _t3 _t17;
+      1 64 _t19 = op select_64 _t18 _t16 _t15;
+      1 = write X _t3 _t19;
+  - name: CFINV_M_pstate
+    attributes:
+      - instr-class.system
+      - mnemonic.CFINV
+    operand_sizes: []
+    operand_names: []
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 3573563423
+      const_mask: 4294967295
+      decode: []
+      encode: encode_none
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 1 _t1 = const 0;
+      1 4 _t2 = read NZCV _t1;
+      1 4 _t3 = const 3;
+      1 4 _t4 = op lsr_4 _t2 _t3;
+      1 1 _t5 = op extract_low_4_to_1 _t4;
+      1 4 _t6 = const 2;
+      1 4 _t7 = op lsr_4 _t2 _t6;
+      1 1 _t8 = op extract_low_4_to_1 _t7;
+      1 4 _t9 = const 1;
+      1 4 _t10 = op lsr_4 _t2 _t9;
+      1 1 _t11 = op extract_low_4_to_1 _t10;
+      1 1 _t12 = op extract_low_4_to_1 _t2;
+      1 1 _t13 = const 0;
+      1 1 _t14 = op not_1 _t11;
+      1 4 _t15 = op extend_zero_1_to_4 _t12;
+      1 4 _t16 = op extend_zero_1_to_4 _t14;
+      1 4 _t17 = const 1;
+      1 4 _t18 = op lsl_4 _t16 _t17;
+      1 4 _t19 = op orr_4 _t15 _t18;
+      1 4 _t20 = op extend_zero_1_to_4 _t8;
+      1 4 _t21 = const 2;
+      1 4 _t22 = op lsl_4 _t20 _t21;
+      1 4 _t23 = op orr_4 _t19 _t22;
+      1 4 _t24 = op extend_zero_1_to_4 _t5;
+      1 4 _t25 = const 3;
+      1 4 _t26 = op lsl_4 _t24 _t25;
+      1 4 _t27 = op orr_4 _t23 _t26;
+      1 1 _t28 = const 0;
+      1 = write NZCV _t28 _t27;
+  - name: AXFLAG_M_pstate
+    attributes:
+      - instr-class.system
+      - mnemonic.AXFLAG
+    operand_sizes: []
+    operand_names: []
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 3573563487
+      const_mask: 4294967295
+      decode: []
+      encode: encode_none
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 1 _t1 = const 0;
+      1 4 _t2 = read NZCV _t1;
+      1 4 _t3 = const 3;
+      1 4 _t4 = op lsr_4 _t2 _t3;
+      1 1 _t5 = op extract_low_4_to_1 _t4;
+      1 4 _t6 = const 2;
+      1 4 _t7 = op lsr_4 _t2 _t6;
+      1 1 _t8 = op extract_low_4_to_1 _t7;
+      1 4 _t9 = const 1;
+      1 4 _t10 = op lsr_4 _t2 _t9;
+      1 1 _t11 = op extract_low_4_to_1 _t10;
+      1 1 _t12 = op extract_low_4_to_1 _t2;
+      1 1 _t13 = const 0;
+      1 1 _t14 = op orr_1 _t8 _t12;
+      1 1 _t15 = op not_1 _t12;
+      1 1 _t16 = op and_1 _t11 _t15;
+      1 4 _t17 = op extend_zero_1_to_4 _t13;
+      1 4 _t18 = op extend_zero_1_to_4 _t16;
+      1 4 _t19 = const 1;
+      1 4 _t20 = op lsl_4 _t18 _t19;
+      1 4 _t21 = op orr_4 _t17 _t20;
+      1 4 _t22 = op extend_zero_1_to_4 _t14;
+      1 4 _t23 = const 2;
+      1 4 _t24 = op lsl_4 _t22 _t23;
+      1 4 _t25 = op orr_4 _t21 _t24;
+      1 4 _t26 = op extend_zero_1_to_4 _t13;
+      1 4 _t27 = const 3;
+      1 4 _t28 = op lsl_4 _t26 _t27;
+      1 4 _t29 = op orr_4 _t25 _t28;
+      1 1 _t30 = const 0;
+      1 = write NZCV _t30 _t29;
+  - name: XAFLAG_M_pstate
+    attributes:
+      - instr-class.system
+      - mnemonic.XAFLAG
+    operand_sizes: []
+    operand_names: []
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 3573563455
+      const_mask: 4294967295
+      decode: []
+      encode: encode_none
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 1 _t1 = const 0;
+      1 4 _t2 = read NZCV _t1;
+      1 4 _t3 = const 3;
+      1 4 _t4 = op lsr_4 _t2 _t3;
+      1 1 _t5 = op extract_low_4_to_1 _t4;
+      1 4 _t6 = const 2;
+      1 4 _t7 = op lsr_4 _t2 _t6;
+      1 1 _t8 = op extract_low_4_to_1 _t7;
+      1 4 _t9 = const 1;
+      1 4 _t10 = op lsr_4 _t2 _t9;
+      1 1 _t11 = op extract_low_4_to_1 _t10;
+      1 1 _t12 = op extract_low_4_to_1 _t2;
+      1 1 _t13 = const 0;
+      1 1 _t14 = op not_1 _t11;
+      1 1 _t15 = op not_1 _t8;
+      1 1 _t16 = op and_1 _t14 _t15;
+      1 1 _t17 = op and_1 _t8 _t11;
+      1 1 _t18 = op orr_1 _t11 _t8;
+      1 1 _t19 = op not_1 _t11;
+      1 1 _t20 = op and_1 _t19 _t8;
+      1 4 _t21 = op extend_zero_1_to_4 _t20;
+      1 4 _t22 = op extend_zero_1_to_4 _t18;
+      1 4 _t23 = const 1;
+      1 4 _t24 = op lsl_4 _t22 _t23;
+      1 4 _t25 = op orr_4 _t21 _t24;
+      1 4 _t26 = op extend_zero_1_to_4 _t17;
+      1 4 _t27 = const 2;
+      1 4 _t28 = op lsl_4 _t26 _t27;
+      1 4 _t29 = op orr_4 _t25 _t28;
+      1 4 _t30 = op extend_zero_1_to_4 _t16;
+      1 4 _t31 = const 3;
+      1 4 _t32 = op lsl_4 _t30 _t31;
+      1 4 _t33 = op orr_4 _t29 _t32;
+      1 1 _t34 = const 0;
+      1 = write NZCV _t34 _t33;
+  - name: RMIF_only_rmif
+    attributes:
+      - instr-class.general
+      - mnemonic.RMIF
+    operand_sizes:
+      - 6
+      - 5
+      - 4
+    operand_names:
+      - imm6
+      - Rn
+      - mask
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 3120563200
+      const_mask: 4292901904
+      decode:
+        - decode_field_15_6
+        - decode_field_5_5
+        - decode_field_0_4
+      encode: encode_15w6_5w5_0w4
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 6 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 4 _t3 = input 2;
+      1 64 _t4 = read X _t2;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t2 _t5;
+      1 64 _t7 = const 0;
+      1 64 _t8 = op select_64 _t6 _t7 _t4;
+      1 64 _t9 = op extend_zero_6_to_64 _t1;
+      1 64 _t10 = op ror_64 _t8 _t9;
+      1 4 _t11 = op extract_low_64_to_4 _t10;
+      1 4 _t12 = op and_4 _t11 _t3;
+      1 1 _t13 = const 0;
+      1 4 _t14 = read NZCV _t13;
+      1 4 _t15 = op not_4 _t3;
+      1 4 _t16 = op and_4 _t14 _t15;
+      1 4 _t17 = op orr_4 _t12 _t16;
+      1 1 _t18 = const 0;
+      1 = write NZCV _t18 _t17;
+  - name: SETF8_only_setf
+    attributes:
+      - instr-class.general
+      - mnemonic.SETF8
+    operand_sizes:
+      - 5
+    operand_names:
+      - Rn
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 973080589
+      const_mask: 4294966303
+      decode:
+        - decode_field_5_5
+      encode: encode_5w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 64 _t2 = read X _t1;
+      1 5 _t3 = const 31;
+      1 1 _t4 = op eq_5 _t1 _t3;
+      1 64 _t5 = const 0;
+      1 64 _t6 = op select_64 _t4 _t5 _t2;
+      1 32 _t7 = op extract_low_64_to_32 _t6;
+      1 1 _t8 = const 0;
+      1 4 _t9 = read NZCV _t8;
+      1 4 _t10 = const 3;
+      1 4 _t11 = op lsr_4 _t9 _t10;
+      1 1 _t12 = op extract_low_4_to_1 _t11;
+      1 4 _t13 = const 2;
+      1 4 _t14 = op lsr_4 _t9 _t13;
+      1 1 _t15 = op extract_low_4_to_1 _t14;
+      1 4 _t16 = const 1;
+      1 4 _t17 = op lsr_4 _t9 _t16;
+      1 1 _t18 = op extract_low_4_to_1 _t17;
+      1 1 _t19 = op extract_low_4_to_1 _t9;
+      1 32 _t20 = const 7;
+      1 32 _t21 = op lsr_32 _t7 _t20;
+      1 1 _t22 = op extract_low_32_to_1 _t21;
+      1 8 _t23 = op extract_low_32_to_8 _t7;
+      1 8 _t24 = const 0;
+      1 1 _t25 = op eq_8 _t23 _t24;
+      1 32 _t26 = const 8;
+      1 32 _t27 = op lsr_32 _t7 _t26;
+      1 1 _t28 = op extract_low_32_to_1 _t27;
+      1 1 _t29 = op xor_1 _t28 _t22;
+      1 4 _t30 = op extend_zero_1_to_4 _t29;
+      1 4 _t31 = op extend_zero_1_to_4 _t18;
+      1 4 _t32 = const 1;
+      1 4 _t33 = op lsl_4 _t31 _t32;
+      1 4 _t34 = op orr_4 _t30 _t33;
+      1 4 _t35 = op extend_zero_1_to_4 _t25;
+      1 4 _t36 = const 2;
+      1 4 _t37 = op lsl_4 _t35 _t36;
+      1 4 _t38 = op orr_4 _t34 _t37;
+      1 4 _t39 = op extend_zero_1_to_4 _t22;
+      1 4 _t40 = const 3;
+      1 4 _t41 = op lsl_4 _t39 _t40;
+      1 4 _t42 = op orr_4 _t38 _t41;
+      1 1 _t43 = const 0;
+      1 = write NZCV _t43 _t42;
+  - name: SETF16_only_setf
+    attributes:
+      - instr-class.general
+      - mnemonic.SETF16
+    operand_sizes:
+      - 5
+    operand_names:
+      - Rn
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 973096973
+      const_mask: 4294966303
+      decode:
+        - decode_field_5_5
+      encode: encode_5w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 64 _t2 = read X _t1;
+      1 5 _t3 = const 31;
+      1 1 _t4 = op eq_5 _t1 _t3;
+      1 64 _t5 = const 0;
+      1 64 _t6 = op select_64 _t4 _t5 _t2;
+      1 32 _t7 = op extract_low_64_to_32 _t6;
+      1 1 _t8 = const 0;
+      1 4 _t9 = read NZCV _t8;
+      1 4 _t10 = const 3;
+      1 4 _t11 = op lsr_4 _t9 _t10;
+      1 1 _t12 = op extract_low_4_to_1 _t11;
+      1 4 _t13 = const 2;
+      1 4 _t14 = op lsr_4 _t9 _t13;
+      1 1 _t15 = op extract_low_4_to_1 _t14;
+      1 4 _t16 = const 1;
+      1 4 _t17 = op lsr_4 _t9 _t16;
+      1 1 _t18 = op extract_low_4_to_1 _t17;
+      1 1 _t19 = op extract_low_4_to_1 _t9;
+      1 32 _t20 = const 15;
+      1 32 _t21 = op lsr_32 _t7 _t20;
+      1 1 _t22 = op extract_low_32_to_1 _t21;
+      1 16 _t23 = op extract_low_32_to_16 _t7;
+      1 16 _t24 = const 0;
+      1 1 _t25 = op eq_16 _t23 _t24;
+      1 32 _t26 = const 16;
+      1 32 _t27 = op lsr_32 _t7 _t26;
+      1 1 _t28 = op extract_low_32_to_1 _t27;
+      1 1 _t29 = op xor_1 _t28 _t22;
+      1 4 _t30 = op extend_zero_1_to_4 _t29;
+      1 4 _t31 = op extend_zero_1_to_4 _t18;
+      1 4 _t32 = const 1;
+      1 4 _t33 = op lsl_4 _t31 _t32;
+      1 4 _t34 = op orr_4 _t30 _t33;
+      1 4 _t35 = op extend_zero_1_to_4 _t25;
+      1 4 _t36 = const 2;
+      1 4 _t37 = op lsl_4 _t35 _t36;
+      1 4 _t38 = op orr_4 _t34 _t37;
+      1 4 _t39 = op extend_zero_1_to_4 _t22;
+      1 4 _t40 = const 3;
+      1 4 _t41 = op lsl_4 _t39 _t40;
+      1 4 _t42 = op orr_4 _t38 _t41;
+      1 1 _t43 = const 0;
+      1 = write NZCV _t43 _t42;
+  - name: BC_only_condbranch
+    attributes:
+      - branch-offset.br19
+      - compare-with.cmp-cond
+      - instr-class.general
+      - mnemonic.BC
+    operand_sizes:
+      - 19
+      - 4
+    operand_names:
+      - imm19
+      - cond
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 1409286160
+      const_mask: 4278190096
+      decode:
+        - decode_field_5_19
+        - decode_field_0_4
+      encode: encode_5w19_0w4
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 19 _t1 = input 0;
+      1 4 _t2 = input 1;
+      1 64 _t3 = env pc_read;
+      1 2 _t4 = const 0;
+      1 21 _t5 = op extend_zero_2_to_21 _t4;
+      1 21 _t6 = op extend_zero_19_to_21 _t1;
+      1 21 _t7 = const 2;
+      1 21 _t8 = op lsl_21 _t6 _t7;
+      1 21 _t9 = op orr_21 _t5 _t8;
+      1 64 _t10 = op extend_sign_21_to_64 _t9;
+      1 64 _t11 = op add_64 _t3 _t10;
+      1 1 _t12 = const 0;
+      1 4 _t13 = read NZCV _t12;
+      1 1 _t14 = op condition_holds _t2 _t13;
+      1 = cond_env pc_write _t14 _t11;
+  - name: HINT_HM_hints
+    attributes:
+      - instr-class.system
+      - mnemonic.HINT
+    operand_sizes:
+      - 4
+      - 3
+    operand_names:
+      - CRm
+      - op2
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 3573751839
+      const_mask: 4294963231
+      decode:
+        - decode_field_8_4
+        - decode_field_5_3
+      encode: encode_8w4_5w3
+      constraint_decode: constraint_decode_HINT_HM_hints
+      constraint_encode: constraint_encode_HINT_HM_hints
+    semantic: |
+      1 4 _t1 = input 0;
+      1 3 _t2 = input 1;
+  - name: MRS_RS_systemmove_NZCV
+    attributes:
+      - instr-class.system
+      - mnemonic.MRS
+    operand_sizes:
+      - 5
+    operand_names:
+      - Rt
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 3577430528
+      const_mask: 4294967264
+      decode:
+        - decode_field_0_5
+      encode: encode_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 1 _t2 = const 0;
+      1 4 _t3 = read NZCV _t2;
+      1 64 _t4 = op extend_zero_4_to_64 _t3;
+      1 64 _t5 = const 28;
+      1 64 _t6 = op lsl_64 _t4 _t5;
+      1 64 _t7 = read X _t1;
+      1 5 _t8 = const 31;
+      1 1 _t9 = op eq_5 _t1 _t8;
+      1 64 _t10 = op select_64 _t9 _t7 _t6;
+      1 = write X _t1 _t10;
+  - name: MRS_RS_systemmove_FPCR
+    attributes:
+      - instr-class.system
+      - mnemonic.MRS
+    operand_sizes:
+      - 5
+    operand_names:
+      - Rt
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 3577431040
+      const_mask: 4294967264
+      decode:
+        - decode_field_0_5
+      encode: encode_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 1 _t2 = const 0;
+      1 32 _t3 = read FPCR _t2;
+      1 64 _t4 = read X _t1;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t1 _t5;
+      1 64 _t7 = op extend_zero_32_to_64 _t3;
+      1 64 _t8 = op select_64 _t6 _t4 _t7;
+      1 = write X _t1 _t8;
+  - name: MRS_RS_systemmove_FPSR
+    attributes:
+      - instr-class.system
+      - mnemonic.MRS
+    operand_sizes:
+      - 5
+    operand_names:
+      - Rt
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 3577431072
+      const_mask: 4294967264
+      decode:
+        - decode_field_0_5
+      encode: encode_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 1 _t2 = const 0;
+      1 32 _t3 = read FPSR _t2;
+      1 64 _t4 = read X _t1;
+      1 5 _t5 = const 31;
+      1 1 _t6 = op eq_5 _t1 _t5;
+      1 64 _t7 = op extend_zero_32_to_64 _t3;
+      1 64 _t8 = op select_64 _t6 _t4 _t7;
+      1 = write X _t1 _t8;
+  - name: MSR_SR_systemmove_NZCV
+    attributes:
+      - instr-class.system
+      - mnemonic.MSR
+      - msr-sysreg-target.register-field
+    operand_sizes:
+      - 5
+    operand_names:
+      - Rt
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 3575333376
+      const_mask: 4294967264
+      decode:
+        - decode_field_0_5
+      encode: encode_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 64 _t2 = read X _t1;
+      1 5 _t3 = const 31;
+      1 1 _t4 = op eq_5 _t1 _t3;
+      1 64 _t5 = const 0;
+      1 64 _t6 = op select_64 _t4 _t5 _t2;
+      1 64 _t7 = const 28;
+      1 64 _t8 = op lsr_64 _t6 _t7;
+      1 4 _t9 = op extract_low_64_to_4 _t8;
+      1 1 _t10 = const 0;
+      1 = write NZCV _t10 _t9;
+  - name: MSR_SR_systemmove_FPCR
+    attributes:
+      - instr-class.system
+      - mnemonic.MSR
+      - msr-sysreg-target.register-field
+    operand_sizes:
+      - 5
+    operand_names:
+      - Rt
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 3575333888
+      const_mask: 4294967264
+      decode:
+        - decode_field_0_5
+      encode: encode_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 64 _t2 = read X _t1;
+      1 5 _t3 = const 31;
+      1 1 _t4 = op eq_5 _t1 _t3;
+      1 64 _t5 = const 0;
+      1 64 _t6 = op select_64 _t4 _t5 _t2;
+      1 32 _t7 = op extract_low_64_to_32 _t6;
+      1 32 _t8 = const 134192896;
+      1 32 _t9 = op and_32 _t7 _t8;
+      1 1 _t10 = const 0;
+      1 = write FPCR _t10 _t9;
+  - name: MSR_SR_systemmove_FPSR
+    attributes:
+      - instr-class.system
+      - mnemonic.MSR
+      - msr-sysreg-target.register-field
+    operand_sizes:
+      - 5
+    operand_names:
+      - Rt
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 3575333920
+      const_mask: 4294967264
+      decode:
+        - decode_field_0_5
+      encode: encode_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 64 _t2 = read X _t1;
+      1 5 _t3 = const 31;
+      1 1 _t4 = op eq_5 _t1 _t3;
+      1 64 _t5 = const 0;
+      1 64 _t6 = op select_64 _t4 _t5 _t2;
+      1 32 _t7 = op extract_low_64_to_32 _t6;
+      1 32 _t8 = const 134217887;
+      1 32 _t9 = op and_32 _t7 _t8;
+      1 1 _t10 = const 0;
+      1 = write FPSR _t10 _t9;

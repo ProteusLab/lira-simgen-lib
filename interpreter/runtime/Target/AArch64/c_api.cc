@@ -42,10 +42,11 @@ private:
 
 } // namespace
 
-// x: 32 registers (x0..x30, sp); nzcv: 4-bit flags; pc: in/out.
+// x: 32 registers (x0..x30, sp); nzcv: 4-bit flags; fpcr, fpsr: FP control
+// and status registers; pc. All in/out.
 // Returns 0 on success, -1 if the word does not decode, -2 on a runtime error.
 extern "C" int lira_a64_exec(uint32_t word, uint64_t *x, uint64_t *nzcv,
-                             uint64_t *pc) try {
+                             uint64_t *fpcr, uint64_t *fpsr, uint64_t *pc) try {
   auto insn = prot::decoder::decode(word);
   if (!insn) {
     return -1;
@@ -55,6 +56,8 @@ extern "C" int lira_a64_exec(uint32_t word, uint64_t *x, uint64_t *nzcv,
     cpu.setX(i, x[i]);
   }
   cpu.m_nzcv = static_cast<uint8_t>(*nzcv);
+  cpu.m_fpcr = static_cast<uint32_t>(*fpcr);
+  cpu.m_fpsr = static_cast<uint32_t>(*fpsr);
   cpu.setPC(*pc);
   HostMemory mem;
   prot::engine::Interpreter engine;
@@ -63,6 +66,8 @@ extern "C" int lira_a64_exec(uint32_t word, uint64_t *x, uint64_t *nzcv,
     x[i] = cpu.getX<uint64_t>(i);
   }
   *nzcv = cpu.m_nzcv;
+  *fpcr = cpu.m_fpcr;
+  *fpsr = cpu.m_fpsr;
   *pc = cpu.getPC();
   return 0;
 } catch (...) {

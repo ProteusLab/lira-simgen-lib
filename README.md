@@ -38,8 +38,10 @@ environment interfaces, `target.cmake` with the IR path and runtime sources)
 and `interpreter/runtime/Target/<ARCH_TARGET>` (ELF loader, syscalls, `main`).
 
 - `RISC_V` — RV32I (`data/RISC_V/RV32I.yaml`).
-- `AArch64` — A64 base integer instructions (`data/AArch64/aarch64.yaml`,
-  generated in the LIRA repository by `archs/aarch64/gen.py`). Linux-style
+- `AArch64` — A64 base integer instructions, MRS/MSR for NZCV/FPCR/FPSR and
+  the scalar v8.x instructions without FP (`data/AArch64/aarch64.yaml`,
+  generated in the LIRA repository by
+  `python -m archs.aarch64.gen --simgen <path>`). Linux-style
   `exit`/`write` syscalls via `SVC`. The `a64-capi` target builds
   `liba64-capi` (single-instruction execution over host memory) used by the
   LIRA AArch64 tests.

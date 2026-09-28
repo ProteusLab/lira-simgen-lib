@@ -49,7 +49,7 @@ class RegFile(IRegFile):
         if len(rf.regs) == 1:
             return f"""\
   // Register file: {rf.name}
-  {ctype} m_{rf.regs[0].name};
+  {ctype} m_{rf.regs[0].name}{{}};
 """
 
         return f"""\

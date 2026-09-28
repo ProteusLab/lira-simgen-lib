@@ -25,3 +25,25 @@ class Flags(RegFile):
 
     def write(self, index, value) -> str:
         return f"{config.SimpleInterpConfig.CPU_VAR}.m_nzcv = {value};"
+
+
+@serves("FPCR")
+class Fpcr(RegFile):
+    """Floating-point Control Register (MRS/MSR FPCR)."""
+
+    def read(self, index, var) -> str:
+        return f"{var} = {config.SimpleInterpConfig.CPU_VAR}.m_fpcr;"
+
+    def write(self, index, value) -> str:
+        return f"{config.SimpleInterpConfig.CPU_VAR}.m_fpcr = {value};"
+
+
+@serves("FPSR")
+class Fpsr(RegFile):
+    """Floating-point Status Register (MRS/MSR FPSR)."""
+
+    def read(self, index, var) -> str:
+        return f"{var} = {config.SimpleInterpConfig.CPU_VAR}.m_fpsr;"
+
+    def write(self, index, value) -> str:
+        return f"{config.SimpleInterpConfig.CPU_VAR}.m_fpsr = {value};"
