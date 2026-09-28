@@ -73,8 +73,9 @@ for _n in (8, 16, 32, 64, 128):
     serves(f"mem_read_{_n}")(ReadMem)
     serves(f"mem_write_{_n}")(WriteMem)
 
-# SVC #imm: Linux-like syscalls
-serves("supervisor_call")(MemRuntimeCall)
+# SVC #imm: Linux-like syscalls; MOPS copy and set
+for _name in ("supervisor_call", "mem_copy", "mem_set"):
+    serves(_name)(MemRuntimeCall)
 # Alignment faults, the exclusive monitor, barriers and hints
 for _name in (
     "check_alignment",

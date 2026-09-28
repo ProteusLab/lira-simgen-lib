@@ -38,6 +38,25 @@ void CPU::supervisor_call(memory::Memory &mem, uint16_t /*imm*/) {
   }
 }
 
+// MOPS (CPY*, SET*): the whole operation happens in the prologue. A copy that
+// may overlap behaves like memmove; a forward-only copy (CPYF*) copies bytes
+// in increasing address order.
+void CPU::mem_copy(memory::Memory &mem, uint64_t dst, uint64_t src, uint64_t n,
+                   bool may_overlap) {
+  if (may_overlap && dst > src && dst - src < n) {
+    for (uint64_t i = n; i-- > 0;)
+      mem.write<uint8_t>(dst + i, mem.read<uint8_t>(src + i));
+    return;
+  }
+  for (uint64_t i = 0; i < n; ++i)
+    mem.write<uint8_t>(dst + i, mem.read<uint8_t>(src + i));
+}
+
+void CPU::mem_set(memory::Memory &mem, uint64_t dst, uint64_t n, uint8_t byte) {
+  for (uint64_t i = 0; i < n; ++i)
+    mem.write<uint8_t>(dst + i, byte);
+}
+
 // Alignment rules of ordered, atomic and exclusive accesses: exclusives must
 // be naturally aligned, the others must not cross a 16-byte boundary
 // (FEAT_LSE2). A violation is an Alignment fault, which ends the program.

@@ -59,7 +59,9 @@ and `interpreter/runtime/Target/<ARCH_TARGET>` (ELF loader, syscalls, `main`).
   generated in the LIRA repository by
   `python -m archs.aarch64.gen --simgen <path>`). Linux-style
   `exit`/`write` syscalls via `SVC`; a misaligned atomic, ordered or
-  exclusive access is an Alignment fault that stops the program. The
+  exclusive access is an Alignment fault that stops the program. MOPS
+  (CPY*/SET*) copy or set the whole block in the prologue; copies that may
+  overlap behave like memmove. The
   `a64-capi` target builds
   `liba64-capi` (single-instruction execution over host memory) used by the
   LIRA AArch64 tests.
