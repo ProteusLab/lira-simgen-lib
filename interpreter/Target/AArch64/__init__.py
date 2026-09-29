@@ -23,5 +23,10 @@ TARGET = TargetInfo(
   bool m_exclValid{false};
   uint64_t m_exclAddr{0};
   uint8_t m_exclSize{0};
+
+  // EL0 system state: TPIDR_EL0 and the PSTATE.{DIT,SSBS} bits
+  uint64_t m_tpidrEl0{0};
+  bool m_dit{false};
+  bool m_ssbs{false};
 """,
 )

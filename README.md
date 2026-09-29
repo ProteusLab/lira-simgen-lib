@@ -52,10 +52,10 @@ environment interfaces, `target.cmake` with the IR path and runtime sources)
 and `interpreter/runtime/Target/<ARCH_TARGET>` (ELF loader, syscalls, `main`).
 
 - `RISC_V` — RV32I (`data/RISC_V/RV32I.yaml`).
-- `AArch64` — A64 base integer instructions, MRS/MSR for NZCV/FPCR/FPSR and
-  the scalar v8.x instructions without FP, including exclusives, LSE atomics,
-  load-acquire/store-release, barriers and hints, scalar floating point
-  and Advanced SIMD (`data/AArch64/aarch64.yaml`,
+- `AArch64` — the whole A64 description of LIRA: base integer, the
+  ARMv8.1-v8.9 extensions, scalar floating point, Advanced SIMD and crypto,
+  MOPS, pointer authentication and system instructions
+  (`data/AArch64/aarch64.yaml`,
   generated in the LIRA repository by
   `python -m archs.aarch64.gen --simgen <path>`). Linux-style
   `exit`/`write` syscalls via `SVC`; a misaligned atomic, ordered or
@@ -64,7 +64,10 @@ and `interpreter/runtime/Target/<ARCH_TARGET>` (ELF loader, syscalls, `main`).
   overlap behave like memmove. Pointer authentication follows a Linux EL0
   process (48-bit VAs, top byte ignored for data pointers only) with an
   implementation-defined keyed hash as the PAC and fixed keys; a failed
-  authentication is a fault (FEAT_FPAC). The
+  authentication is a fault (FEAT_FPAC). System registers and operations
+  are those Linux gives EL0 (TPIDR_EL0, CTR_EL0, DCZID_EL0 with DC ZVA, the
+  counters, DIT, SSBS, cache maintenance, the emulated ID registers); BRK/HLT
+  and anything else Linux does not allow stop the program. The
   `a64-capi` target builds
   `liba64-capi` (single-instruction execution over host memory) used by the
   LIRA AArch64 tests.

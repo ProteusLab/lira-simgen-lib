@@ -73,8 +73,8 @@ for _n in (8, 16, 32, 64, 128):
     serves(f"mem_read_{_n}")(ReadMem)
     serves(f"mem_write_{_n}")(WriteMem)
 
-# SVC #imm: Linux-like syscalls; MOPS copy and set
-for _name in ("supervisor_call", "mem_copy", "mem_set"):
+# SVC #imm: Linux-like syscalls; MOPS copy and set; SYS (DC ZVA)
+for _name in ("supervisor_call", "mem_copy", "mem_set", "sys_op"):
     serves(_name)(MemRuntimeCall)
 # Alignment faults, the exclusive monitor, barriers and hints
 for _name in (
@@ -91,5 +91,13 @@ for _name in (
     "pac_auth",
     "pac_strip",
     "pac_generic",
+    # Exceptions and system registers of a Linux EL0 process
+    "exception_call",
+    "exception_return",
+    "debug_state",
+    "sys_op_read",
+    "sysreg_read",
+    "sysreg_write",
+    "pstate_write",
 ):
     serves(_name)(RuntimeCall)
