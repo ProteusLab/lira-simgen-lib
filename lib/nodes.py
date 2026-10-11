@@ -161,24 +161,25 @@ LANE_INDEX = "lane_i"
 
 class LaneLoop(Node):
     """A lane-wise statement (`op`, `fop`, `env`, `cond_env` on vectors): the
-    scalar node `body` (built on LaneViews) run for every lane."""
+    scalar node `body` (built on LaneViews) run for every lane, in lane order.
+    `count` is the C++ expression of the number of lanes."""
 
-    def __init__(self, outs: List[Variable], lanes: int, body: Node):
+    def __init__(self, outs: List[Variable], count: str, body: Node):
         self.outs: List[Variable] = outs
-        self.lanes: int = lanes
+        self.count: str = count
         self.body: Node = body
 
     def cpp_body(self) -> str:
         defs = "".join(f"{o.definition}\n" for o in self.outs)
-        return f"""{defs}for (std::size_t {LANE_INDEX} = 0; {LANE_INDEX} < {self.lanes}; ++{LANE_INDEX}) {{
+        return f"""{defs}for (std::size_t {LANE_INDEX} = 0, lane_n = {self.count}; {LANE_INDEX} < lane_n; ++{LANE_INDEX}) {{
 {self.body.cpp_body()}
 }}
 """
 
 
 class VecCall(Node):
-    """`out = prot::vec::<helper><decltype(out)>(args...)` (runtime/lira_vec.hh):
-    index, replicate, gather, extract_first, extend_zero."""
+    """`prot::vec::<helper>(out, args...)` (runtime/lira_vec.hh): index,
+    replicate, gather, extract_first, extend_zero."""
 
     def __init__(self, out: Variable, helper: str, args: List[Variable]):
         self.out: Variable = out
@@ -186,21 +187,29 @@ class VecCall(Node):
         self.args: List[Variable] = args
 
     def cpp_body(self) -> str:
-        args = ", ".join(a.name for a in self.args)
+        args = "".join(f", {a.name}" for a in self.args)
         return f"""{self.out.definition}
-{self.out} = prot::vec::{self.helper}<decltype({self.out})>({args});
+prot::vec::{self.helper}({self.out}{args});
 """
 
 
-class Fold(Node):
-    """`fold op state vectors...`: state = op(state, lanes...) over the lanes."""
+class ArenaScope(Node):
+    """The scalable values of an instruction are released when it ends."""
 
-    def __init__(self, out: Variable, op: Operation, state: Variable, vectors: List[Variable], lanes: int):
+    def cpp_body(self) -> str:
+        return "prot::vec::ArenaScope arena_scope;\n"
+
+
+class Fold(Node):
+    """`fold op state vectors...`: state = op(state, lanes...) over the lanes
+    (`count`: the C++ expression of their number)."""
+
+    def __init__(self, out: Variable, op: Operation, state: Variable, vectors: List[Variable], count: str):
         self.out: Variable = out
         self.op: Operation = op
         self.state: Variable = state
         self.vectors: List[Variable] = vectors
-        self.lanes: int = lanes
+        self.count: str = count
 
     def cpp_body(self) -> str:
         from lib.cpp.func import Func
@@ -210,48 +219,40 @@ class Fold(Node):
         call = Func.from_op(self.op)(args)
         return f"""{self.out.definition}
 {self.out} = {self.state};
-for (std::size_t {i} = 0; {i} < {self.lanes}; ++{i}) {{
+for (std::size_t {i} = 0, lane_n = {self.count}; {i} < lane_n; ++{i}) {{
   {self.out} = {call};
 }}
 """
 
 
 class ReadRegLanes(Node):
-    """`read` of a register as lanes of `lane_width` bits."""
+    """`read` of a register as lanes of `lane_width` bits (rendered by the
+    register-file model)."""
 
-    def __init__(self, rf, index: Variable, var: Variable, reg_type: str, lane_width: int):
+    def __init__(self, rf, index: Variable, var: Variable, lane_width: int):
         self.rf = rf
         self.index: Variable = index
         self.var: Variable = var
-        self.reg_type: str = reg_type
         self.lane_width: int = lane_width
 
     def cpp_body(self) -> str:
         return f"""{self.var.definition}
-{{
-  {self.reg_type} reg{{0}};
-  {self.rf.read(self.index, "reg")}
-  {self.var} = prot::vec::unpack<decltype({self.var}), {self.lane_width}>(reg);
-}}
+{self.rf.read_lanes(self.index, self.var, self.lane_width)}
 """
 
 
 class WriteRegLanes(Node):
-    """`write` of lanes of `lane_width` bits to a register."""
+    """`write` of lanes of `lane_width` bits to a register (rendered by the
+    register-file model)."""
 
-    def __init__(self, rf, index: Variable, value: Variable, reg_type: str, lane_width: int):
+    def __init__(self, rf, index: Variable, value: Variable, lane_width: int):
         self.rf = rf
         self.index: Variable = index
         self.value: Variable = value
-        self.reg_type: str = reg_type
         self.lane_width: int = lane_width
 
     def cpp_body(self) -> str:
-        return f"""{{
-  const {self.reg_type} reg = prot::vec::pack<{self.reg_type}, {self.lane_width}>({self.value});
-  {self.rf.write(self.index, "reg")}
-}}
-"""
+        return self.rf.write_lanes(self.index, self.value, self.lane_width)
 
 
 class Return(Node):

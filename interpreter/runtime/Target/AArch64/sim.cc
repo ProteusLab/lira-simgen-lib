@@ -22,6 +22,7 @@ int main(int argc, const char *argv[]) try {
   prot::isa::Addr stackTop = kDefaultStack;
   bool propagateExit = false;
   bool quiet = false;
+  std::size_t vq = 1;
 
   CLI::App app{"Generated LIRA AArch64 simulator (interpreter)"};
 
@@ -31,6 +32,10 @@ int main(int argc, const char *argv[]) try {
   app.add_flag("--propagate-exit", propagateExit,
                "Propagate exit code from guest to host");
   app.add_flag("-q,--quiet", quiet, "Do not print statistics");
+  app.add_option("--vq", vq,
+                 "SVE vector length in quadwords (VL = 128 * VQ bits); SME "
+                 "needs a power of two")
+      ->check(CLI::Range(1, 16));
 
   CLI11_PARSE(app, argc, argv);
 
@@ -44,6 +49,7 @@ int main(int argc, const char *argv[]) try {
                           std::move(engine)};
     hart.load(loader);
     hart.cpu().setX(kSPRegister, stackTop);
+    hart.cpu().m_vq = vq;
     return hart;
   }();
 

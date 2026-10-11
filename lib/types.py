@@ -1,5 +1,7 @@
 # lira-simgen-lib/simgen/types.py
 
+from typing import ClassVar, Dict, Optional
+
 
 class OperandType:
     _STANDARD_WIDTHS = [1, 8, 16, 32, 64, 128, 256]
@@ -17,8 +19,11 @@ class OperandType:
         return next(s for s in cls._STANDARD_WIDTHS if s >= width)
 
     @classmethod
-    def vector(cls, width: int, lanes: int) -> str:
-        """C++ type of a value of `lanes` lanes (runtime/lira_vec.hh)."""
+    def vector(cls, width: int, lanes: int, mult: Optional[str] = None) -> str:
+        """C++ type of a value of `lanes` lanes, times `mult` for a scalable
+        shape (runtime/lira_vec.hh)."""
+        if mult is not None:
+            return f"prot::vec::Scalable<{cls.gen(width)}>"
         if lanes == 1:
             return cls.gen(width)
         return f"std::array<{cls.gen(width)}, {lanes}>"
@@ -43,3 +48,21 @@ class OperandType:
         if len(widths) == 1:
             return cls.gen(widths[0])
         return f"std::tuple<{', '.join(cls.gen(w) for w in widths)}>"
+
+
+class Lanes:
+    """Lane counts of shapes. A scalable shape (`lanes_mult`) has lanes_base
+    times its multiplier lanes; the target gives each multiplier as a C++
+    expression evaluated at run time."""
+
+    multipliers: ClassVar[Dict[str, str]] = {}
+
+    @classmethod
+    def count(cls, lanes: int, mult: Optional[str] = None) -> str:
+        """C++ expression of the number of lanes."""
+        if mult is None:
+            return str(lanes)
+        expr = cls.multipliers.get(mult)
+        if expr is None:
+            raise ValueError(f"the target has no lane multiplier '{mult}'")
+        return f"({expr})" if lanes == 1 else f"{lanes} * ({expr})"

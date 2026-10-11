@@ -22,6 +22,25 @@ class IRegFile(ABC):
             f"{type(self).__name__} does not provide register writes"
         )
 
+    def read_lanes(self, index, var, lane_width: int) -> str:
+        """`var` = the register as lanes of `lane_width` bits (lane 0 in the
+        low bits): read the whole register and split it."""
+        reg_type = OperandType.gen(self.rf.reg_size.lanes_base)
+        return f"""{{
+  {reg_type} reg{{0}};
+  {self.read(index, "reg")}
+  prot::vec::unpack<{lane_width}>({var}, reg);
+}}"""
+
+    def write_lanes(self, index, value, lane_width: int) -> str:
+        """Write the lanes of `value` (`lane_width` bits each) as the register."""
+        reg_type = OperandType.gen(self.rf.reg_size.lanes_base)
+        return f"""{{
+  const {reg_type} reg = prot::vec::pack<{reg_type}, {lane_width}>({value});
+  {self.write(index, "reg")}
+}}
+"""
+
     def wiring(self, reg) -> str:
         return ""
 

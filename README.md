@@ -38,8 +38,14 @@ copy of the description's table.
 
 A value of a vector statement (shape N > 1) is a `std::array` of N lanes;
 lane-wise statements (`op`, `fop`, `env`, `cond_env`) become loops over the
-lanes, and `index`, `replicate`, `gather`, `extract_first`, `extend_zero`,
-`fold` and shaped register accesses use `interpreter/runtime/lira_vec.hh`.
+lanes, in lane order, and `index`, `replicate`, `gather`, `extract_first`,
+`extend_zero`, `fold` and shaped register accesses use
+`interpreter/runtime/lira_vec.hh`.
+
+A scalable shape (`<n>VQ`, `<n>VQVQ`) has n times its multiplier lanes, a
+value the target computes at run time (`TargetInfo.lane_multipliers`). Such a
+value is a `prot::vec::Scalable` whose storage comes from a per-thread arena,
+released when the instruction ends, so large values stay off the stack.
 
 `fop` statements call the standard float operations of
 `interpreter/runtime/lira_fp.hh`, a C++ port of LIRA's reference
@@ -67,10 +73,11 @@ and `interpreter/runtime/Target/<ARCH_TARGET>` (ELF loader, syscalls, `main`).
   authentication is a fault (FEAT_FPAC). System registers and operations
   are those Linux gives EL0 (TPIDR_EL0, CTR_EL0, DCZID_EL0 with DC ZVA, the
   counters, DIT, SSBS, cache maintenance, the emulated ID registers); BRK/HLT
-  and anything else Linux does not allow stop the program. The
-  `a64-capi` target builds
-  `liba64-capi` (single-instruction execution over host memory) used by the
-  LIRA AArch64 tests.
+  and anything else Linux does not allow stop the program. The SVE vector
+  length is a run-time parameter: `--vq N` (VL = 128 * N bits, 1..16,
+  default 1; SME needs a power of two). The `a64-capi` target builds
+  `liba64-capi` (single-instruction execution over host memory, at a given
+  VQ with `lira_a64_run`) used by the LIRA AArch64 tests.
 
 ```bash
 cmake --preset Default-Release -DARCH_TARGET=AArch64

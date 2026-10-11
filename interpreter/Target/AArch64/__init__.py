@@ -28,5 +28,11 @@ TARGET = TargetInfo(
   uint64_t m_tpidrEl0{0};
   bool m_dit{false};
   bool m_ssbs{false};
+
+  // SVE vector length in quadwords (VL / 128, 1..16), fixed for a run; the
+  // streaming vector length is the same
+  std::size_t m_vq{1};
 """,
+    # `<n>VQ` lanes (SVE vectors and predicates) and `<n>VQVQ` (the ZA array)
+    lane_multipliers={"VQ": "cpu.m_vq", "VQVQ": "cpu.m_vq * cpu.m_vq"},
 )

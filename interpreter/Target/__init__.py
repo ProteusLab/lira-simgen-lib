@@ -1,7 +1,8 @@
 # lira-simgen-lib/interpreter/Target/__init__.py
 
 import importlib
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import Dict
 
 
 @dataclass
@@ -12,6 +13,9 @@ class TargetInfo:
     addr_type: str = "uint32_t"
     # Extra members pasted into the generated `CPU` class
     cpu_members: str = ""
+    # Scalable shapes: lanes_mult -> C++ expression of the multiplier (run
+    # time; `cpu` is the CPU state)
+    lane_multipliers: Dict[str, str] = field(default_factory=dict)
 
 
 def load(name: str) -> TargetInfo:

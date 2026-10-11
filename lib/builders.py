@@ -22,6 +22,7 @@ from lira.ir_std import (
 from lib.config import IConfig
 from lib.nodes import (
     LANE_INDEX,
+    ArenaScope,
     CondEnv as CondEnvNode,
     ConstDef,
     EnvExec,
@@ -41,7 +42,7 @@ from lib.nodes import (
 
 
 from lib.operand import Constant, LaneView, Register, Variable
-from lib.types import OperandType
+from lib.types import Lanes
 
 
 class IBuilder(ABC):
@@ -114,10 +115,10 @@ class CodeBuilder(IBuilder, metaclass=BuilderMeta):
             self.nodes.append(Return([self._outputs[i] for i in sorted(self._outputs)]))
         return self.nodes
 
-    def variable(self, name: str, width: int, lanes: int = 1) -> Variable:
+    def variable(self, name: str, width: int, lanes: int = 1, mult: Optional[str] = None) -> Variable:
         if name in self._vars:
             return self._vars[name]
-        var = Variable(name, width, lanes)
+        var = Variable(name, width, lanes, mult)
         self._vars[name] = var
         return var
 
@@ -127,9 +128,18 @@ class CodeBuilder(IBuilder, metaclass=BuilderMeta):
     def outputs(self, stmt: Statement) -> List[Variable]:
         """The output variables of a statement, with its shape."""
         return [
-            self.variable(name, width, stmt.shape.lanes_base)
+            self.variable(name, width, stmt.shape.lanes_base, stmt.shape.lanes_mult)
             for name, width in zip(stmt.outputs, stmt.outputs_types)
         ]
+
+    @staticmethod
+    def is_vector(stmt: Statement) -> bool:
+        return stmt.shape.lanes_base > 1 or stmt.shape.lanes_mult is not None
+
+    @staticmethod
+    def lane_count(stmt: Statement) -> str:
+        """C++ expression of the number of lanes of the statement's shape."""
+        return Lanes.count(stmt.shape.lanes_base, stmt.shape.lanes_mult)
 
     def lanewise(self, stmt: Statement, make_node) -> None:
         """Add the node `make_node(outs, inputs)` for a statement that works
@@ -137,13 +147,12 @@ class CodeBuilder(IBuilder, metaclass=BuilderMeta):
         vector."""
         outs = self.outputs(stmt)
         inputs = [self.resolve_var(a) for a in stmt.inputs]
-        lanes = stmt.shape.lanes_base
-        if lanes == 1:
+        if not self.is_vector(stmt):
             self.nodes.append(make_node(outs, inputs))
             return
         view = lambda v: LaneView(v, LANE_INDEX)  # noqa: E731
         body = make_node([view(o) for o in outs], [view(i) for i in inputs])
-        self.nodes.append(LaneLoop(outs, lanes, body))
+        self.nodes.append(LaneLoop(outs, self.lane_count(stmt), body))
 
     @serves(StmtInput.kind)
     class InputHandler(StmtHandler):
@@ -166,6 +175,7 @@ class CodeBuilder(IBuilder, metaclass=BuilderMeta):
                 self.stmt.outputs_types[0],
                 self.stmt.specifier,
                 self.stmt.shape.lanes_base,
+                self.stmt.shape.lanes_mult,
             )
             builder._vars[out] = const
             builder.nodes.append(ConstDef(const))
@@ -217,7 +227,7 @@ class CodeBuilder(IBuilder, metaclass=BuilderMeta):
             state, *vectors = [builder.resolve_var(a) for a in self.stmt.inputs]
             op = builder.index.op[self.stmt.specifier]
             builder.nodes.append(
-                Fold(out, op, state, vectors, self.stmt.shape.lanes_base)
+                Fold(out, op, state, vectors, builder.lane_count(self.stmt))
             )
 
     @serves(StmtOutput.kind)
@@ -318,7 +328,10 @@ class SemanticBuilder(CodeBuilder):
         self._scan()
         self._build_regs()
         self._bind_reg_files()
-        return super().build(seq)
+        nodes = super().build(seq)
+        if any(getattr(v, "mult", None) is not None for v in self._vars.values()):
+            nodes.insert(0, ArenaScope())
+        return nodes
 
     @serves(StmtInput.kind)
     class Noop(StmtHandler):
@@ -335,11 +348,10 @@ class SemanticBuilder(CodeBuilder):
             index = builder.resolve_var(self.stmt.inputs[0])
             var = builder.outputs(self.stmt)[0]
             rf = builder.reg_files[self.stmt.specifier]
-            if var.lanes == 1:
+            if not var.is_vector:
                 builder.nodes.append(ReadReg(rf, index, var))
                 return
-            reg_type = OperandType.gen(builder.reg_width(self.stmt.specifier))
-            builder.nodes.append(ReadRegLanes(rf, index, var, reg_type, var.width))
+            builder.nodes.append(ReadRegLanes(rf, index, var, var.width))
 
     @serves(StmtWrite.kind)
     class Write(StmtHandler):
@@ -348,13 +360,11 @@ class SemanticBuilder(CodeBuilder):
             index = builder.resolve_var(self.stmt.inputs[0])
             val = builder.resolve_var(self.stmt.inputs[1])
             rf = builder.reg_files[self.stmt.specifier]
-            lanes = self.stmt.shape.lanes_base
-            if lanes == 1:
+            if not builder.is_vector(self.stmt):
                 builder.nodes.append(WriteReg(rf, index, val))
                 return
-            width = builder.reg_width(self.stmt.specifier)
-            reg_type = OperandType.gen(width)
-            builder.nodes.append(WriteRegLanes(rf, index, val, reg_type, width // lanes))
+            lane_width = builder.reg_width(self.stmt.specifier) // self.stmt.shape.lanes_base
+            builder.nodes.append(WriteRegLanes(rf, index, val, lane_width))
 
     @serves(StmtEnv.kind)
     class Env(StmtHandler):

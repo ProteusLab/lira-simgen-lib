@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Dict, Set, Tuple
 
 from lib.config import IConfig
+from lib.types import Lanes
 
 from interpreter.emitter import InterpEmitter
 from interpreter.templates import Templates
@@ -17,6 +18,7 @@ class SimpleInterpConfig(IConfig):
         from interpreter.Target import TargetInfo
 
         self.target = target if target is not None else TargetInfo()
+        Lanes.multipliers = dict(self.target.lane_multipliers)
         self.templates = Templates(self.templates_dir)
         self.emitter = InterpEmitter(self)
 
