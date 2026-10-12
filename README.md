@@ -70,9 +70,9 @@ environment interfaces, `target.cmake` with the IR path and runtime sources)
 and `interpreter/runtime/Target/<ARCH_TARGET>` (ELF loader, syscalls, `main`).
 
 - `RISC_V` — RV32I (`data/RISC_V/RV32I.yaml`).
-- `AArch64` — the A64 description of LIRA: base integer, the
+- `AArch64` — the whole A64 description of LIRA: base integer, the
   ARMv8.1-v8.9 extensions, scalar floating point, Advanced SIMD and crypto,
-  MOPS, pointer authentication, system instructions and SVE
+  MOPS, pointer authentication, system instructions, SVE and SME
   (`data/AArch64/aarch64.yaml`,
   generated in the LIRA repository by
   `python -m archs.aarch64.gen --simgen <path>`). Linux-style
@@ -90,8 +90,12 @@ and `interpreter/runtime/Target/<ARCH_TARGET>` (ELF loader, syscalls, `main`).
   default 1; SME needs a power of two). V is the low 128 bits of Z: an
   Advanced SIMD or FP write zeroes the rest. The non-fault reads of the SVE
   first-fault and non-fault loads (`mem_read_nf_*`) never fault: an access
-  outside memory is not performed (`Memory::readNoFault`). The `a64-capi`
-  target builds
+  outside memory is not performed (`Memory::readNoFault`). SME runs as the
+  description models it: the streaming vector length is VL, ZA is one
+  register of VL / 8 rows; SMSTART, SMSTOP and MSR SVCR need nothing from the
+  runtime. An SME instruction without streaming mode or ZA takes an SME
+  access trap: SIGILL for a Linux process, which stops the program. The
+  `a64-capi` target builds
   `liba64-capi` (single-instruction execution over host memory, at a given
   VQ with `lira_a64_run`) used by the LIRA AArch64 tests.
 

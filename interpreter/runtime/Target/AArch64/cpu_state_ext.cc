@@ -1,3 +1,4 @@
+#include "aarch64_exceptions.hh"
 #include "cpu_state.hh"
 
 #include <cstdint>
@@ -305,6 +306,10 @@ void CPU::pstate_write(uint8_t op1, uint8_t op2, uint8_t crm) {
   else
     undefined(fmt::format("MSR (immediate) op1={} op2={}", op1, op2));
 }
+
+// SME instructions trap (SIGILL) without streaming mode or ZA; SMSTART and
+// MSR SVCR enable them without the runtime
+void CPU::sme_access_trap(uint8_t type) { throw SmeAccessTrap{type}; }
 
 // A single PE with sequentially consistent memory: barriers, hints, wait
 // instructions and BTI landing pads have no effect.

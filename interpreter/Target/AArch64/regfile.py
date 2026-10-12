@@ -82,6 +82,17 @@ class Fpcr(RegFile):
         return f"{config.SimpleInterpConfig.CPU_VAR}.m_fpcr = {value};"
 
 
+@serves("SVCR")
+class Svcr(RegFile):
+    """Streaming Vector Control Register: bit 0 PSTATE.SM, bit 1 PSTATE.ZA."""
+
+    def read(self, index, var) -> str:
+        return f"{var} = {config.SimpleInterpConfig.CPU_VAR}.m_svcr;"
+
+    def write(self, index, value) -> str:
+        return f"{config.SimpleInterpConfig.CPU_VAR}.m_svcr = {value};"
+
+
 @serves("FPSR")
 class Fpsr(RegFile):
     """Floating-point Status Register (MRS/MSR FPSR)."""

@@ -102,5 +102,7 @@ for _name in (
     "sysreg_read",
     "sysreg_write",
     "pstate_write",
+    # SME instruction without streaming mode or ZA
+    "sme_access_trap",
 ):
     serves(_name)(RuntimeCall)

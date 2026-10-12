@@ -2,6 +2,7 @@
 // state. Guest addresses are host addresses (no translation), so tests can
 // point base registers at their own buffers.
 
+#include "aarch64_exceptions.hh"
 #include "cpu_state.hh"
 #include "decoder.hh"
 #include "memory.hh"
@@ -119,12 +120,14 @@ struct LiraA64State {
   uint8_t p[16][32];  // p0..p15: the first VL / 64 bytes
   uint8_t ffr[32];    // the first VL / 64 bytes
   uint8_t za[65536];  // ZA: VL / 8 rows of VL / 8 bytes, row 0 first
+  uint64_t trap;      // out: the type of an SME access trap (-3)
 };
 
 // Run one word on `st` (in/out) at VQ `vq` (1..16). With mem_size > 0 any
 // memory access outside [mem_base, mem_base + mem_size) is a fault.
 // Returns 0 on success, -1 if the word does not decode, -2 on a fault or other
-// runtime error, -4 for an invalid VQ.
+// runtime error, -3 on an SME access trap (its type in st->trap), -4 for an
+// invalid VQ.
 extern "C" int lira_a64_run(uint32_t word, unsigned vq, LiraA64State *st, uint64_t mem_base,
                             uint64_t mem_size) try {
   if (vq < 1 || vq > 16)
@@ -150,6 +153,12 @@ extern "C" int lira_a64_run(uint32_t word, unsigned vq, LiraA64State *st, uint64
 #ifdef LIRA_RF_FFR
   std::memcpy(cpu.regFFR(0), st->ffr, pbytes);
 #endif
+#ifdef LIRA_RF_ZA
+  std::memcpy(cpu.regZA(0), st->za, zbytes * zbytes);
+#endif
+#ifdef LIRA_RF_SVCR
+  cpu.m_svcr = st->svcr;
+#endif
   cpu.m_nzcv = static_cast<uint8_t>(st->nzcv);
   cpu.m_fpcr = static_cast<uint32_t>(st->fpcr);
   cpu.m_fpsr = static_cast<uint32_t>(st->fpsr);
@@ -172,11 +181,20 @@ extern "C" int lira_a64_run(uint32_t word, unsigned vq, LiraA64State *st, uint64
 #ifdef LIRA_RF_FFR
   std::memcpy(st->ffr, cpu.regFFR(0), pbytes);
 #endif
+#ifdef LIRA_RF_ZA
+  std::memcpy(st->za, cpu.regZA(0), zbytes * zbytes);
+#endif
+#ifdef LIRA_RF_SVCR
+  st->svcr = cpu.m_svcr;
+#endif
   st->nzcv = cpu.m_nzcv;
   st->fpcr = cpu.m_fpcr;
   st->fpsr = cpu.m_fpsr;
   st->pc = cpu.getPC();
   return 0;
+} catch (const prot::state::SmeAccessTrap &trap) {
+  st->trap = trap.type();
+  return -3;
 } catch (...) {
   return -2;
 }
