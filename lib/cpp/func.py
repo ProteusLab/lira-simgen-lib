@@ -31,7 +31,7 @@ def _masked(body: str, width: int, ret: str) -> str:
 def _table_body(table, op) -> str:
     """out = table[a] (an index outside the table gives 0)."""
     t = OperandType.gen(op.outputs[0])
-    values = ", ".join(str(v) for v in table.values)
+    values = ", ".join(OperandType.literal(v, op.outputs[0]) for v in table.values)
     return f"""  static constexpr {t} table[{len(table.values)}] = {{{values}}};
   return a < {len(table.values)} ? table[a] : 0;"""
 

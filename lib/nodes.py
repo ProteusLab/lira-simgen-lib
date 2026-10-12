@@ -64,7 +64,7 @@ class Fop(Node):
     state of the CPU; the flags it raises are accumulated."""
 
     def __init__(self, outs: List[Variable], fop, args: List[Variable], fpu):
-        from lira.float_ops import parse
+        from lira.float_ops import modifiers_of, parse
 
         self.outs: List[Variable] = outs
         self.fop = fop
@@ -72,6 +72,8 @@ class Fop(Node):
         # FPU model of the generator (wraps the call with the FPU state)
         self.fpu = fpu
         _, self.n, self.m = parse(fop)
+        # `default_nan`, `no_flags` (LIRA float_ops.MODIFIERS)
+        self.modifiers: List[str] = modifiers_of(fop)
 
     def cpp_body(self) -> str:
         widths = f"{self.n}" if self.m is None else f"{self.n}, {self.m}"
@@ -82,7 +84,7 @@ class Fop(Node):
             raise ValueError(f"{self.fop.name}: several outputs are not supported")
         if self.fpu is None:
             raise ValueError(f"{self.fop.name}: the generator has no FPU model")
-        return f"{defs}\n{self.fpu.wrap(f'{self.outs[0]} = {call};')}"
+        return f"{defs}\n{self.fpu.wrap(f'{self.outs[0]} = {call};', self.modifiers)}"
 
 
 class ReadReg(Node):

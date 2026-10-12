@@ -29,15 +29,19 @@ UPDATE_FN = "fpuUpdate"
 class FpuModel:
     """How `fop` statements reach the FPU state in the generated interpreter."""
 
-    def wrap(self, assignment: str) -> str:
-        """Run `assignment` (a call using `fpu`) with the CPU's FPU state."""
+    def wrap(self, assignment: str, modifiers=()) -> str:
+        """Run `assignment` (a call using `fpu`) with the CPU's FPU state; the
+        modifier `default_nan` computes as if the default-NaN control were
+        set, `no_flags` drops the flags raised."""
         cpu = config.SimpleInterpConfig.CPU_VAR
-        return f"""{{
-  prot::fp::State fpu = {STATE_FN}({cpu});
-  {assignment}
-  {UPDATE_FN}({cpu}, fpu);
-}}
-"""
+        lines = [f"prot::fp::State fpu = {STATE_FN}({cpu});"]
+        if "default_nan" in modifiers:
+            lines.append("fpu.dn = true;")
+        lines.append(assignment)
+        if "no_flags" not in modifiers:
+            lines.append(f"{UPDATE_FN}({cpu}, fpu);")
+        body = "\n".join(f"  {line}" for line in lines)
+        return f"{{\n{body}\n}}\n"
 
     @staticmethod
     def helpers(arch: Arch, reg_files) -> Optional[str]:

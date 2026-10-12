@@ -59,8 +59,11 @@ An environment function with several outputs returns a `std::tuple`.
 `fop` statements call the standard float operations of
 `interpreter/runtime/lira_fp.hh`, a C++ port of LIRA's reference
 (`lira/float_ops.py`: Arm FPU rules, exact rounding in every mode, FZ/FZ16/DN
-and exception flags). The FPU controls and flags live in the registers the
-description marks with `fpu.*` attributes.
+and exception flags; the Arm reciprocal estimates and steps, FMULX, FRECPX,
+FSCALE, the half-precision and BFloat16 dot products). The FPU controls and
+flags live in the registers the description marks with `fpu.*` attributes;
+an operation with the modifier `default_nan` computes as if the default-NaN
+control were set, one with `no_flags` leaves the flags unchanged.
 
 Each target lives in `interpreter/Target/<ARCH_TARGET>` (register-file models,
 environment interfaces, `target.cmake` with the IR path and runtime sources)
@@ -69,8 +72,7 @@ and `interpreter/runtime/Target/<ARCH_TARGET>` (ELF loader, syscalls, `main`).
 - `RISC_V` — RV32I (`data/RISC_V/RV32I.yaml`).
 - `AArch64` — the A64 description of LIRA: base integer, the
   ARMv8.1-v8.9 extensions, scalar floating point, Advanced SIMD and crypto,
-  MOPS, pointer authentication, system instructions and SVE but for the
-  instructions with float operations not ported yet
+  MOPS, pointer authentication, system instructions and SVE
   (`data/AArch64/aarch64.yaml`,
   generated in the LIRA repository by
   `python -m archs.aarch64.gen --simgen <path>`). Linux-style

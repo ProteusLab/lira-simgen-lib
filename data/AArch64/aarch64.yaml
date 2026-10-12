@@ -211999,6 +211999,198 @@ instructions:
       2VQ 3 _t6 = const 7;
       2VQ 64 _t7 = fop fmul_64 _t4 _t5 _t6;
       2VQ = write Z _t3 _t7;
+  - name: frecps_z_zz_H
+    attributes:
+      - instr-class.sve
+      - mnemonic.FRECPS
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Zm
+      - Zn
+      - Zd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 1698699264
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      8VQ 16 _t4 = read Z _t2;
+      8VQ 16 _t5 = read Z _t1;
+      8VQ 3 _t6 = const 7;
+      8VQ 16 _t7 = fop frecps_16 _t4 _t5 _t6;
+      8VQ = write Z _t3 _t7;
+  - name: frecps_z_zz_S
+    attributes:
+      - instr-class.sve
+      - mnemonic.FRECPS
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Zm
+      - Zn
+      - Zd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 1702893568
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      4VQ 32 _t4 = read Z _t2;
+      4VQ 32 _t5 = read Z _t1;
+      4VQ 3 _t6 = const 7;
+      4VQ 32 _t7 = fop frecps_32 _t4 _t5 _t6;
+      4VQ = write Z _t3 _t7;
+  - name: frecps_z_zz_D
+    attributes:
+      - instr-class.sve
+      - mnemonic.FRECPS
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Zm
+      - Zn
+      - Zd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 1707087872
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      2VQ 64 _t4 = read Z _t2;
+      2VQ 64 _t5 = read Z _t1;
+      2VQ 3 _t6 = const 7;
+      2VQ 64 _t7 = fop frecps_64 _t4 _t5 _t6;
+      2VQ = write Z _t3 _t7;
+  - name: frsqrts_z_zz_H
+    attributes:
+      - instr-class.sve
+      - mnemonic.FRSQRTS
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Zm
+      - Zn
+      - Zd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 1698700288
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      8VQ 16 _t4 = read Z _t2;
+      8VQ 16 _t5 = read Z _t1;
+      8VQ 3 _t6 = const 7;
+      8VQ 16 _t7 = fop frsqrts_16 _t4 _t5 _t6;
+      8VQ = write Z _t3 _t7;
+  - name: frsqrts_z_zz_S
+    attributes:
+      - instr-class.sve
+      - mnemonic.FRSQRTS
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Zm
+      - Zn
+      - Zd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 1702894592
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      4VQ 32 _t4 = read Z _t2;
+      4VQ 32 _t5 = read Z _t1;
+      4VQ 3 _t6 = const 7;
+      4VQ 32 _t7 = fop frsqrts_32 _t4 _t5 _t6;
+      4VQ = write Z _t3 _t7;
+  - name: frsqrts_z_zz_D
+    attributes:
+      - instr-class.sve
+      - mnemonic.FRSQRTS
+    operand_sizes:
+      - 5
+      - 5
+      - 5
+    operand_names:
+      - Zm
+      - Zn
+      - Zd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 1707088896
+      const_mask: 4292934656
+      decode:
+        - decode_field_16_5
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_16w5_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      2VQ 64 _t4 = read Z _t2;
+      2VQ 64 _t5 = read Z _t1;
+      2VQ 3 _t6 = const 7;
+      2VQ 64 _t7 = fop frsqrts_64 _t4 _t5 _t6;
+      2VQ = write Z _t3 _t7;
   - name: fabd_z_p_zz_H
     attributes:
       - instr-class.sve
@@ -213046,6 +213238,123 @@ instructions:
       2VQ 64 _t13 = fop fmul_64 _t8 _t11 _t12;
       2VQ 64 _t14 = op select_64 _t5 _t13 _t6;
       2VQ = write Z _t3 _t14;
+  - name: fmulx_z_p_zz_H
+    attributes:
+      - instr-class.sve
+      - mnemonic.FMULX
+    operand_sizes:
+      - 3
+      - 5
+      - 5
+    operand_names:
+      - Pg
+      - Zm
+      - Zdn
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 1699381248
+      const_mask: 4294959104
+      decode:
+        - decode_field_10_3
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w3_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 3 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      8VQ 2 _t4 = read P _t1;
+      8VQ 1 _t5 = op extract_low_2_to_1 _t4;
+      8VQ 16 _t6 = read Z _t3;
+      8VQ 16 _t7 = const 15360;
+      8VQ 16 _t8 = op select_16 _t5 _t6 _t7;
+      8VQ 16 _t9 = read Z _t2;
+      8VQ 16 _t10 = const 15360;
+      8VQ 16 _t11 = op select_16 _t5 _t9 _t10;
+      8VQ 3 _t12 = const 7;
+      8VQ 16 _t13 = fop fmulx_16 _t8 _t11 _t12;
+      8VQ 16 _t14 = op select_16 _t5 _t13 _t6;
+      8VQ = write Z _t3 _t14;
+  - name: fmulx_z_p_zz_S
+    attributes:
+      - instr-class.sve
+      - mnemonic.FMULX
+    operand_sizes:
+      - 3
+      - 5
+      - 5
+    operand_names:
+      - Pg
+      - Zm
+      - Zdn
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 1703575552
+      const_mask: 4294959104
+      decode:
+        - decode_field_10_3
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w3_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 3 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      4VQ 4 _t4 = read P _t1;
+      4VQ 1 _t5 = op extract_low_4_to_1 _t4;
+      4VQ 32 _t6 = read Z _t3;
+      4VQ 32 _t7 = const 1065353216;
+      4VQ 32 _t8 = op select_32 _t5 _t6 _t7;
+      4VQ 32 _t9 = read Z _t2;
+      4VQ 32 _t10 = const 1065353216;
+      4VQ 32 _t11 = op select_32 _t5 _t9 _t10;
+      4VQ 3 _t12 = const 7;
+      4VQ 32 _t13 = fop fmulx_32 _t8 _t11 _t12;
+      4VQ 32 _t14 = op select_32 _t5 _t13 _t6;
+      4VQ = write Z _t3 _t14;
+  - name: fmulx_z_p_zz_D
+    attributes:
+      - instr-class.sve
+      - mnemonic.FMULX
+    operand_sizes:
+      - 3
+      - 5
+      - 5
+    operand_names:
+      - Pg
+      - Zm
+      - Zdn
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 1707769856
+      const_mask: 4294959104
+      decode:
+        - decode_field_10_3
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w3_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 3 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      2VQ 8 _t4 = read P _t1;
+      2VQ 1 _t5 = op extract_low_8_to_1 _t4;
+      2VQ 64 _t6 = read Z _t3;
+      2VQ 64 _t7 = const 4607182418800017408;
+      2VQ 64 _t8 = op select_64 _t5 _t6 _t7;
+      2VQ 64 _t9 = read Z _t2;
+      2VQ 64 _t10 = const 4607182418800017408;
+      2VQ 64 _t11 = op select_64 _t5 _t9 _t10;
+      2VQ 3 _t12 = const 7;
+      2VQ 64 _t13 = fop fmulx_64 _t8 _t11 _t12;
+      2VQ 64 _t14 = op select_64 _t5 _t13 _t6;
+      2VQ = write Z _t3 _t14;
   - name: fsub_z_p_zz_H
     attributes:
       - instr-class.sve
@@ -213278,6 +213587,123 @@ instructions:
       2VQ 64 _t11 = op select_64 _t5 _t9 _t10;
       2VQ 3 _t12 = const 7;
       2VQ 64 _t13 = fop fsub_64 _t11 _t8 _t12;
+      2VQ 64 _t14 = op select_64 _t5 _t13 _t6;
+      2VQ = write Z _t3 _t14;
+  - name: fscale_z_p_zz_H
+    attributes:
+      - instr-class.sve
+      - mnemonic.FSCALE
+    operand_sizes:
+      - 3
+      - 5
+      - 5
+    operand_names:
+      - Pg
+      - Zm
+      - Zdn
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 1699315712
+      const_mask: 4294959104
+      decode:
+        - decode_field_10_3
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w3_5w5_0w5
+      constraint_decode: constraint_decode_fadd_z_zz_H
+      constraint_encode: constraint_encode_fadd_z_p_zz_H
+    semantic: |
+      1 3 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      8VQ 2 _t4 = read P _t1;
+      8VQ 1 _t5 = op extract_low_2_to_1 _t4;
+      8VQ 16 _t6 = read Z _t3;
+      8VQ 16 _t7 = read Z _t2;
+      8VQ 16 _t8 = const 0;
+      8VQ 16 _t9 = op select_16 _t5 _t7 _t8;
+      8VQ 16 _t10 = const 15360;
+      8VQ 16 _t11 = op select_16 _t5 _t6 _t10;
+      8VQ 3 _t12 = const 7;
+      8VQ 16 _t13 = fop fscale_16 _t11 _t9 _t12;
+      8VQ 16 _t14 = op select_16 _t5 _t13 _t6;
+      8VQ = write Z _t3 _t14;
+  - name: fscale_z_p_zz_S
+    attributes:
+      - instr-class.sve
+      - mnemonic.FSCALE
+    operand_sizes:
+      - 3
+      - 5
+      - 5
+    operand_names:
+      - Pg
+      - Zm
+      - Zdn
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 1703510016
+      const_mask: 4294959104
+      decode:
+        - decode_field_10_3
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w3_5w5_0w5
+      constraint_decode: constraint_decode_fadd_z_zz_S
+      constraint_encode: constraint_encode_fadd_z_p_zz_S
+    semantic: |
+      1 3 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      4VQ 4 _t4 = read P _t1;
+      4VQ 1 _t5 = op extract_low_4_to_1 _t4;
+      4VQ 32 _t6 = read Z _t3;
+      4VQ 32 _t7 = read Z _t2;
+      4VQ 32 _t8 = const 0;
+      4VQ 32 _t9 = op select_32 _t5 _t7 _t8;
+      4VQ 32 _t10 = const 1065353216;
+      4VQ 32 _t11 = op select_32 _t5 _t6 _t10;
+      4VQ 3 _t12 = const 7;
+      4VQ 32 _t13 = fop fscale_32 _t11 _t9 _t12;
+      4VQ 32 _t14 = op select_32 _t5 _t13 _t6;
+      4VQ = write Z _t3 _t14;
+  - name: fscale_z_p_zz_D
+    attributes:
+      - instr-class.sve
+      - mnemonic.FSCALE
+    operand_sizes:
+      - 3
+      - 5
+      - 5
+    operand_names:
+      - Pg
+      - Zm
+      - Zdn
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 1707704320
+      const_mask: 4294959104
+      decode:
+        - decode_field_10_3
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w3_5w5_0w5
+      constraint_decode: constraint_decode_fadd_z_zz_D
+      constraint_encode: constraint_encode_fadd_z_p_zz_D
+    semantic: |
+      1 3 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      2VQ 8 _t4 = read P _t1;
+      2VQ 1 _t5 = op extract_low_8_to_1 _t4;
+      2VQ 64 _t6 = read Z _t3;
+      2VQ 64 _t7 = read Z _t2;
+      2VQ 64 _t8 = const 0;
+      2VQ 64 _t9 = op select_64 _t5 _t7 _t8;
+      2VQ 64 _t10 = const 4607182418800017408;
+      2VQ 64 _t11 = op select_64 _t5 _t6 _t10;
+      2VQ 3 _t12 = const 7;
+      2VQ 64 _t13 = fop fscale_64 _t11 _t9 _t12;
       2VQ 64 _t14 = op select_64 _t5 _t13 _t6;
       2VQ = write Z _t3 _t14;
   - name: fadd_z_p_zs_H
@@ -214606,6 +215032,117 @@ instructions:
       2VQ 64 _t11 = read Z _t3;
       2VQ 64 _t12 = op select_64 _t5 _t10 _t11;
       2VQ = write Z _t3 _t12;
+  - name: frecpx_z_p_z_m_H
+    attributes:
+      - instr-class.sve
+      - mnemonic.FRECPX
+      - sve-predication.merging
+    operand_sizes:
+      - 3
+      - 5
+      - 5
+    operand_names:
+      - Pg
+      - Zn
+      - Zd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 1699520512
+      const_mask: 4294959104
+      decode:
+        - decode_field_10_3
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w3_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 3 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      8VQ 2 _t4 = read P _t1;
+      8VQ 1 _t5 = op extract_low_2_to_1 _t4;
+      8VQ 16 _t6 = read Z _t2;
+      8VQ 16 _t7 = const 15360;
+      8VQ 16 _t8 = op select_16 _t5 _t6 _t7;
+      8VQ 16 _t9 = fop frecpx_16 _t8;
+      8VQ 16 _t10 = read Z _t3;
+      8VQ 16 _t11 = op select_16 _t5 _t9 _t10;
+      8VQ = write Z _t3 _t11;
+  - name: frecpx_z_p_z_m_S
+    attributes:
+      - instr-class.sve
+      - mnemonic.FRECPX
+      - sve-predication.merging
+    operand_sizes:
+      - 3
+      - 5
+      - 5
+    operand_names:
+      - Pg
+      - Zn
+      - Zd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 1703714816
+      const_mask: 4294959104
+      decode:
+        - decode_field_10_3
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w3_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 3 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      4VQ 4 _t4 = read P _t1;
+      4VQ 1 _t5 = op extract_low_4_to_1 _t4;
+      4VQ 32 _t6 = read Z _t2;
+      4VQ 32 _t7 = const 1065353216;
+      4VQ 32 _t8 = op select_32 _t5 _t6 _t7;
+      4VQ 32 _t9 = fop frecpx_32 _t8;
+      4VQ 32 _t10 = read Z _t3;
+      4VQ 32 _t11 = op select_32 _t5 _t9 _t10;
+      4VQ = write Z _t3 _t11;
+  - name: frecpx_z_p_z_m_D
+    attributes:
+      - instr-class.sve
+      - mnemonic.FRECPX
+      - sve-predication.merging
+    operand_sizes:
+      - 3
+      - 5
+      - 5
+    operand_names:
+      - Pg
+      - Zn
+      - Zd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 1707909120
+      const_mask: 4294959104
+      decode:
+        - decode_field_10_3
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_10w3_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 3 _t1 = input 0;
+      1 5 _t2 = input 1;
+      1 5 _t3 = input 2;
+      2VQ 8 _t4 = read P _t1;
+      2VQ 1 _t5 = op extract_low_8_to_1 _t4;
+      2VQ 64 _t6 = read Z _t2;
+      2VQ 64 _t7 = const 4607182418800017408;
+      2VQ 64 _t8 = op select_64 _t5 _t6 _t7;
+      2VQ 64 _t9 = fop frecpx_64 _t8;
+      2VQ 64 _t10 = read Z _t3;
+      2VQ 64 _t11 = op select_64 _t5 _t9 _t10;
+      2VQ = write Z _t3 _t11;
   - name: frintx_z_p_z_m_H
     attributes:
       - instr-class.sve
@@ -215404,6 +215941,162 @@ instructions:
       2VQ 64 _t11 = read Z _t3;
       2VQ 64 _t12 = op select_64 _t5 _t10 _t11;
       2VQ = write Z _t3 _t12;
+  - name: frecpe_z_z_H
+    attributes:
+      - instr-class.sve
+      - mnemonic.FRECPE
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Zn
+      - Zd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 1699622912
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      8VQ 16 _t3 = read Z _t1;
+      8VQ 16 _t4 = fop frecpe_16 _t3;
+      8VQ = write Z _t2 _t4;
+  - name: frecpe_z_z_S
+    attributes:
+      - instr-class.sve
+      - mnemonic.FRECPE
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Zn
+      - Zd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 1703817216
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      4VQ 32 _t3 = read Z _t1;
+      4VQ 32 _t4 = fop frecpe_32 _t3;
+      4VQ = write Z _t2 _t4;
+  - name: frecpe_z_z_D
+    attributes:
+      - instr-class.sve
+      - mnemonic.FRECPE
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Zn
+      - Zd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 1708011520
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      2VQ 64 _t3 = read Z _t1;
+      2VQ 64 _t4 = fop frecpe_64 _t3;
+      2VQ = write Z _t2 _t4;
+  - name: frsqrte_z_z_H
+    attributes:
+      - instr-class.sve
+      - mnemonic.FRSQRTE
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Zn
+      - Zd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 1699688448
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      8VQ 16 _t3 = read Z _t1;
+      8VQ 16 _t4 = fop frsqrte_16 _t3;
+      8VQ = write Z _t2 _t4;
+  - name: frsqrte_z_z_S
+    attributes:
+      - instr-class.sve
+      - mnemonic.FRSQRTE
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Zn
+      - Zd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 1703882752
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      4VQ 32 _t3 = read Z _t1;
+      4VQ 32 _t4 = fop frsqrte_32 _t3;
+      4VQ = write Z _t2 _t4;
+  - name: frsqrte_z_z_D
+    attributes:
+      - instr-class.sve
+      - mnemonic.FRSQRTE
+    operand_sizes:
+      - 5
+      - 5
+    operand_names:
+      - Zn
+      - Zd
+    encoding:
+      encoded_size: 32
+      const_encoding_part: 1708077056
+      const_mask: 4294966272
+      decode:
+        - decode_field_5_5
+        - decode_field_0_5
+      encode: encode_5w5_0w5
+      constraint_decode: ''
+      constraint_encode: ''
+    semantic: |
+      1 5 _t1 = input 0;
+      1 5 _t2 = input 1;
+      2VQ 64 _t3 = read Z _t1;
+      2VQ 64 _t4 = fop frsqrte_64 _t3;
+      2VQ = write Z _t2 _t4;
   - name: fcvt_z_p_z_h2s
     attributes:
       - instr-class.sve
@@ -225842,6 +226535,177 @@ float_operations:
     outputs:
       - 64
     semantic_base: uitof
+  - name: frecps_16
+    attributes: []
+    inputs:
+      - 16
+      - 16
+      - 3
+    outputs:
+      - 16
+    semantic_base: frecps
+  - name: frecps_32
+    attributes: []
+    inputs:
+      - 32
+      - 32
+      - 3
+    outputs:
+      - 32
+    semantic_base: frecps
+  - name: frecps_64
+    attributes: []
+    inputs:
+      - 64
+      - 64
+      - 3
+    outputs:
+      - 64
+    semantic_base: frecps
+  - name: frsqrts_16
+    attributes: []
+    inputs:
+      - 16
+      - 16
+      - 3
+    outputs:
+      - 16
+    semantic_base: frsqrts
+  - name: frsqrts_32
+    attributes: []
+    inputs:
+      - 32
+      - 32
+      - 3
+    outputs:
+      - 32
+    semantic_base: frsqrts
+  - name: frsqrts_64
+    attributes: []
+    inputs:
+      - 64
+      - 64
+      - 3
+    outputs:
+      - 64
+    semantic_base: frsqrts
+  - name: fmulx_16
+    attributes: []
+    inputs:
+      - 16
+      - 16
+      - 3
+    outputs:
+      - 16
+    semantic_base: fmulx
+  - name: fmulx_32
+    attributes: []
+    inputs:
+      - 32
+      - 32
+      - 3
+    outputs:
+      - 32
+    semantic_base: fmulx
+  - name: fmulx_64
+    attributes: []
+    inputs:
+      - 64
+      - 64
+      - 3
+    outputs:
+      - 64
+    semantic_base: fmulx
+  - name: fscale_16
+    attributes: []
+    inputs:
+      - 16
+      - 16
+      - 3
+    outputs:
+      - 16
+    semantic_base: fscale
+  - name: fscale_32
+    attributes: []
+    inputs:
+      - 32
+      - 32
+      - 3
+    outputs:
+      - 32
+    semantic_base: fscale
+  - name: fscale_64
+    attributes: []
+    inputs:
+      - 64
+      - 64
+      - 3
+    outputs:
+      - 64
+    semantic_base: fscale
+  - name: frecpx_16
+    attributes: []
+    inputs:
+      - 16
+    outputs:
+      - 16
+    semantic_base: frecpx
+  - name: frecpx_32
+    attributes: []
+    inputs:
+      - 32
+    outputs:
+      - 32
+    semantic_base: frecpx
+  - name: frecpx_64
+    attributes: []
+    inputs:
+      - 64
+    outputs:
+      - 64
+    semantic_base: frecpx
+  - name: frecpe_16
+    attributes: []
+    inputs:
+      - 16
+    outputs:
+      - 16
+    semantic_base: frecpe
+  - name: frecpe_32
+    attributes: []
+    inputs:
+      - 32
+    outputs:
+      - 32
+    semantic_base: frecpe
+  - name: frecpe_64
+    attributes: []
+    inputs:
+      - 64
+    outputs:
+      - 64
+    semantic_base: frecpe
+  - name: frsqrte_16
+    attributes: []
+    inputs:
+      - 16
+    outputs:
+      - 16
+    semantic_base: frsqrte
+  - name: frsqrte_32
+    attributes: []
+    inputs:
+      - 32
+    outputs:
+      - 32
+    semantic_base: frsqrte
+  - name: frsqrte_64
+    attributes: []
+    inputs:
+      - 64
+    outputs:
+      - 64
+    semantic_base: frsqrte
   - name: ftosi_16_to_16
     attributes: []
     inputs:

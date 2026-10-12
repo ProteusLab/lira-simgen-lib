@@ -2,7 +2,8 @@
 // docs/float_ops.md). A C++ port of the executable reference
 // python/lira/float_ops.py: the Arm FP library (FPUnpack, FPRound,
 // FPProcessNaN(s), FPAdd, FPMulAdd, ...) with FPCR.AH = FIZ = NEP = 0, no
-// trapped exceptions and IEEE half precision.
+// trapped exceptions and IEEE half precision; the reciprocal estimates are the
+// 8-bit ones (no FEAT_RPRES), BFloat16 dot products have no FEAT_EBF16.
 //
 // Values are IEEE binary16/32/64 bit patterns in uint64_t. Arithmetic is exact
 // on a 128-bit mantissa: every operand has at most 106 significant bits (a
@@ -712,6 +713,345 @@ uint64_t sitof(State &st, uint64_t a, uint64_t fbits, unsigned rm) {
 template <unsigned N, unsigned M>
 uint64_t uitof(State &st, uint64_t a, uint64_t fbits, unsigned rm) {
   return detail::itof<N, M>(st, a, static_cast<unsigned>(fbits), rm, true);
+}
+
+// -- Arm-specific operations: FMULX, reciprocal (square root) estimates and
+// steps, FRECPX, FSCALE, dot products --------------------------------------
+
+namespace detail {
+
+// A positive constant (1 + frac / 2^F) * 2^exp_off
+template <unsigned N> constexpr uint64_t constant(int exp_off, uint64_t frac) {
+  constexpr int E = Format<N>::E, F = Format<N>::F;
+  return static_cast<uint64_t>((1 << (E - 1)) - 1 + exp_off) << F | frac;
+}
+
+template <unsigned N> constexpr uint64_t two() { return constant<N>(1, 0); }
+template <unsigned N> constexpr uint64_t one_and_half() {
+  return constant<N>(0, uint64_t{1} << (Format<N>::F - 1));
+}
+
+template <unsigned N> constexpr uint64_t max_normal(bool sign) { return inf<N>(sign) - 1; }
+
+// floor(log2 |v|) of a non-zero value
+inline int ilog2(const Exact &v) { return msb(v.mant) + v.exp; }
+
+// FPRecipStepFused (2 - a * b) and FPRSqrtStepFused ((3 - a * b) / 2), fused
+template <unsigned N>
+uint64_t step_fused(State &st, uint64_t a, uint64_t b, unsigned rm, bool rsqrt) {
+  const unsigned rounding = mode(rm, st);
+  a ^= uint64_t{1} << (N - 1); // FPNeg(op1)
+  const Unpacked u1 = unpack<N>(a, st), u2 = unpack<N>(b, st);
+  uint64_t result;
+  if (process_nans<N>({u1.type, u2.type}, {a, b}, st, result))
+    return result;
+  const bool inf1 = u1.type == kInfinity, inf2 = u2.type == kInfinity;
+  const bool z1 = u1.type == kZero, z2 = u2.type == kZero;
+  if ((inf1 && z2) || (z1 && inf2))
+    return rsqrt ? one_and_half<N>() : two<N>();
+  if (inf1 || inf2)
+    return inf<N>(u1.sign != u2.sign);
+  Exact r = add(Exact{false, rsqrt ? u128{3} : u128{2}, 0}, mul(u1.value, u2.value));
+  if (rsqrt)
+    r.exp -= 1;
+  if (r.mant == 0)
+    return zero<N>(exact_zero_sign(rounding));
+  return round<N>(r, st, rounding);
+}
+
+// The fraction of `a` widened to 52 bits and its biased exponent
+template <unsigned N> void fraction52(uint64_t a, uint64_t &fraction, int &exp) {
+  constexpr int E = Format<N>::E, F = Format<N>::F;
+  fraction = (a & ((uint64_t{1} << F) - 1)) << (52 - F);
+  exp = static_cast<int>((a >> F) & ((uint64_t{1} << E) - 1));
+}
+
+constexpr uint64_t kMask52 = (uint64_t{1} << 52) - 1;
+
+// RecipEstimate / RecipSqrtEstimate (8-bit, FEAT_RPRES not used)
+inline uint64_t recip_estimate(uint64_t a) {
+  a = a * 2 + 1;
+  return ((uint64_t{1} << 19) / a + 1) / 2;
+}
+
+inline uint64_t rsqrt_estimate(uint64_t a) {
+  if (a < 256) {
+    a = a * 2 + 1;
+  } else {
+    a = ((a >> 1) << 1) + 1;
+    a = a * 2;
+  }
+  uint64_t b = 512;
+  while (a * (b + 1) * (b + 1) < (uint64_t{1} << 28))
+    ++b;
+  return (b + 1) / 2;
+}
+
+// BFloat16 arithmetic of BFDotAdd (FEAT_EBF16 not implemented): BFUnpack
+// flushes denormals to zero and makes every NaN quiet
+inline Unpacked bf_unpack(uint64_t bits, unsigned n) {
+  const bool sign = (bits >> (n - 1)) & 1;
+  const uint64_t exp = (bits >> (n - 9)) & 0xFF;
+  const uint64_t frac = (bits & ((uint64_t{1} << (n - 9)) - 1)) << (32 - n);
+  Unpacked u{kZero, sign, {sign, 0, 0}};
+  if (exp == 0)
+    return u;
+  if (exp == 0xFF) {
+    u.type = frac == 0 ? kInfinity : kQNaN;
+    return u;
+  }
+  u.type = kNonzero;
+  u.value = {sign, frac | (uint64_t{1} << 23), static_cast<int>(exp) - 127 - 23};
+  return u;
+}
+
+// BFRound: round to odd into single precision; tiny values flush to zero
+inline uint64_t bf_round(const Exact &v) {
+  const int exponent = ilog2(v);
+  if (exponent < -126)
+    return zero<32>(v.sign);
+  const int shift = msb(v.mant) - 23;
+  u128 int_mant = shift > 0 ? v.mant >> shift : v.mant << -shift;
+  if (shift > 0 && (v.mant & mask(shift)) != 0 && !(int_mant & 1))
+    ++int_mant;
+  const int biased = exponent + 127;
+  if (biased >= 255)
+    return inf<32>(v.sign);
+  return zero<32>(v.sign) | static_cast<uint64_t>(biased) << 23 |
+         (static_cast<uint64_t>(int_mant) & ((uint64_t{1} << 23) - 1));
+}
+
+inline uint64_t bf_mulh(uint64_t a, uint64_t b) {
+  const Unpacked u1 = bf_unpack(a, 16), u2 = bf_unpack(b, 16);
+  if (u1.type == kQNaN || u2.type == kQNaN)
+    return default_nan<32>();
+  const bool inf1 = u1.type == kInfinity, inf2 = u2.type == kInfinity;
+  const bool z1 = u1.type == kZero, z2 = u2.type == kZero;
+  if ((inf1 && z2) || (z1 && inf2))
+    return default_nan<32>();
+  if (inf1 || inf2)
+    return inf<32>(u1.sign != u2.sign);
+  if (z1 || z2)
+    return zero<32>(u1.sign != u2.sign);
+  return bf_round(mul(u1.value, u2.value));
+}
+
+inline uint64_t bf_add(uint64_t a, uint64_t b) {
+  const Unpacked u1 = bf_unpack(a, 32), u2 = bf_unpack(b, 32);
+  if (u1.type == kQNaN || u2.type == kQNaN)
+    return default_nan<32>();
+  const bool inf1 = u1.type == kInfinity, inf2 = u2.type == kInfinity;
+  if (inf1 && inf2 && u1.sign != u2.sign)
+    return default_nan<32>();
+  if ((inf1 && !u1.sign) || (inf2 && !u2.sign))
+    return inf<32>(false);
+  if (inf1 || inf2)
+    return inf<32>(true);
+  if (u1.type == kZero && u2.type == kZero && u1.sign == u2.sign)
+    return zero<32>(u1.sign);
+  const Exact r = add(u1.value, u2.value);
+  return r.mant == 0 ? zero<32>(false) : bf_round(r);
+}
+
+// FPConvertNaN: a half-precision NaN as a quiet single-precision NaN with the
+// same payload
+inline uint64_t convert_nan_16_to_32(uint64_t op) {
+  const uint64_t payload = (op & ((uint64_t{1} << 9) - 1)) << (22 - 9);
+  return inf<32>((op >> 15) & 1) | (uint64_t{1} << 22) | payload;
+}
+
+// FPDot (half precision): a1 * a2 + b1 * b2 rounded once to single precision
+inline uint64_t fpdot(State &st, uint64_t a1, uint64_t b1, uint64_t a2, uint64_t b2,
+                      unsigned rounding) {
+  const uint64_t ops[4] = {a1, b1, a2, b2};
+  Unpacked un[4];
+  for (unsigned i = 0; i < 4; ++i)
+    un[i] = unpack<16>(ops[i], st);
+  for (Type kind : {kSNaN, kQNaN}) // FPProcessNaNs4
+    for (unsigned i = 0; i < 4; ++i)
+      if (un[i].type == kind)
+        return convert_nan_16_to_32(process_nan<16>(kind, ops[i], st));
+  const Unpacked &u1a = un[0], &u1b = un[1], &u2a = un[2], &u2b = un[3];
+  const bool sign_a = u1a.sign != u2a.sign, sign_b = u1b.sign != u2b.sign;
+  const bool inf_a = u1a.type == kInfinity || u2a.type == kInfinity;
+  const bool inf_b = u1b.type == kInfinity || u2b.type == kInfinity;
+  const bool zero_a = u1a.type == kZero || u2a.type == kZero;
+  const bool zero_b = u1b.type == kZero || u2b.type == kZero;
+  if ((inf_a && zero_a) || (inf_b && zero_b) || (inf_a && inf_b && sign_a != sign_b)) {
+    st.flags |= kInvalid;
+    return default_nan<32>();
+  }
+  if ((inf_a && !sign_a) || (inf_b && !sign_b))
+    return inf<32>(false);
+  if (inf_a || inf_b)
+    return inf<32>(true);
+  if (zero_a && zero_b && sign_a == sign_b)
+    return zero<32>(sign_a);
+  const Exact r = add(mul(u1a.value, u2a.value), mul(u1b.value, u2b.value));
+  if (r.mant == 0)
+    return zero<32>(exact_zero_sign(rounding));
+  return round<32>(r, st, rounding);
+}
+
+} // namespace detail
+
+// FPMulX: like fmul, but infinity * zero is +/-2.0
+template <unsigned N> uint64_t fmulx(State &st, uint64_t a, uint64_t b, unsigned rm) {
+  using namespace detail;
+  const Unpacked u1 = unpack<N>(a, st), u2 = unpack<N>(b, st);
+  if (!is_nan(u1.type) && !is_nan(u2.type) &&
+      ((u1.type == kInfinity && u2.type == kZero) || (u1.type == kZero && u2.type == kInfinity)))
+    return two<N>() | zero<N>(u1.sign != u2.sign);
+  return fmul<N>(st, a, b, rm);
+}
+
+template <unsigned N> uint64_t frecps(State &st, uint64_t a, uint64_t b, unsigned rm) {
+  return detail::step_fused<N>(st, a, b, rm, false);
+}
+
+template <unsigned N> uint64_t frsqrts(State &st, uint64_t a, uint64_t b, unsigned rm) {
+  return detail::step_fused<N>(st, a, b, rm, true);
+}
+
+// FPRecipEstimate
+template <unsigned N> uint64_t frecpe(State &st, uint64_t a) {
+  using namespace detail;
+  constexpr int E = Format<N>::E, F = Format<N>::F;
+  const Unpacked u = unpack<N>(a, st);
+  const bool sign = u.sign;
+  if (is_nan(u.type))
+    return process_nan<N>(u.type, a, st);
+  if (u.type == kInfinity)
+    return zero<N>(sign);
+  if (u.type == kZero) {
+    st.flags |= kDivByZero;
+    return inf<N>(sign);
+  }
+  constexpr int lim = N == 16 ? -16 : N == 32 ? -128 : -1024;
+  if (ilog2(u.value) < lim) {
+    const unsigned rm = st.rmode;
+    const bool to_inf = rm == kRNE || (rm == kRTP && !sign) || (rm == kRTN && sign);
+    st.flags |= kOverflow | kInexact;
+    return to_inf ? inf<N>(sign) : max_normal<N>(sign);
+  }
+  constexpr int big = N == 16 ? 14 : N == 32 ? 126 : 1022;
+  if ((N == 16 ? st.fz16 : st.fz) && ilog2(u.value) >= big) {
+    st.flags |= kUnderflow;
+    return zero<N>(sign);
+  }
+  uint64_t fraction;
+  int exp;
+  fraction52<N>(a, fraction, exp);
+  if (exp == 0) {
+    if (!((fraction >> 51) & 1)) {
+      exp = -1;
+      fraction = (fraction << 2) & kMask52;
+    } else {
+      fraction = (fraction << 1) & kMask52;
+    }
+  }
+  const uint64_t scaled = (uint64_t{1} << 8) | (fraction >> 44);
+  int result_exp = (N == 16 ? 29 : N == 32 ? 253 : 2045) - exp;
+  fraction = (recip_estimate(scaled) & 0xFF) << 44;
+  if (result_exp == 0) {
+    fraction = (uint64_t{1} << 51) | (fraction >> 1);
+  } else if (result_exp == -1) {
+    fraction = (uint64_t{1} << 50) | (fraction >> 2);
+    result_exp = 0;
+  }
+  return zero<N>(sign) |
+         (static_cast<uint64_t>(result_exp) & ((uint64_t{1} << E) - 1)) << F |
+         (fraction >> (52 - F));
+}
+
+// FPRSqrtEstimate
+template <unsigned N> uint64_t frsqrte(State &st, uint64_t a) {
+  using namespace detail;
+  constexpr int E = Format<N>::E, F = Format<N>::F;
+  const Unpacked u = unpack<N>(a, st);
+  if (is_nan(u.type))
+    return process_nan<N>(u.type, a, st);
+  if (u.type == kZero) {
+    st.flags |= kDivByZero;
+    return inf<N>(u.sign);
+  }
+  if (u.sign) {
+    st.flags |= kInvalid;
+    return default_nan<N>();
+  }
+  if (u.type == kInfinity)
+    return zero<N>(false);
+  uint64_t fraction;
+  int exp;
+  fraction52<N>(a, fraction, exp);
+  if (exp == 0) {
+    while (!((fraction >> 51) & 1)) {
+      fraction = (fraction << 1) & kMask52;
+      --exp;
+    }
+    fraction = (fraction << 1) & kMask52;
+  }
+  const uint64_t scaled = (exp & 1) == 0 ? (uint64_t{1} << 8) | (fraction >> 44)
+                                         : (uint64_t{1} << 7) | (fraction >> 45);
+  const int result_exp = ((N == 16 ? 44 : N == 32 ? 380 : 3068) - exp) / 2;
+  const uint64_t est = rsqrt_estimate(scaled) & 0xFF;
+  return (static_cast<uint64_t>(result_exp) & ((uint64_t{1} << E) - 1)) << F | est << (F - 8);
+}
+
+// FPRecpX: exponent reciprocal estimate
+template <unsigned N> uint64_t frecpx(State &st, uint64_t a) {
+  using namespace detail;
+  constexpr int E = Format<N>::E, F = Format<N>::F;
+  const Unpacked u = unpack<N>(a, st);
+  if (is_nan(u.type))
+    return process_nan<N>(u.type, a, st);
+  const uint64_t emask = (uint64_t{1} << E) - 1;
+  const uint64_t exp = (a >> F) & emask;
+  const uint64_t result_exp = exp == 0 ? emask - 1 : ~exp & emask;
+  return zero<N>(u.sign) | result_exp << F;
+}
+
+// FPScale: a * 2^SInt(scale) rounded once; the scale is clamped to the range
+// where it can change the result (FPClampScale)
+template <unsigned N> uint64_t fscale(State &st, uint64_t a, uint64_t scale, unsigned rm) {
+  using namespace detail;
+  constexpr int E = Format<N>::E, F = Format<N>::F;
+  const unsigned rounding = mode(rm, st);
+  const Unpacked u = unpack<N>(a, st);
+  if (is_nan(u.type))
+    return process_nan<N>(u.type, a, st);
+  if (u.type == kZero)
+    return zero<N>(u.sign);
+  if (u.type == kInfinity)
+    return inf<N>(u.sign);
+  const int64_t exp = static_cast<int64_t>((a >> F) & ((uint64_t{1} << E) - 1));
+  int64_t k = static_cast<int64_t>(scale << (64 - N)) >> (64 - N); // SInt
+  const int64_t lo = -(F + 1) - exp, hi = (int64_t{1} << E) - 1 + F + 1 - exp;
+  k = k < lo ? lo : k > hi ? hi : k;
+  Exact v = u.value;
+  v.exp += static_cast<int>(k);
+  return round<N>(v, st, rounding);
+}
+
+// FPDotAdd: addend + (a1 * a2 + b1 * b2) on half-precision factors; the dot
+// product is rounded to single precision, then added
+template <unsigned N>
+uint64_t fdotadd(State &st, uint64_t addend, uint64_t a1, uint64_t b1, uint64_t a2,
+                 uint64_t b2, unsigned rm) {
+  static_assert(N == 32);
+  const uint64_t prod = detail::fpdot(st, a1, b1, a2, b2, detail::mode(rm, st));
+  return fadd<32>(st, addend, prod, rm);
+}
+
+// BFDotAdd: no exceptions, default NaNs, round to odd, flush to zero; the FPU
+// controls are not used
+template <unsigned N>
+uint64_t bfdotadd(State &st, uint64_t addend, uint64_t a1, uint64_t b1, uint64_t a2,
+                  uint64_t b2) {
+  static_assert(N == 32);
+  (void)st;
+  using namespace detail;
+  return bf_add(addend, bf_add(bf_mulh(a1, a2), bf_mulh(b1, b2)));
 }
 
 } // namespace prot::fp
