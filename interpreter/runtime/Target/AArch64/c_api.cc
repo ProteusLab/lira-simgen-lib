@@ -29,6 +29,9 @@ public:
     check(addr, dest.size());
     std::memcpy(dest.data(), reinterpret_cast<const void *>(addr), dest.size());
   }
+  bool accessible(Addr addr, std::size_t n) const override {
+    return m_size == 0 || (addr >= m_base && addr - m_base <= m_size && n <= m_size - (addr - m_base));
+  }
   uint8_t read8(Addr addr) const override { return load<uint8_t>(addr); }
   uint16_t read16(Addr addr) const override { return load<uint16_t>(addr); }
   uint32_t read32(Addr addr) const override { return load<uint32_t>(addr); }
@@ -38,7 +41,7 @@ public:
 
 private:
   void check(Addr addr, uint64_t n) const {
-    if (m_size != 0 && (addr < m_base || addr - m_base > m_size || n > m_size - (addr - m_base)))
+    if (!accessible(addr, n))
       throw std::runtime_error{"Data abort"};
   }
   template <typename T> T load(Addr addr) const {

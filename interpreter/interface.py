@@ -22,6 +22,23 @@ class ReadMem(MemInterface):
         return ""
 
 
+class ReadMemNoFault(MemInterface):
+    """Non-fault read (`mem.nofault`): (data, true), or (0, false) when the
+    access would fault; it never faults."""
+
+    def __init__(self, func, **linked):
+        super().__init__(func, **linked)
+        self.width: int = self.outputs[0]
+
+    def __call__(self, inputs, out: Optional[str] = None) -> str:
+        t = OperandType.gen(self.width)
+        return f"{out} = {config.SimpleInterpConfig.MEM_VAR}.readNoFault<{t}>({inputs[0]});"
+
+    @property
+    def definition(self) -> str:
+        return ""
+
+
 class WriteMem(MemInterface):
     def __init__(self, func, **linked):
         super().__init__(func, **linked)

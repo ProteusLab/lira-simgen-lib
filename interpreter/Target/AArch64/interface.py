@@ -6,7 +6,7 @@ from lib.interface import CpuInterface, serves
 from lib.types import OperandType
 
 from interpreter import config
-from interpreter.interface import ReadMem, WriteMem
+from interpreter.interface import ReadMem, ReadMemNoFault, WriteMem
 
 CPU = config.SimpleInterpConfig.CPU_VAR
 MEM = config.SimpleInterpConfig.MEM_VAR
@@ -72,6 +72,9 @@ serves("pc_write")(PcWrite)
 for _n in (8, 16, 32, 64, 128):
     serves(f"mem_read_{_n}")(ReadMem)
     serves(f"mem_write_{_n}")(WriteMem)
+# SVE first-fault and non-fault loads
+for _n in (8, 16, 32, 64):
+    serves(f"mem_read_nf_{_n}")(ReadMemNoFault)
 
 # SVC #imm: Linux-like syscalls; MOPS copy and set; SYS (DC ZVA)
 for _name in ("supervisor_call", "mem_copy", "mem_set", "sys_op"):

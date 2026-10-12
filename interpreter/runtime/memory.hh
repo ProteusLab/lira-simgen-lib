@@ -7,6 +7,7 @@
 #include <cstring>
 #include <memory>
 #include <span>
+#include <tuple>
 
 namespace prot::memory {
 
@@ -21,6 +22,22 @@ public:
 
   virtual void writeBlock(std::span<const std::byte> src, isa::Addr addr) = 0;
   virtual void readBlock(isa::Addr addr, std::span<std::byte> dest) const = 0;
+
+  // Whether an access of `size` bytes at `addr` is performed (not a fault)
+  virtual bool accessible(isa::Addr addr, std::size_t size) const {
+    (void)addr;
+    (void)size;
+    return true;
+  }
+
+  // A read that never faults: (value, true), or (0, false) when the access
+  // would fault
+  template <std::unsigned_integral T>
+  [[nodiscard]] std::tuple<T, bool> readNoFault(isa::Addr addr) const {
+    if (!accessible(addr, sizeof(T)))
+      return {T{0}, false};
+    return {read<T>(addr), true};
+  }
 
   void fillBlock(isa::Addr addr, std::byte value, std::size_t count) {
     for (std::size_t i = 0; i < count; ++i) {

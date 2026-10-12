@@ -66,6 +66,11 @@ public:
     *reinterpret_cast<uint32_t *>(translateAddr(addr)) = val;
   }
 
+  bool accessible(isa::Addr addr, std::size_t size) const override {
+    return addr >= m_start && addr - m_start <= m_data.size() &&
+           size <= m_data.size() - (addr - m_start);
+  }
+
   void writeBlock(std::span<const std::byte> src, isa::Addr addr) override {
     checkRange(addr, src.size());
     std::memcpy(translateAddr(addr), src.data(), src.size());

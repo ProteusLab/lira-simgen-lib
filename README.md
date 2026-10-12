@@ -54,6 +54,8 @@ writes see them as lanes. A file whose registers are the low bits of another
 file's (`alias.<file>@0+<bits>` on the other file) gets the other model as
 `alias_of`.
 
+An environment function with several outputs returns a `std::tuple`.
+
 `fop` statements call the standard float operations of
 `interpreter/runtime/lira_fp.hh`, a C++ port of LIRA's reference
 (`lira/float_ops.py`: Arm FPU rules, exact rounding in every mode, FZ/FZ16/DN
@@ -68,7 +70,7 @@ and `interpreter/runtime/Target/<ARCH_TARGET>` (ELF loader, syscalls, `main`).
 - `AArch64` — the A64 description of LIRA: base integer, the
   ARMv8.1-v8.9 extensions, scalar floating point, Advanced SIMD and crypto,
   MOPS, pointer authentication, system instructions and SVE but for the
-  first-fault and non-fault loads and the float operations not ported yet
+  instructions with float operations not ported yet
   (`data/AArch64/aarch64.yaml`,
   generated in the LIRA repository by
   `python -m archs.aarch64.gen --simgen <path>`). Linux-style
@@ -84,7 +86,10 @@ and `interpreter/runtime/Target/<ARCH_TARGET>` (ELF loader, syscalls, `main`).
   and anything else Linux does not allow stop the program. The SVE vector
   length is a run-time parameter: `--vq N` (VL = 128 * N bits, 1..16,
   default 1; SME needs a power of two). V is the low 128 bits of Z: an
-  Advanced SIMD or FP write zeroes the rest. The `a64-capi` target builds
+  Advanced SIMD or FP write zeroes the rest. The non-fault reads of the SVE
+  first-fault and non-fault loads (`mem_read_nf_*`) never fault: an access
+  outside memory is not performed (`Memory::readNoFault`). The `a64-capi`
+  target builds
   `liba64-capi` (single-instruction execution over host memory, at a given
   VQ with `lira_a64_run`) used by the LIRA AArch64 tests.
 

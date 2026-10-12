@@ -380,7 +380,7 @@ class SemanticBuilder(CodeBuilder):
 
             if self.stmt.outputs:
                 builder.lanewise(
-                    self.stmt, lambda outs, ins: ReadMem(outs[0], ins, interface)
+                    self.stmt, lambda outs, ins: ReadMem(outs, ins, interface)
                 )
             else:
                 builder.lanewise(self.stmt, lambda outs, ins: EnvExec(ins, interface))

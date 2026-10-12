@@ -107,15 +107,27 @@ class WriteReg(Node):
         return self.rf.write(self.index, self.value)
 
 
+def env_target(outs: List[Variable]) -> Optional[str]:
+    """Where the result of an environment call goes: its output, or
+    `std::tie(...)` of its outputs (the call returns a tuple)."""
+    if not outs:
+        return None
+    if len(outs) == 1:
+        return str(outs[0])
+    return f"std::tie({', '.join(o.name for o in outs)})"
+
+
 class ReadMem(Node):
-    def __init__(self, var: Variable, inputs: List[Variable], interface):
-        self.var: Variable = var
+    """An environment call with outputs."""
+
+    def __init__(self, outs: List[Variable], inputs: List[Variable], interface):
+        self.outs: List[Variable] = outs
         self.inputs: List[Variable] = inputs
         self.interface = interface
 
     def cpp_body(self) -> str:
-        return f"""{self.var.definition}
-{self.interface(self.inputs, self.var)}
+        defs = "".join(f"{o.definition}\n" for o in self.outs)
+        return f"""{defs}{self.interface(self.inputs, env_target(self.outs))}
 """
 
 
@@ -148,8 +160,7 @@ class CondEnv(Node):
 
     def cpp_body(self) -> str:
         defs = "".join(f"{o.definition}\n" for o in self.outs)
-        out: Optional[Variable] = self.outs[0] if self.outs else None
-        call = self.interface(self.inputs, out)
+        call = self.interface(self.inputs, env_target(self.outs))
         if not self.outs:
             return f"{defs}if ({self.cond}) {{\n{call}\n}}\n"
         other = "\n".join(f"{o} = {v};" for o, v in zip(self.outs, self.on_false))
