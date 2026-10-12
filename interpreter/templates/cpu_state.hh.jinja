@@ -10,8 +10,14 @@
 #include <concepts>
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
 #include <fmt/core.h>
 #include <fmt/ostream.h>
+
+// The register files of the description
+{%- for name in rf_names %}
+#define LIRA_RF_{{ name }} 1
+{%- endfor %}
 
 namespace prot::state {
 

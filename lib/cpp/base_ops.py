@@ -87,9 +87,13 @@ And._cpp_body = lambda self: _render("binary_op.jinja", token="&")
 Orr._cpp_body = lambda self: _render("binary_op.jinja", token="|")
 Xor._cpp_body = lambda self: _render("binary_op.jinja", token="^")
 
-Lsl._cpp_body = lambda self: _render("shift.jinja", op="<<")
-Lsr._cpp_body = lambda self: _render("shift.jinja", op=">>")
-Asr._cpp_body = lambda self: _render("asr.jinja", t=_in_type(self), ts=_signed(self))
+# A shift by the width or more gives 0 (asr: copies of the sign bit), as in
+# LIRA's reference interpreter (the IR leaves it unspecified)
+Lsl._cpp_body = lambda self: _render("shift.jinja", op="<<", width=self.inputs[0])
+Lsr._cpp_body = lambda self: _render("shift.jinja", op=">>", width=self.inputs[0])
+Asr._cpp_body = lambda self: _render(
+    "asr.jinja", t=_in_type(self), ts=_signed(self), width=self.inputs[0]
+)
 Eq._cpp_body = lambda self: _render("cmp_unsigned.jinja", token="==")
 Ne._cpp_body = lambda self: _render("cmp_unsigned.jinja", token="!=")
 Slt._cpp_body = lambda self: _render("cmp_signed.jinja", token="<", t=_signed(self))

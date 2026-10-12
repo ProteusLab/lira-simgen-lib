@@ -34,18 +34,25 @@ Consumers import the library as `lib`.
 ## Targets
 
 A table operation (`semantic_table`) is a lookup in a `static constexpr`
-copy of the description's table.
+copy of the description's table. A shift by the operand width or more gives 0
+(`asr`: copies of the sign bit), as in LIRA's reference interpreter (the IR
+leaves it unspecified).
 
 A value of a vector statement (shape N > 1) is a `std::array` of N lanes;
 lane-wise statements (`op`, `fop`, `env`, `cond_env`) become loops over the
 lanes, in lane order, and `index`, `replicate`, `gather`, `extract_first`,
-`extend_zero`, `fold` and shaped register accesses use
-`interpreter/runtime/lira_vec.hh`.
+`extend_zero`, `fold` (with one or several state values) and shaped register
+accesses use `interpreter/runtime/lira_vec.hh`.
 
 A scalable shape (`<n>VQ`, `<n>VQVQ`) has n times its multiplier lanes, a
 value the target computes at run time (`TargetInfo.lane_multipliers`). Such a
 value is a `prot::vec::Scalable` whose storage comes from a per-thread arena,
-released when the instruction ends, so large values stay off the stack.
+released when the instruction ends, so large values stay off the stack. A
+register file of scalable size (`lib.regfile.ScalableRegFile`) keeps the
+bytes of each register, little endian, for the largest size; shaped reads and
+writes see them as lanes. A file whose registers are the low bits of another
+file's (`alias.<file>@0+<bits>` on the other file) gets the other model as
+`alias_of`.
 
 `fop` statements call the standard float operations of
 `interpreter/runtime/lira_fp.hh`, a C++ port of LIRA's reference
@@ -58,9 +65,10 @@ environment interfaces, `target.cmake` with the IR path and runtime sources)
 and `interpreter/runtime/Target/<ARCH_TARGET>` (ELF loader, syscalls, `main`).
 
 - `RISC_V` — RV32I (`data/RISC_V/RV32I.yaml`).
-- `AArch64` — the whole A64 description of LIRA: base integer, the
+- `AArch64` — the A64 description of LIRA: base integer, the
   ARMv8.1-v8.9 extensions, scalar floating point, Advanced SIMD and crypto,
-  MOPS, pointer authentication and system instructions
+  MOPS, pointer authentication, system instructions and SVE but for the
+  first-fault and non-fault loads and the float operations not ported yet
   (`data/AArch64/aarch64.yaml`,
   generated in the LIRA repository by
   `python -m archs.aarch64.gen --simgen <path>`). Linux-style
@@ -75,7 +83,8 @@ and `interpreter/runtime/Target/<ARCH_TARGET>` (ELF loader, syscalls, `main`).
   counters, DIT, SSBS, cache maintenance, the emulated ID registers); BRK/HLT
   and anything else Linux does not allow stop the program. The SVE vector
   length is a run-time parameter: `--vq N` (VL = 128 * N bits, 1..16,
-  default 1; SME needs a power of two). The `a64-capi` target builds
+  default 1; SME needs a power of two). V is the low 128 bits of Z: an
+  Advanced SIMD or FP write zeroes the rest. The `a64-capi` target builds
   `liba64-capi` (single-instruction execution over host memory, at a given
   VQ with `lira_a64_run`) used by the LIRA AArch64 tests.
 

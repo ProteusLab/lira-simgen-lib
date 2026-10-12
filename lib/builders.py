@@ -221,13 +221,13 @@ class CodeBuilder(IBuilder, metaclass=BuilderMeta):
     class FoldHandler(StmtHandler):
         def build(self) -> None:
             builder = self.builder
-            if len(self.stmt.outputs) != 1:
-                raise NotImplementedError("'fold' with several state values")
-            out = builder.variable(self.stmt.outputs[0], self.stmt.outputs_types[0])
-            state, *vectors = [builder.resolve_var(a) for a in self.stmt.inputs]
+            outs = [builder.variable(name, width)
+                    for name, width in zip(self.stmt.outputs, self.stmt.outputs_types)]
+            args = [builder.resolve_var(a) for a in self.stmt.inputs]
+            states, vectors = args[:len(outs)], args[len(outs):]
             op = builder.index.op[self.stmt.specifier]
             builder.nodes.append(
-                Fold(out, op, state, vectors, builder.lane_count(self.stmt))
+                Fold(outs, op, states, vectors, builder.lane_count(self.stmt))
             )
 
     @serves(StmtOutput.kind)

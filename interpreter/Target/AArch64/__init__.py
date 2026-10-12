@@ -34,5 +34,5 @@ TARGET = TargetInfo(
   std::size_t m_vq{1};
 """,
     # `<n>VQ` lanes (SVE vectors and predicates) and `<n>VQVQ` (the ZA array)
-    lane_multipliers={"VQ": "cpu.m_vq", "VQVQ": "cpu.m_vq * cpu.m_vq"},
+    lane_multipliers={"VQ": ("cpu.m_vq", 16), "VQVQ": ("cpu.m_vq * cpu.m_vq", 256)},
 )

@@ -201,13 +201,15 @@ class ArenaScope(Node):
 
 
 class Fold(Node):
-    """`fold op state vectors...`: state = op(state, lanes...) over the lanes
-    (`count`: the C++ expression of their number)."""
+    """`fold op states... vectors...`: states = the first outputs of
+    op(states..., lanes...) over the lanes (`count`: the C++ expression of
+    their number)."""
 
-    def __init__(self, out: Variable, op: Operation, state: Variable, vectors: List[Variable], count: str):
-        self.out: Variable = out
+    def __init__(self, outs: List[Variable], op: Operation, states: List[Variable],
+                 vectors: List[Variable], count: str):
+        self.outs: List[Variable] = outs
         self.op: Operation = op
-        self.state: Variable = state
+        self.states: List[Variable] = states
         self.vectors: List[Variable] = vectors
         self.count: str = count
 
@@ -215,12 +217,19 @@ class Fold(Node):
         from lib.cpp.func import Func
 
         i = LANE_INDEX
-        args = [self.out.name] + [f"prot::vec::lane({v.name}, {i})" for v in self.vectors]
+        args = [o.name for o in self.outs] + [f"prot::vec::lane({v.name}, {i})" for v in self.vectors]
         call = Func.from_op(self.op)(args)
-        return f"""{self.out.definition}
-{self.out} = {self.state};
+        if len(self.op.outputs) == 1:
+            step = f"{self.outs[0]} = {call};"
+        else:
+            step = f"const auto r = {call};\n" + "\n".join(
+                f"  {o} = std::get<{k}>(r);" for k, o in enumerate(self.outs))
+        defs = "\n".join(o.definition for o in self.outs)
+        init = "\n".join(f"{o} = {st};" for o, st in zip(self.outs, self.states))
+        return f"""{defs}
+{init}
 for (std::size_t {i} = 0, lane_n = {self.count}; {i} < lane_n; ++{i}) {{
-  {self.out} = {call};
+  {step}
 }}
 """
 

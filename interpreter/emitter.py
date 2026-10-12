@@ -74,6 +74,7 @@ class InterpEmitter:
             self.cfg.templates.render(
                 self.cfg.cpu_state_hh_jinja,
                 rf_code=rf_code,
+                rf_names=[rf.name for rf in arch.register_files],
                 decls=decls,
                 members=self.cfg.target.cpu_members,
             ),

@@ -2,7 +2,7 @@
 
 import importlib
 from dataclasses import dataclass, field
-from typing import Dict
+from typing import Dict, Tuple
 
 
 @dataclass
@@ -13,9 +13,9 @@ class TargetInfo:
     addr_type: str = "uint32_t"
     # Extra members pasted into the generated `CPU` class
     cpu_members: str = ""
-    # Scalable shapes: lanes_mult -> C++ expression of the multiplier (run
-    # time; `cpu` is the CPU state)
-    lane_multipliers: Dict[str, str] = field(default_factory=dict)
+    # Scalable shapes: lanes_mult -> (C++ expression of the multiplier at run
+    # time, `cpu` being the CPU state; its largest value)
+    lane_multipliers: Dict[str, Tuple[str, int]] = field(default_factory=dict)
 
 
 def load(name: str) -> TargetInfo:

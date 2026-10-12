@@ -1,1 +1,5 @@
+{%- if width > 128 %}
   return a {{ op }} b;
+{%- else %}
+  return b < {{ width }} ? a {{ op }} b : 0;
+{%- endif %}

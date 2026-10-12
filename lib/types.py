@@ -1,6 +1,6 @@
 # lira-simgen-lib/simgen/types.py
 
-from typing import ClassVar, Dict, Optional
+from typing import ClassVar, Dict, Optional, Tuple
 
 
 class OperandType:
@@ -53,16 +53,26 @@ class OperandType:
 class Lanes:
     """Lane counts of shapes. A scalable shape (`lanes_mult`) has lanes_base
     times its multiplier lanes; the target gives each multiplier as a C++
-    expression evaluated at run time."""
+    expression evaluated at run time and its largest value."""
 
-    multipliers: ClassVar[Dict[str, str]] = {}
+    multipliers: ClassVar[Dict[str, Tuple[str, int]]] = {}
+
+    @classmethod
+    def _mult(cls, mult: str) -> Tuple[str, int]:
+        m = cls.multipliers.get(mult)
+        if m is None:
+            raise ValueError(f"the target has no lane multiplier '{mult}'")
+        return m
 
     @classmethod
     def count(cls, lanes: int, mult: Optional[str] = None) -> str:
         """C++ expression of the number of lanes."""
         if mult is None:
             return str(lanes)
-        expr = cls.multipliers.get(mult)
-        if expr is None:
-            raise ValueError(f"the target has no lane multiplier '{mult}'")
+        expr = cls._mult(mult)[0]
         return f"({expr})" if lanes == 1 else f"{lanes} * ({expr})"
+
+    @classmethod
+    def maximum(cls, lanes: int, mult: Optional[str] = None) -> int:
+        """The largest number of lanes."""
+        return lanes if mult is None else lanes * cls._mult(mult)[1]

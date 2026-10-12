@@ -129,12 +129,24 @@ extern "C" int lira_a64_run(uint32_t word, unsigned vq, LiraA64State *st, uint64
   auto insn = prot::decoder::decode(word);
   if (!insn)
     return -1;
+  const std::size_t zbytes = 16 * vq, pbytes = 2 * vq;
   prot::state::CPU cpu{};
   cpu.m_vq = vq;
   for (std::size_t i = 0; i < 32; ++i) {
     cpu.setX(i, st->x[i]);
+#ifdef LIRA_RF_Z
+    std::memcpy(cpu.regZ(i), st->z[i], zbytes);
+#else
     cpu.setV(i, load128(st->z[i]));
+#endif
   }
+#ifdef LIRA_RF_P
+  for (std::size_t i = 0; i < 16; ++i)
+    std::memcpy(cpu.regP(i), st->p[i], pbytes);
+#endif
+#ifdef LIRA_RF_FFR
+  std::memcpy(cpu.regFFR(0), st->ffr, pbytes);
+#endif
   cpu.m_nzcv = static_cast<uint8_t>(st->nzcv);
   cpu.m_fpcr = static_cast<uint32_t>(st->fpcr);
   cpu.m_fpsr = static_cast<uint32_t>(st->fpsr);
@@ -144,8 +156,19 @@ extern "C" int lira_a64_run(uint32_t word, unsigned vq, LiraA64State *st, uint64
   engine.execute(cpu, mem, *insn);
   for (std::size_t i = 0; i < 32; ++i) {
     st->x[i] = cpu.getX<uint64_t>(i);
+#ifdef LIRA_RF_Z
+    std::memcpy(st->z[i], cpu.regZ(i), zbytes);
+#else
     store128(st->z[i], cpu.getV(i));
+#endif
   }
+#ifdef LIRA_RF_P
+  for (std::size_t i = 0; i < 16; ++i)
+    std::memcpy(st->p[i], cpu.regP(i), pbytes);
+#endif
+#ifdef LIRA_RF_FFR
+  std::memcpy(st->ffr, cpu.regFFR(0), pbytes);
+#endif
   st->nzcv = cpu.m_nzcv;
   st->fpcr = cpu.m_fpcr;
   st->fpsr = cpu.m_fpsr;
