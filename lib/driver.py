@@ -7,7 +7,6 @@ from lira.arch_ser_yaml import read_arch
 from lira.arch_utils import build_arch_index
 
 from lib.builders import SemanticBuilder
-from lib.cpp.func import Func
 from lib.instruction import Instruction
 from lib.interface import InterfacesRegistry
 from lib.regfile import RegFileRegistry
@@ -25,19 +24,9 @@ class Driver:
 
         self.interfaces = InterfacesRegistry.from_arch(self.arch, self.attributes)
 
-        self.snippet_funcs = self.process_snippets()
-
         self.config = config
 
-        supported = self.config.supported_instructions
-        self.insts = self.process_instrs(
-            [
-                insn
-                for insn in self.arch.instructions
-                if (supported is None or insn.name in supported)
-                and insn.name not in self.config.excluded_instructions
-            ],
-        )
+        self.insts = self.process_instrs(self.arch.instructions)
 
     def process_attributes(self) -> Dict[str, object]:
         attributes: Dict[str, object] = {}
@@ -49,26 +38,10 @@ class Driver:
                         attributes[attribute] = model.register(reg)
         return attributes
 
-    def process_snippets(self) -> List[Func]:
-        return [
-            Func.from_snippet(snippet, self.index)
-            for snippet in self.index.snippet.values()
-        ]
-
     def process_instrs(self, insns) -> List[Instruction]:
         insts = []
-        for i, insn in enumerate(insns):
+        for insn in insns:
             sem = SemanticBuilder(self.index, insn, self.interfaces, self.reg_files)
             body = sem.build(insn.semantic)
-            insts.append(
-                Instruction(
-                    i,
-                    body,
-                    sem.regs,
-                    len(sem.read_operands),
-                    len(sem.write_operands),
-                    sem.has_mem,
-                    insn=insn,
-                )
-            )
+            insts.append(Instruction(body, sem.regs, insn))
         return insts

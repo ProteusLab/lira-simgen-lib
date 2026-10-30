@@ -1,5 +1,5 @@
-# lira-simgen-lib/interpreter/templates.py
-# jinja2 rendering of the C++ artifact templates.
+# lira-simgen-lib/lib/templates.py
+# Shared jinja2 rendering of the C++ artifact templates.
 
 from pathlib import Path
 

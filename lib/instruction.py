@@ -1,6 +1,6 @@
-# lira-simgen-lib/simgen/instruction.py
+# lira-simgen-lib/lib/instruction.py
 
-from typing import List, Optional
+from typing import List
 
 from lira.arch import Instruction as LiraInstruction
 
@@ -10,29 +10,29 @@ from lib.operand import Register
 class Instruction:
     def __init__(
         self,
-        inst_id: int,
         sem: List[object],
         regs: List[Register],
-        num_src: int,
-        num_dst: int,
-        has_mem: bool,
-        insn: Optional[LiraInstruction] = None,
+        insn: LiraInstruction,
     ):
-        self.inst_id: int = inst_id
         self.sem: List[object] = sem
         self.regs: List[Register] = regs
-        self.num_src: int = num_src
-        self.num_dst: int = num_dst
-        self.has_mem: bool = has_mem
-        self.insn: Optional[LiraInstruction] = insn
+        self.insn: LiraInstruction = insn
 
     @property
     def name(self) -> str:
         return self.insn.name.upper()
 
     @property
+    def snake_name(self) -> str:
+        return self.insn.name
+
+    @property
     def constraint_decode(self) -> str:
         return self.insn.encoding.constraint_decode
+
+    @property
+    def encode_snippet(self) -> str:
+        return self.insn.encoding.encode
 
     @property
     def ilen(self) -> int:

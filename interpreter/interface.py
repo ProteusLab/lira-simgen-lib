@@ -2,10 +2,38 @@
 
 from typing import List, Optional
 
-from lib.interface import CpuInterface, MemInterface
-from lib.types import OperandType
+from lib.attributes import PC_ATTRIBUTE
+from lib.interface import Interface
+
+from cpp.types import OperandType
 
 from interpreter import config
+
+
+class CpuInterface(Interface):
+    """Interface served by the CPU state object."""
+
+    @property
+    def is_terminator(self) -> bool:
+        return False
+
+    @property
+    def declaration(self) -> str:
+        from cpp.func import Func
+
+        return Func.from_env(self.func).declaration
+
+    @property
+    def definition(self) -> str:
+        return ""
+
+
+class MemInterface(Interface):
+    """Interface served by memory, independent of the CPU model."""
+
+    @property
+    def is_terminator(self) -> bool:
+        return False
 
 
 class ReadMem(MemInterface):
@@ -15,7 +43,7 @@ class ReadMem(MemInterface):
 
     def __call__(self, inputs, out: Optional[str] = None) -> str:
         t = OperandType.gen(self.width)
-        return f"{out} = {config.SimpleInterpConfig.MEM_VAR}.read<{t}>({inputs[0]});"
+        return f"{out} = {config.SimpleInterpConfig.M_MEM}.read<{t}>({inputs[0]});"
 
     @property
     def definition(self) -> str:
@@ -30,8 +58,7 @@ class WriteMem(MemInterface):
     def __call__(self, inputs, out: Optional[str] = None) -> str:
         t = OperandType.gen(self.width)
         return (
-            f"{config.SimpleInterpConfig.MEM_VAR}"
-            f".write<{t}>({inputs[0]}, {inputs[1]});"
+            f"{config.SimpleInterpConfig.M_MEM}.write<{t}>({inputs[0]}, {inputs[1]});"
         )
 
     @property
@@ -42,11 +69,11 @@ class WriteMem(MemInterface):
 class GetPC(CpuInterface):
     def __init__(self, func, **attributes):
         super().__init__(func, **attributes)
-        self.pc = attributes["pc"]
+        self.pc = attributes[PC_ATTRIBUTE]
         self.attributes = attributes.keys()
 
     def __call__(self, inputs, out: Optional[str] = None) -> str:
-        return f"{out} = {config.SimpleInterpConfig.CPU_VAR}.{self.name}();"
+        return f"{out} = {config.SimpleInterpConfig.M_CPU}.{self.name}();"
 
     @property
     def declaration(self) -> str:
@@ -56,38 +83,36 @@ class GetPC(CpuInterface):
     @property
     def definition(self) -> str:
         t = OperandType.gen(self.pc.width)
-        return f"""\
-  // Read PC function
-  {t} CPU::{self.name}() const {{
-    return m_{self.pc.name};
-  }}
-"""
+        return f"""{t} CPU::{self.name}() const {{ return m_{self.pc.name}; }}\n"""
 
 
 class SetPC(CpuInterface):
     def __init__(self, func, **attributes):
         super().__init__(func, **attributes)
         # PC metadata constructed by the register-file model.
-        self.pc = attributes["pc"]
+        self.pc = attributes[PC_ATTRIBUTE]
         self.attributes = attributes.keys()
 
     def __call__(self, inputs, out: Optional[str] = None) -> str:
-        return f"{config.SimpleInterpConfig.CPU_VAR}.{self.name}({inputs[0]});"
+        return f"{config.SimpleInterpConfig.M_CPU}.{self.name}({inputs[0]});"
+
+    @property
+    def is_terminator(self) -> bool:
+        return True
 
     @property
     def definition(self) -> str:
         t = OperandType.gen(self.pc.width)
-        return f"""\
-  // Set PC function
-  void CPU::{self.name}(const {t} value) {{
-    m_{self.pc.name} = value;
-  }}
-"""
+        return f"""void CPU::{self.name}(const {t} value) {{ m_{self.pc.name} = value; }}\n"""
 
 
 class SysCall(CpuInterface):
     def __call__(self, inputs, out: Optional[str] = None) -> str:
-        return f"{config.SimpleInterpConfig.CPU_VAR}.{self.name}();"
+        return f"{config.SimpleInterpConfig.M_CPU}.{self.name}();"
+
+    @property
+    def is_terminator(self) -> bool:
+        return True
 
     @property
     def definition(self) -> str:

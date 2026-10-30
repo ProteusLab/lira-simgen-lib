@@ -9,7 +9,11 @@
     {
       "name": "Base",
       "hidden": true,
-      "binaryDir": "${sourceDir}/build/${presetName}"
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "ARCH_TARGET": "RISC_V",
+        "ARCH_SOURCE": "Protea"
+      }
     },
     {
       "name": "Default-Release",

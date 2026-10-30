@@ -1,4 +1,4 @@
-# lira-simgen-lib/simgen/types.py
+# lira-simgen-lib/cpp/types.py
 
 
 class OperandType:

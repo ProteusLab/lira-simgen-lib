@@ -1,19 +1,24 @@
 # lira-simgen-lib/lib/interface.py
 
+import logging
 from abc import ABC, abstractmethod
 from typing import ClassVar, Dict, Iterator, List, Optional
 
 from lira.arch import Arch, EnvironmentFunction
 
-from lib.cpp.func import Func
+from lib.registry import serves as registry_serves
+
+logger = logging.getLogger(__name__)
 
 
 class Interface(ABC):
-    has_mem: ClassVar[bool] = False
-
     def __init__(self, func: EnvironmentFunction, **linked):
         self.func: EnvironmentFunction = func
         self.attributes: Dict[str, object] = dict(linked)
+
+    @property
+    def is_terminator(self) -> bool:
+        return False
 
     @property
     def name(self) -> str:
@@ -31,41 +36,10 @@ class Interface(ABC):
     def __call__(self, inputs: List[str], out: Optional[str] = None) -> str:
         pass
 
-    @property
-    def declaration(self) -> str:
-        return Func.from_env(self.func).declaration
-
-    @property
-    @abstractmethod
-    def definition(self) -> str:
-        pass
-
-
-def serves(name: str):
-    def decorator(interface_cls):
-        InterfacesRegistry.registry[name] = interface_cls
-        return interface_cls
-
-    return decorator
-
 
 class NonImplemented(Interface):
     def __call__(self, inputs: List[str], out: Optional[str] = None) -> str:
         return "// Non Implemented"
-
-    @property
-    def definition(self) -> str:
-        return ""
-
-
-class CpuInterface(Interface):
-    """Interface served by the CPU state object."""
-
-
-class MemInterface(Interface):
-    """Interface served by memory, independent of the CPU model."""
-
-    has_mem: ClassVar[bool] = True
 
 
 class InterfacesRegistry:
@@ -95,16 +69,17 @@ class InterfacesRegistry:
                             kwargs[attr] = obj
                 reg._map[func.name] = interface_cls(func, **kwargs)
             else:
-                print(
-                    f"warning: no interface registered for env function "
-                    f"'{func.name}'; falling back to 'NonImplemented'"
+                logger.warning(
+                    "no interface registered for env function '%s'; falling back to 'NonImplemented'",
+                    func.name,
                 )
                 reg._map[func.name] = NonImplemented(func)
+
         for name in cls.registry:
             if name not in reg._map:
-                print(
-                    f"warning: interface '{name}' is registered but not "
-                    f"present in the IR environment functions"
+                logger.warning(
+                    "interface '%s' is registered but not present in the IR environment functions",
+                    name,
                 )
         return reg
 
@@ -115,3 +90,6 @@ class InterfacesRegistry:
         interface = self._map.get(name)
         assert interface is not None, f"env function '{name}' is not mapped"
         return interface
+
+
+serves = registry_serves(InterfacesRegistry.registry)

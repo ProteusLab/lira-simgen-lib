@@ -1,63 +1,50 @@
 # lira-simgen-lib/interpreter/emitter.py
 
-from typing import Dict, List, Set, Tuple
+from pathlib import Path
+from typing import List, Set, Tuple
 
-import lib.cpp.base_ops
-import interpreter.Target.RISC_V.base_ops
+import cpp.base_ops
+import cpp.nodes  # noqa: F401  (registers the node renderers)
 
-from lib.cpp.func import Func
 from lib.instruction import Instruction
 from lib.nodes import EnvExec, render_nodes
-
-from lib.interface import CpuInterface
-from interpreter.interface import SetPC, SysCall
-
-
-def _terminators(insts: List[Instruction]) -> Set[str]:
-    return {
-        inst.name
-        for inst in insts
-        if any(
-            isinstance(node, EnvExec) and isinstance(node.interface, (SetPC, SysCall))
-            for node in inst.sem
-        )
-    }
+from cpp.types import OperandType
 
 
 class InterpEmitter:
     def __init__(self, config):
         self.cfg = config
 
-    def isa(self, insts: List[Instruction]) -> str:
-        terminators = _terminators(insts)
-        num_operands = max((len(inst.regs) for inst in insts), default=0)
-        return self.cfg.templates.render(
-            self.cfg.isa_hh_jinja,
-            insts=insts,
-            terminators=terminators,
-            num_operands=num_operands,
-        )
+    def _terminators(self, insts: List[Instruction]) -> Set[str]:
+        terminators = set()
+        for inst in insts:
+            for node in inst.sem:
+                if isinstance(node, EnvExec) and node.interface.is_terminator:
+                    terminators.add(inst.name)
+                    break
 
-    def decoder(self, index, insts: List[Instruction]) -> Tuple[str, str]:
-        return (
-            self.cfg.templates.render(self.cfg.decoder_hh_jinja),
-            self.cfg.templates.render(self.cfg.decoder_cc_jinja, insts=insts),
-        )
+        return terminators
 
-    def interpreter(self, insts: List[Instruction]) -> Tuple[str, str]:
+    def execute(self, insts: List[Instruction]) -> Tuple[str, str]:
         bodies = {inst.name: render_nodes(inst.sem) for inst in insts}
-        return (
-            self.cfg.templates.render(self.cfg.interpreter_hh_jinja),
-            self.cfg.templates.render(
-                self.cfg.interpreter_cc_jinja,
-                insts=insts,
-                bodies=bodies,
-                cpu_var=self.cfg.CPU_VAR,
-                mem_var=self.cfg.MEM_VAR,
-            ),
+        operand_types = {
+            inst.name: [OperandType.gen(op.width) for op in inst.regs] for inst in insts
+        }
+        exec_hh = self.cfg.templates.render(Path(f"{self.cfg.execute_hh}.jinja"))
+        exec_cc = self.cfg.templates.render(
+            Path(f"{self.cfg.execute_cc}.jinja"),
+            insts=insts,
+            bodies=bodies,
+            operand_types=operand_types,
+            terminators=self._terminators(insts),
+            m_cpu=self.cfg.M_CPU,
+            m_mem=self.cfg.M_MEM,
         )
+        return exec_hh, exec_cc
 
     def cpu_state(self, arch, interfaces, reg_files) -> Tuple[str, str]:
+        from interpreter.interface import CpuInterface
+
         rf_code = "\n".join(reg_files[rf.name].definition for rf in arch.register_files)
         decls = [
             interface.declaration
@@ -69,27 +56,10 @@ class InterpEmitter:
             for interface in interfaces
             if isinstance(interface, CpuInterface) and interface.definition
         )
-        return (
-            self.cfg.templates.render(
-                self.cfg.cpu_state_hh_jinja, rf_code=rf_code, decls=decls
-            ),
-            self.cfg.templates.render(self.cfg.cpu_state_cc_jinja, defs=defs),
+        cpu_hh = self.cfg.templates.render(
+            Path(f"{self.cfg.cpu_state_hh}.jinja"), rf_code=rf_code, decls=decls
         )
-
-    def base_ops(self, operations) -> Tuple[str, str]:
-        funcs = [Func.from_op(op) for op in operations]
-
-        decls = "\n".join(f.declaration for f in funcs)
-        defs = "\n".join(f.definition for f in funcs)
-        return (
-            self.cfg.templates.render(self.cfg.base_ops_hh_jinja, decls=decls),
-            self.cfg.templates.render(self.cfg.base_ops_cc_jinja, defs=defs),
+        cpu_cc = self.cfg.templates.render(
+            Path(f"{self.cfg.cpu_state_cc}.jinja"), defs=defs
         )
-
-    def snippets(self, funcs) -> Tuple[str, str]:
-        decls = "\n".join(func.declaration for func in funcs)
-        defs = "\n\n".join(func.definition for func in funcs)
-        return (
-            self.cfg.templates.render(self.cfg.snippets_hh_jinja, decls=decls),
-            self.cfg.templates.render(self.cfg.snippets_cc_jinja, defs=defs),
-        )
+        return cpu_hh, cpu_cc

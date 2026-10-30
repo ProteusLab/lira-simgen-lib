@@ -1,6 +1,6 @@
 #include "hart.hh"
 #include "memory.hh"
-#include "naive_interpreter.hh"
+#include "execute.hh"
 #include "riscv_elf_loader.hh"
 
 #include <CLI/CLI.hpp>
