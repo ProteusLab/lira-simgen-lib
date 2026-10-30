@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lira-simgen-lib"
+version = "0.1.0"
+description = "LIRA-driven simulator generator framework (common components)"
+requires-python = ">=3.10"
+dependencies = [
+    "lira-ir",
+    "jinja2",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["lib*", "cpp*", "interpreter*", "encoder*", "decoder*", "utils*"]
+
+[tool.setuptools.package-data]
+cpp = ["templates/*.jinja", "Target/*/templates/*.jinja"]
+interpreter = ["templates/*.jinja"]
+encoder = ["templates/*.jinja"]
+decoder = ["templates/*.jinja"]

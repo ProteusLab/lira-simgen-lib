@@ -1,0 +1,14 @@
+{%- if width == 128 -%}
+  if (a == 0) return 128;
+  uint64_t lo = (uint64_t)a;
+  if (lo) return ctz_64(lo);
+  else return 64 + ctz_64((uint64_t)(a >> 64));
+{%- else -%}
+  if (a == 0) return {{ width }};
+  unsigned n = 0;
+  while ((a & 1) == 0) {
+    a >>= 1;
+    n++;
+  }
+  return n;
+{%- endif -%}
