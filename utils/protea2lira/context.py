@@ -51,9 +51,9 @@ class Context:
 class Scope:
     ctx: Context
     seq: BaseBuilder
-    vars: Dict[str, object] = field(default_factory=dict)  # name -> Value | width
+    vars: Dict[str, object] = field(default_factory=dict)
     operand_names: tuple[str, ...] = ()
-    fields: Dict[str, object] = field(default_factory=dict)  # field name -> field
+    fields: Dict[str, object] = field(default_factory=dict)
     raw: Optional[object] = None  # decode input value
 
 
@@ -65,6 +65,7 @@ def find_env(ctx: Context, name, inputs, outputs):
             and list(env.outputs) == outputs
         ):
             return env
+
     raise ValueError(
         f"no environment function '{name}' with inputs {inputs} and outputs {outputs}"
     )
