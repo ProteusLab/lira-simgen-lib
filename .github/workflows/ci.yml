@@ -32,7 +32,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install dependencies
-        run: pip install lira-ir jinja2
+        run: pip install "git+https://github.com/ProteusLab/LIRA@v0.1.1#subdirectory=python" jinja2
 
       - name: Import and sanity-check the code generators
         run: |
