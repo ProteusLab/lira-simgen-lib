@@ -80,6 +80,7 @@ def resolve(node, scope):
         value = scope.seq.env(scope.ctx.get_pc, list())[0]
         scope.vars[name] = value
         return value
+
     raise ValueError(f"unresolved variable '{name}'")
 
 
@@ -169,7 +170,7 @@ def _mixed(stmt, scope, cls):
     lhs, left, right = stmt["oprnds"]
     left_val = resolve(left, scope)
     scope.vars[lhs["name"]] = scope.seq.op(
-        cls(left_val.width), list((left_val, resolve(right, scope)))
+        cls(left_val.width), [left_val, resolve(right, scope)]
     )
 
 
@@ -257,7 +258,7 @@ def writeReg(stmt, scope):
         )
         scope.seq.write(scope.ctx.reg_files[reg["regset"]], operand, value)
     elif name in scope.ctx.pc_regs:
-        scope.seq.env(scope.ctx.set_pc, list((value,)))
+        scope.seq.env(scope.ctx.set_pc, [value])
     else:
         raise ValueError(f"unresolved write register '{name}'")
 
@@ -268,10 +269,10 @@ def readMem(stmt, scope):
     env = find_env(
         scope.ctx,
         stmt["attrs"],
-        list((addr_val.width,)),
-        list((width_of(lhs["type"]),)),
+        [addr_val.width],
+        [width_of(lhs["type"])],
     )
-    scope.vars[lhs["name"]] = scope.seq.env(env, list((addr_val,)))[0]
+    scope.vars[lhs["name"]] = scope.seq.env(env, [addr_val])[0]
 
 
 def writeMem(stmt, scope):
@@ -280,14 +281,14 @@ def writeMem(stmt, scope):
     env = find_env(
         scope.ctx,
         stmt["attrs"],
-        list((addr_val.width, value.width)),
+        [addr_val.width, value.width],
         list(),
     )
-    scope.seq.env(env, list((addr_val, value)))
+    scope.seq.env(env, [addr_val, value])
 
 
 def branch(stmt, scope):
-    scope.seq.env(scope.ctx.set_pc, list((resolve(stmt["oprnds"][0], scope),)))
+    scope.seq.env(scope.ctx.set_pc, [resolve(stmt["oprnds"][0], scope)])
 
 
 def sysCall(stmt, scope):
@@ -396,7 +397,7 @@ def field_map(operand_map, operand_list, fields):
             return list()
         name = node["name"]
         if name in field_names:
-            return list(((name, 0),))
+            return [(name, 0)]
         if name not in parts:
             raise ValueError(f"operand tree references undefined variable '{name}'")
         return parts[name]
@@ -566,18 +567,18 @@ def convert(ir_data):
 
     get_pc = arch.EnvironmentFunction(
         name="getPC",
-        attributes=list((PC_ATTRIBUTE,)),
+        attributes=[PC_ATTRIBUTE],
         inputs=list(),
-        outputs=list((pc_size,)),
+        outputs=[pc_size],
     )
     set_pc = arch.EnvironmentFunction(
         name="setPC",
-        attributes=list((PC_ATTRIBUTE,)),
-        inputs=list((pc_size,)),
+        attributes=[PC_ATTRIBUTE],
+        inputs=[pc_size],
         outputs=list(),
     )
 
-    envs += list((get_pc, set_pc))
+    envs += [get_pc, set_pc]
 
     builder = ArchBuilder(name=arch_name, attributes=list())
 
