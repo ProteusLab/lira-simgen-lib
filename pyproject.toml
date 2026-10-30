@@ -17,7 +17,7 @@ where = ["."]
 include = ["lib*", "cpp*", "interpreter*", "encoder*", "decoder*", "utils*"]
 
 [tool.setuptools.package-data]
-cpp = ["templates/*.jinja", "Target/*/templates/*.jinja"]
+cpp = ["templates/*.jinja"]
 interpreter = ["templates/*.jinja"]
 encoder = ["templates/*.jinja"]
 decoder = ["templates/*.jinja"]

@@ -70,6 +70,129 @@ def _out_type(op: Operation) -> str:
     return OperandType.gen(op.outputs[0])
 
 
+def _extend_sign(op: Operation) -> str:
+    iw = op.inputs[0]
+    t = _out_type(op)
+    return (
+        f"  {t} val = a & ((({t})1 << {iw}) - 1);\n"
+        f"  {t} sign = (val >> ({iw} - 1)) & 1;\n"
+        "  if (sign)\n"
+        f"    return val | (~((({t})1 << {iw}) - 1));\n"
+        "  else\n"
+        "    return val;\n"
+    )
+
+
+def _extend_zero(op: Operation) -> str:
+    iw = op.inputs[0]
+    t = _out_type(op)
+    return f"  return a & ((({t})1 << {iw}) - 1);\n"
+
+
+def _extract_low(op: Operation) -> str:
+    ow = op.outputs[0]
+    t = _in_type(op)
+    return f"  return a & ((({t})1 << {ow}) - 1);\n"
+
+
+def _clz(op: Operation) -> str:
+    width = op.inputs[0]
+    if width == 128:
+        return (
+            "  if (a == 0) return 128;\n"
+            "  uint64_t hi = (uint64_t)(a >> 64);\n"
+            "  if (hi) return clz_64(hi);\n"
+            "  else return 64 + clz_64((uint64_t)a);\n"
+        )
+    mask = {8: "0x80", 16: "0x8000", 32: "0x80000000", 64: "0x8000000000000000ULL"}[width]
+    return (
+        f"  if (a == 0) return {width};\n"
+        "  unsigned n = 0;\n"
+        f"  while ((a & {mask}) == 0) {{\n"
+        "    a <<= 1;\n"
+        "    n++;\n"
+        "  }\n"
+        "  return n;\n"
+    )
+
+
+def _ctz(op: Operation) -> str:
+    width = op.inputs[0]
+    if width == 128:
+        return (
+            "  if (a == 0) return 128;\n"
+            "  uint64_t lo = (uint64_t)a;\n"
+            "  if (lo) return ctz_64(lo);\n"
+            "  else return 64 + ctz_64((uint64_t)(a >> 64));\n"
+        )
+    return (
+        f"  if (a == 0) return {width};\n"
+        "  unsigned n = 0;\n"
+        "  while ((a & 1) == 0) {\n"
+        "    a >>= 1;\n"
+        "    n++;\n"
+        "  }\n"
+        "  return n;\n"
+    )
+
+
+def _popcnt(op: Operation) -> str:
+    return {
+        8: (
+            "  unsigned cnt = 0;\n"
+            "  while (a) {\n"
+            "    cnt += a & 1;\n"
+            "    a >>= 1;\n"
+            "  }\n"
+            "  return cnt;\n"
+        ),
+        16: "  return popcnt_8(a & 0xFF) + popcnt_8((a >> 8) & 0xFF);\n",
+        32: "  return popcnt_16(a & 0xFFFF) + popcnt_16((a >> 16) & 0xFFFF);\n",
+        64: "  return popcnt_32(a & 0xFFFFFFFF) + popcnt_32((a >> 32) & 0xFFFFFFFF);\n",
+        128: "  return popcnt_64((uint64_t)a) + popcnt_64((uint64_t)(a >> 64));\n",
+    }[op.inputs[0]]
+
+
+def _reverse(op: Operation) -> str:
+    return {
+        8: (
+            "  a = ((a & 0xF0) >> 4) | ((a & 0x0F) << 4);\n"
+            "  a = ((a & 0xCC) >> 2) | ((a & 0x33) << 2);\n"
+            "  a = ((a & 0xAA) >> 1) | ((a & 0x55) << 1);\n"
+            "  return a;\n"
+        ),
+        16: (
+            "  a = ((a & 0xFF00) >> 8) | ((a & 0x00FF) << 8);\n"
+            "  a = ((a & 0xF0F0) >> 4) | ((a & 0x0F0F) << 4);\n"
+            "  a = ((a & 0xCCCC) >> 2) | ((a & 0x3333) << 2);\n"
+            "  a = ((a & 0xAAAA) >> 1) | ((a & 0x5555) << 1);\n"
+            "  return a;\n"
+        ),
+        32: (
+            "  a = ((a & 0xFFFF0000) >> 16) | ((a & 0x0000FFFF) << 16);\n"
+            "  a = ((a & 0xFF00FF00) >> 8) | ((a & 0x00FF00FF) << 8);\n"
+            "  a = ((a & 0xF0F0F0F0) >> 4) | ((a & 0x0F0F0F0F) << 4);\n"
+            "  a = ((a & 0xCCCCCCCC) >> 2) | ((a & 0x33333333) << 2);\n"
+            "  a = ((a & 0xAAAAAAAA) >> 1) | ((a & 0x55555555) << 1);\n"
+            "  return a;\n"
+        ),
+        64: (
+            "  a = ((a & 0xFFFFFFFF00000000ULL) >> 32) | ((a & 0x00000000FFFFFFFFULL) << 32);\n"
+            "  a = ((a & 0xFFFF0000FFFF0000ULL) >> 16) | ((a & 0x0000FFFF0000FFFFULL) << 16);\n"
+            "  a = ((a & 0xFF00FF00FF00FF00ULL) >> 8) | ((a & 0x00FF00FF00FF00FFULL) << 8);\n"
+            "  a = ((a & 0xF0F0F0F0F0F0F0F0ULL) >> 4) | ((a & 0x0F0F0F0F0F0F0F0FULL) << 4);\n"
+            "  a = ((a & 0xCCCCCCCCCCCCCCCCULL) >> 2) | ((a & 0x3333333333333333ULL) << 2);\n"
+            "  a = ((a & 0xAAAAAAAAAAAAAAAAULL) >> 1) | ((a & 0x5555555555555555ULL) << 1);\n"
+            "  return a;\n"
+        ),
+        128: (
+            "  uint64_t lo = (uint64_t)a;\n"
+            "  uint64_t hi = (uint64_t)(a >> 64);\n"
+            "  return ((uint128_t)reverse_64(lo) << 64) | reverse_64(hi);\n"
+        ),
+    }[op.inputs[0]]
+
+
 def _include(cls: type) -> None:
     cls._cpp_body = None
 
@@ -87,46 +210,44 @@ for _cls in (
     _include(_cls)
 
 
-Not._cpp_body = lambda self: _render("not_op.jinja")
-Neg._cpp_body = lambda self: _render("neg_op.jinja")
-Add._cpp_body = lambda self: _render("binary_op.jinja", token="+")
-Sub._cpp_body = lambda self: _render("binary_op.jinja", token="-")
-Mul._cpp_body = lambda self: _render("binary_op.jinja", token="*")
-And._cpp_body = lambda self: _render("binary_op.jinja", token="&")
-Orr._cpp_body = lambda self: _render("binary_op.jinja", token="|")
-Xor._cpp_body = lambda self: _render("binary_op.jinja", token="^")
+Not._cpp_body = lambda self: "  return ~a;\n"
+Neg._cpp_body = lambda self: "  return -a;\n"
+Add._cpp_body = lambda self: "  return a + b;\n"
+Sub._cpp_body = lambda self: "  return a - b;\n"
+Mul._cpp_body = lambda self: "  return a * b;\n"
+And._cpp_body = lambda self: "  return a & b;\n"
+Orr._cpp_body = lambda self: "  return a | b;\n"
+Xor._cpp_body = lambda self: "  return a ^ b;\n"
 
-Lsl._cpp_body = lambda self: _render("shift.jinja", op="<<")
-Lsr._cpp_body = lambda self: _render("shift.jinja", op=">>")
-Asr._cpp_body = lambda self: _render("asr.jinja", t=_in_type(self), ts=_signed(self))
-Eq._cpp_body = lambda self: _render("cmp_unsigned.jinja", token="==")
-Ne._cpp_body = lambda self: _render("cmp_unsigned.jinja", token="!=")
-Slt._cpp_body = lambda self: _render("cmp_signed.jinja", token="<", t=_signed(self))
-Sle._cpp_body = lambda self: _render("cmp_signed.jinja", token="<=", t=_signed(self))
-Sgt._cpp_body = lambda self: _render("cmp_signed.jinja", token=">", t=_signed(self))
-Sge._cpp_body = lambda self: _render("cmp_signed.jinja", token=">=", t=_signed(self))
-Ult._cpp_body = lambda self: _render("cmp_unsigned.jinja", token="<")
-Ule._cpp_body = lambda self: _render("cmp_unsigned.jinja", token="<=")
-Ugt._cpp_body = lambda self: _render("cmp_unsigned.jinja", token=">")
-Uge._cpp_body = lambda self: _render("cmp_unsigned.jinja", token=">=")
-DivU._cpp_body = lambda self: _render("div_u.jinja")
-DivS._cpp_body = lambda self: _render("div_s.jinja", t=_in_type(self), ts=_signed(self))
-RemU._cpp_body = lambda self: _render("rem_u.jinja")
-RemS._cpp_body = lambda self: _render("rem_s.jinja", t=_in_type(self), ts=_signed(self))
-Select._cpp_body = lambda self: _render("select.jinja")
-ExtendSign._cpp_body = lambda self: _render(
-    "extend_sign.jinja", iw=self.inputs[0], t=_out_type(self)
+Lsl._cpp_body = lambda self: "  return a << b;\n"
+Lsr._cpp_body = lambda self: "  return a >> b;\n"
+Asr._cpp_body = lambda self: f"  return ({_in_type(self)})(({_signed(self)})a >> b);\n"
+Eq._cpp_body = lambda self: "  return (a == b) ? 1 : 0;\n"
+Ne._cpp_body = lambda self: "  return (a != b) ? 1 : 0;\n"
+Slt._cpp_body = lambda self: f"  return (({_signed(self)})a < ({_signed(self)})b) ? 1 : 0;\n"
+Sle._cpp_body = lambda self: f"  return (({_signed(self)})a <= ({_signed(self)})b) ? 1 : 0;\n"
+Sgt._cpp_body = lambda self: f"  return (({_signed(self)})a > ({_signed(self)})b) ? 1 : 0;\n"
+Sge._cpp_body = lambda self: f"  return (({_signed(self)})a >= ({_signed(self)})b) ? 1 : 0;\n"
+Ult._cpp_body = lambda self: "  return (a < b) ? 1 : 0;\n"
+Ule._cpp_body = lambda self: "  return (a <= b) ? 1 : 0;\n"
+Ugt._cpp_body = lambda self: "  return (a > b) ? 1 : 0;\n"
+Uge._cpp_body = lambda self: "  return (a >= b) ? 1 : 0;\n"
+DivU._cpp_body = lambda self: "  return (b == 0) ? c : a / b;\n"
+DivS._cpp_body = lambda self: f"  return (b == 0) ? c : ({_in_type(self)})(({_signed(self)})a / ({_signed(self)})b);\n"
+RemU._cpp_body = lambda self: "  if (b == 0) return a;\n  return a % b;\n"
+RemS._cpp_body = lambda self: (
+    f"  if (b == 0) return a;\n"
+    f"  {_signed(self)} res = ({_signed(self)})a % ({_signed(self)})b;\n"
+    f"  return ({_in_type(self)})res;\n"
 )
-ExtendZero._cpp_body = lambda self: _render(
-    "extend_zero.jinja", iw=self.inputs[0], t=_out_type(self)
-)
-ExtractLow._cpp_body = lambda self: _render(
-    "extract_low.jinja", ow=self.outputs[0], t=_in_type(self)
-)
-Popcnt._cpp_body = lambda self: _render("popcnt.jinja", width=self.inputs[0])
-Ctz._cpp_body = lambda self: _render("ctz.jinja", width=self.inputs[0])
-Clz._cpp_body = lambda self: _render("clz.jinja", width=self.inputs[0])
-Reverse._cpp_body = lambda self: _render("reverse.jinja", width=self.inputs[0])
+Select._cpp_body = lambda self: "  return a ? b : c;\n"
+ExtendSign._cpp_body = _extend_sign
+ExtendZero._cpp_body = _extend_zero
+ExtractLow._cpp_body = _extract_low
+Popcnt._cpp_body = _popcnt
+Ctz._cpp_body = _ctz
+Clz._cpp_body = _clz
+Reverse._cpp_body = _reverse
 
 
 if __name__ == "__main__":
