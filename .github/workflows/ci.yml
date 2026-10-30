@@ -20,3 +20,42 @@ jobs:
 
       - name: Check formatting
         run: black --check lib
+
+  convert:
+    name: Protea IR -> LIRA IR conversion
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+
+      - name: Install converter dependencies
+        run: pip install ruamel.yaml
+
+      - name: Configure
+        run: cmake -B build -DARCH_TARGET=RISC_V -DARCH_SOURCE=Protea
+
+      - name: Generate the LIRA IR
+        run: cmake --build build --target gen-ir
+
+      - name: Verify the generated IR
+        run: |
+          PYTHONPATH=$PWD:build/_deps/lira-src/python python3 - <<'PYEOF'
+          from pathlib import Path
+          from lira.arch_ser_yaml import read_arch
+
+          arch = read_arch(Path("build/lira_ir/RISC_V.yaml"))
+          assert len(arch.instructions) == 49
+          assert len(arch.snippets) == 226
+          assert len(arch.operations) == 53
+          print(
+              f"IR OK: {len(arch.instructions)} instructions, "
+              f"{len(arch.snippets)} snippets, {len(arch.operations)} ops"
+          )
+          PYEOF
