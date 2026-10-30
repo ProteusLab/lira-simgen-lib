@@ -4,18 +4,21 @@ Generators for the shared C++ sources (base operations and snippets) from LIRA I
 
 ## Getting the LIRA IR
 
-Generate the LIRA IR from the native Protea IR first (see
+The LIRA IR is generated from the Protea ADL at build time (see
 [utils/protea2lira](../utils/protea2lira) for details):
 
+```bash
+cmake -B build -DARCH_TARGET=RISC_V -DARCH_SOURCE=Protea
+cmake --build build --target gen-ir
 ```
-python3 utils/protea2lira/main.py --ir-path <native Protea IR> --output RISC_V.yaml
-```
+
+The LIRA IR is written to `build/lira_ir/RISC_V.yaml`.
 
 Both generators take the same arguments:
 
 | Argument | Description |
 |---|---|
-| `--ir-path` | path to the LIRA IR file (e.g. `RISC_V.yaml`) |
+| `--ir-path` | path to the LIRA IR file (e.g. `build/lira_ir/RISC_V.yaml`) |
 | `--arch-target` | target Python package name: `interpreter/Target/<ARCH_TARGET>` (e.g. `RISC_V`) |
 | `--out-dir` | directory for the generated files |
 
@@ -25,7 +28,7 @@ Generates `base_ops.hh` / `base_ops.cc` — C++ implementations of the LIRA base
 (arithmetic, comparisons, shifts, extensions, ...).
 
 ```
-python3 cpp/base_ops.py --ir-path RISC_V.yaml --arch-target RISC_V --out-dir <out>
+python3 cpp/base_ops.py --ir-path build/lira_ir/RISC_V.yaml --arch-target RISC_V --out-dir <out>
 ```
 
 ## cpp.snippets
@@ -34,5 +37,5 @@ Generates `snippets.hh` / `snippets.cc` — C++ functions for the decode/encode/
 snippets of all instructions.
 
 ```
-python3 cpp/snippets.py --ir-path RISC_V.yaml --arch-target RISC_V --out-dir <out>
+python3 cpp/snippets.py --ir-path build/lira_ir/RISC_V.yaml --arch-target RISC_V --out-dir <out>
 ```
