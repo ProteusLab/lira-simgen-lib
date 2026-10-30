@@ -19,7 +19,37 @@ jobs:
         run: pip install "black==26.10.1"
 
       - name: Check formatting
-        run: black --check lib
+        run: black --check lib cpp
+
+  smoke:
+    name: cpp generator smoke
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install lira-ir jinja2
+
+      - name: Import and sanity-check the code generators
+        run: |
+          python3 - <<'PYEOF'
+          import cpp.base_ops
+          import cpp.snippets
+          import cpp.func
+          import cpp.nodes
+          import cpp.isa
+          import cpp.types
+          from lira.ir_ops import Add, DivS, ExtendSign
+
+          assert Add(32)._cpp_body() == "  return a + b;\n"
+          assert "return" in ExtendSign(1, 32)._cpp_body()
+          assert "return" in DivS(32)._cpp_body()
+          print("cpp generators OK")
+          PYEOF
 
   convert:
     name: Protea IR -> LIRA IR conversion
