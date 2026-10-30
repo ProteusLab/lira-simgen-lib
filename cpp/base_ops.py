@@ -104,7 +104,9 @@ def _clz(op: Operation) -> str:
   if (hi) return clz_64(hi);
   else return 64 + clz_64((uint64_t)a);
 """
-    mask = {8: "0x80", 16: "0x8000", 32: "0x80000000", 64: "0x8000000000000000ULL"}[width]
+    mask = {8: "0x80", 16: "0x8000", 32: "0x80000000", 64: "0x8000000000000000ULL"}[
+        width
+    ]
     return f"""\
   if (a == 0) return {width};
   unsigned n = 0;
@@ -224,16 +226,26 @@ Lsr._cpp_body = lambda self: "  return a >> b;\n"
 Asr._cpp_body = lambda self: f"  return ({_in_type(self)})(({_signed(self)})a >> b);\n"
 Eq._cpp_body = lambda self: "  return (a == b) ? 1 : 0;\n"
 Ne._cpp_body = lambda self: "  return (a != b) ? 1 : 0;\n"
-Slt._cpp_body = lambda self: f"  return (({_signed(self)})a < ({_signed(self)})b) ? 1 : 0;\n"
-Sle._cpp_body = lambda self: f"  return (({_signed(self)})a <= ({_signed(self)})b) ? 1 : 0;\n"
-Sgt._cpp_body = lambda self: f"  return (({_signed(self)})a > ({_signed(self)})b) ? 1 : 0;\n"
-Sge._cpp_body = lambda self: f"  return (({_signed(self)})a >= ({_signed(self)})b) ? 1 : 0;\n"
+Slt._cpp_body = (
+    lambda self: f"  return (({_signed(self)})a < ({_signed(self)})b) ? 1 : 0;\n"
+)
+Sle._cpp_body = (
+    lambda self: f"  return (({_signed(self)})a <= ({_signed(self)})b) ? 1 : 0;\n"
+)
+Sgt._cpp_body = (
+    lambda self: f"  return (({_signed(self)})a > ({_signed(self)})b) ? 1 : 0;\n"
+)
+Sge._cpp_body = (
+    lambda self: f"  return (({_signed(self)})a >= ({_signed(self)})b) ? 1 : 0;\n"
+)
 Ult._cpp_body = lambda self: "  return (a < b) ? 1 : 0;\n"
 Ule._cpp_body = lambda self: "  return (a <= b) ? 1 : 0;\n"
 Ugt._cpp_body = lambda self: "  return (a > b) ? 1 : 0;\n"
 Uge._cpp_body = lambda self: "  return (a >= b) ? 1 : 0;\n"
 DivU._cpp_body = lambda self: "  return (b == 0) ? c : a / b;\n"
-DivS._cpp_body = lambda self: f"  return (b == 0) ? c : ({_in_type(self)})(({_signed(self)})a / ({_signed(self)})b);\n"
+DivS._cpp_body = (
+    lambda self: f"  return (b == 0) ? c : ({_in_type(self)})(({_signed(self)})a / ({_signed(self)})b);\n"
+)
 RemU._cpp_body = lambda self: "  if (b == 0) return a;\n  return a % b;\n"
 RemS._cpp_body = lambda self: f"""\
   if (b == 0) return a;
