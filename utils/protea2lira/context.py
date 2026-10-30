@@ -36,7 +36,7 @@ class Context:
     set_pc: EnvironmentFunction
     used: Dict[str, object] = field(default_factory=dict)  # op name -> instance
     counters: Dict[SnippetKind, int] = field(
-        default_factory=lambda: {kind: 0 for kind in SnippetKind}
+        default_factory=lambda: dict((kind, 0) for kind in SnippetKind)
     )
 
     def add_snippet(self, snippet, kind: SnippetKind) -> str:
@@ -59,7 +59,11 @@ class Scope:
 
 def find_env(ctx: Context, name, inputs, outputs):
     for env in ctx.envs:
-        if env.name == name and list(env.inputs) == inputs and list(env.outputs) == outputs:
+        if (
+            env.name == name
+            and list(env.inputs) == inputs
+            and list(env.outputs) == outputs
+        ):
             return env
     raise ValueError(
         f"no environment function '{name}' with inputs {inputs} and outputs {outputs}"
