@@ -10,7 +10,6 @@ from lib.builders import CodeBuilder
 from lib.config import IConfig
 from lib.nodes import render_nodes
 from lib.operand import Variable
-from lib.snippet import SnippetKind
 
 import cpp.nodes  # noqa: F401  (registers the node renderers)
 
@@ -44,21 +43,7 @@ class Func:
         return cls(env.name, ret, _letter_params(env.inputs), "")
 
     @classmethod
-    def from_snippet(cls, snippet, index, kind, param_names=None):
-        mach_inst = IConfig.mach_inst
-        input_stmts = [
-            stmt for stmt in snippet.seq.stmts if stmt.kind == StmtInput.kind
-        ]
-        if kind is SnippetKind.ENCODE:
-            named = input_stmts
-            prefix = []
-        elif kind in (SnippetKind.DECODE, SnippetKind.CONSTRAINT):
-            # Input 0 is the machine word by definition.
-            named = [stmt for stmt in input_stmts if int(stmt.specifier) != 0]
-            prefix = [mach_inst]
-        else:
-            raise ValueError(f"unexpected snippet kind: {kind!r}")
-
+    def _build_snippet(cls, snippet, index, prefix, named, param_names):
         widths = [stmt.outputs_types[0] for stmt in named]
         if param_names is None:
             params = prefix + _letter_params(widths)
@@ -78,6 +63,32 @@ class Func:
         if builder.ret is None:
             raise ValueError(f"snippet '{snippet.name}' has no output statement")
         return cls(snippet.name, OperandType.gen(builder.ret.width), params, body)
+
+    @classmethod
+    def from_snippet(cls, snippet, index, param_names=None):
+        inputs = [stmt for stmt in snippet.seq.stmts if stmt.kind == StmtInput.kind]
+        return cls._build_snippet(snippet, index, [], inputs, param_names)
+
+    @classmethod
+    def from_encode_snippet(cls, snippet, index, param_names=None):
+        inputs = [stmt for stmt in snippet.seq.stmts if stmt.kind == StmtInput.kind]
+        return cls._build_snippet(snippet, index, [], inputs, param_names)
+
+    @classmethod
+    def from_decode_snippet(cls, snippet, index, param_names=None):
+        inputs = [stmt for stmt in snippet.seq.stmts if stmt.kind == StmtInput.kind]
+        named = [stmt for stmt in inputs if int(stmt.specifier) != 0]
+        return cls._build_snippet(
+            snippet, index, [IConfig.mach_inst], named, param_names
+        )
+
+    @classmethod
+    def from_constraint_snippet(cls, snippet, index, param_names=None):
+        inputs = [stmt for stmt in snippet.seq.stmts if stmt.kind == StmtInput.kind]
+        named = [stmt for stmt in inputs if int(stmt.specifier) != 0]
+        return cls._build_snippet(
+            snippet, index, [IConfig.mach_inst], named, param_names
+        )
 
     def __call__(self, args: List[str]) -> str:
         return f"{self.name}({', '.join(args)})"

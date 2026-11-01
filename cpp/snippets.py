@@ -2,9 +2,8 @@
 
 import cpp.base_ops  # noqa: F401  (C++ bodies for LIRA operations)
 
-from cpp.func import Func
 from cpp import render as _render
-from lib.snippet import SnippetKind
+from cpp.func import Func
 
 
 def render_snippets(funcs) -> tuple:
@@ -21,26 +20,24 @@ def build_snippet_funcs(arch, index) -> list:
     for insn in arch.instructions:
         enc = insn.encoding
         for name in enc.decode:
-            funcs.setdefault(
-                name, Func.from_snippet(index.snippet[name], index, SnippetKind.DECODE)
-            )
+            funcs.setdefault(name, Func.from_decode_snippet(index.snippet[name], index))
         if enc.encode:
             funcs.setdefault(
                 enc.encode,
-                Func.from_snippet(index.snippet[enc.encode], index, SnippetKind.ENCODE),
+                Func.from_encode_snippet(index.snippet[enc.encode], index),
             )
         if enc.constraint_decode:
             funcs.setdefault(
                 enc.constraint_decode,
-                Func.from_snippet(
-                    index.snippet[enc.constraint_decode], index, SnippetKind.CONSTRAINT
+                Func.from_constraint_snippet(
+                    index.snippet[enc.constraint_decode], index
                 ),
             )
         if enc.constraint_encode:
             funcs.setdefault(
                 enc.constraint_encode,
-                Func.from_snippet(
-                    index.snippet[enc.constraint_encode], index, SnippetKind.CONSTRAINT
+                Func.from_constraint_snippet(
+                    index.snippet[enc.constraint_encode], index
                 ),
             )
 
