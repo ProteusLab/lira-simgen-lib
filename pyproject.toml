@@ -24,6 +24,7 @@ include = ["lib*", "cpp*", "interpreter*", "encoder*", "decoder*", "utils*"]
 
 [tool.pytest.ini_options]
 testpaths = ["cpp/tests"]
+pythonpath = ["."]
 
 [tool.setuptools.package-data]
 cpp = ["templates/*.jinja"]
