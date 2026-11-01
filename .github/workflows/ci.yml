@@ -21,8 +21,8 @@ jobs:
       - name: Check formatting
         run: black --check lib cpp
 
-  smoke:
-    name: cpp generator smoke
+  test:
+    name: cpp unit tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -32,24 +32,10 @@ jobs:
           python-version: "3.12"
 
       - name: Install dependencies
-        run: pip install "git+https://github.com/ProteusLab/LIRA@v0.1.1#subdirectory=python" jinja2
+        run: pip install "git+https://github.com/ProteusLab/LIRA@v0.1.1#subdirectory=python" jinja2 pytest pytest-cov
 
-      - name: Import and sanity-check the code generators
-        run: |
-          python3 - <<'PYEOF'
-          import cpp.base_ops
-          import cpp.snippets
-          import cpp.func
-          import cpp.nodes
-          import cpp.isa
-          import cpp.types
-          from lira.ir_ops import Add, DivS, ExtendSign
-
-          assert Add(32)._cpp_body() == "  return a + b;\n"
-          assert "return" in ExtendSign(1, 32)._cpp_body()
-          assert "return" in DivS(32)._cpp_body()
-          print("cpp generators OK")
-          PYEOF
+      - name: Run tests with coverage
+        run: pytest --cov=cpp --cov-fail-under=75 --cov-report=term-missing cpp/tests
 
   convert:
     name: Protea IR -> LIRA IR conversion

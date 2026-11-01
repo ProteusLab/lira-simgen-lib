@@ -12,9 +12,18 @@ dependencies = [
     "jinja2",
 ]
 
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-cov",
+]
+
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["lib*", "cpp*", "interpreter*", "encoder*", "decoder*", "utils*"]
+
+[tool.pytest.ini_options]
+testpaths = ["cpp/tests"]
 
 [tool.setuptools.package-data]
 cpp = ["templates/*.jinja"]
