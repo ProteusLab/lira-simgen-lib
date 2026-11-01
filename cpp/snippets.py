@@ -56,14 +56,14 @@ if __name__ == "__main__":
     from lira.arch_utils import build_arch_index
 
     ap = argparse.ArgumentParser(
-        description="Generate snippets.hh/snippets.cc from LIRA IR"
+        description="Generate snippets C++ sources from LIRA IR"
     )
     ap.add_argument("--ir-path", required=True, type=Path)
     ap.add_argument("--out-dir", required=True, type=Path)
     ap.add_argument(
         "--arch-target",
         required=True,
-        help="""Target architecture: interpreter/Target Python package name""",
+        help="Target architecture name",
     )
     args = ap.parse_args()
 
