@@ -7,6 +7,7 @@ from typing import List, Optional, Tuple
 
 from lib.instruction import Instruction
 
+import cpp.base_ops
 from cpp.func import Func
 from cpp.isa import addr_type_of, render_isa
 
