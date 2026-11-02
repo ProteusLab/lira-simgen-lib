@@ -245,15 +245,19 @@ Ule._cpp_body = lambda self: "return (arg0 <= arg1) ? 1 : 0;\n"
 Ugt._cpp_body = lambda self: "return (arg0 > arg1) ? 1 : 0;\n"
 Uge._cpp_body = lambda self: "return (arg0 >= arg1) ? 1 : 0;\n"
 DivU._cpp_body = lambda self: "return (arg1 == 0) ? arg2 : arg0 / arg1;\n"
+
 DivS._cpp_body = (
     lambda self: f"return (arg1 == 0) ? arg2 : ({_in_type(self)})(({_signed(self)})arg0 / ({_signed(self)})arg1);\n"
 )
+
 RemU._cpp_body = lambda self: "if (arg1 == 0) return arg0;\nreturn arg0 % arg1;\n"
+
 RemS._cpp_body = lambda self: f"""\
 if (arg1 == 0) return arg0;
 {_signed(self)} res = ({_signed(self)})arg0 % ({_signed(self)})arg1;
 return ({_in_type(self)})res;
 """
+
 Select._cpp_body = lambda self: "return arg0 ? arg1 : arg2;\n"
 ExtendSign._cpp_body = _extend_sign
 ExtendZero._cpp_body = _extend_zero
