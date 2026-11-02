@@ -75,17 +75,9 @@ class BuilderMeta(ABCMeta):
 class CodeBuilder(IBuilder, metaclass=BuilderMeta):
     handlers: Dict[str, type]
 
-    def __init__(
-        self,
-        index: ArchIndex,
-        mach_inst: Optional[Variable] = None,
-        params: Optional[List[Variable]] = None,
-    ):
+    def __init__(self, index: ArchIndex, params: List[Variable]):
         self.index: ArchIndex = index
-        self.mach_inst: Variable = (
-            mach_inst if mach_inst is not None else IConfig.mach_inst
-        )
-        self.params: List[Variable] = params if params is not None else [self.mach_inst]
+        self.params: List[Variable] = params
         self.nodes: List[object] = []
         self._vars: Dict[str, Variable] = {}
         self.ret: Optional[Variable] = None
@@ -152,7 +144,7 @@ class CodeBuilder(IBuilder, metaclass=BuilderMeta):
 
 class SemanticBuilder(CodeBuilder):
     def __init__(self, index: ArchIndex, insn: LiraInstruction, interfaces, reg_files):
-        super().__init__(index)
+        super().__init__(index, params=[IConfig.mach_inst])
         self.insn: LiraInstruction = insn
         self.interfaces = interfaces
         self.reg_files = reg_files
