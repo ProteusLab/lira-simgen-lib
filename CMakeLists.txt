@@ -10,7 +10,7 @@ include(cmake/CPM.cmake)
 CPMAddPackage(
   NAME LIRA
   GITHUB_REPOSITORY ProteusLab/LIRA
-  GIT_TAG v0.1.1
+  GIT_TAG aarch64
 )
 
 
@@ -43,7 +43,7 @@ elseif(ARCH_SOURCE STREQUAL "Protea")
   include(cmake/fetch_protea.cmake)
   add_subdirectory(utils/protea2lira)
 elseif(ARCH_SOURCE STREQUAL "ASL")
-  message(FATAL_ERROR "ARCH_SOURCE=ASL is not implemented yet")
+  add_subdirectory(utils/asl2lira)
 else()
   message(FATAL_ERROR
     "unknown ARCH_SOURCE '${ARCH_SOURCE}' (expected Protea or ASL)")
