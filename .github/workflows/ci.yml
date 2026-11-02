@@ -91,6 +91,9 @@ jobs:
         with:
           ruby-version: "3.4"
 
+      - name: Install Python dependencies
+        run: pip install ruamel.yaml jinja2
+
       - name: Configure
         run: cmake -B build -DARCH_TARGET=RISC_V -DARCH_SOURCE=Protea
 
