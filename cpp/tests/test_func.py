@@ -18,7 +18,7 @@ def test_declaration_definition():
     assert func.definition == """
 uint32_t f(uint32_t a, uint32_t b)
 {
-      return a + b;
+  return a + b;
 
 }
 """
@@ -33,8 +33,8 @@ def test_from_op():
     func = Func.from_op(Add(32))
     assert func.name == "add_32"
     assert func.ret == "uint32_t"
-    assert [p.name for p in func.params] == ["a", "b"]
-    assert func.declaration == "uint32_t add_32(uint32_t a, uint32_t b);"
+    assert [p.name for p in func.params] == ["arg0", "arg1"]
+    assert func.declaration == "uint32_t add_32(uint32_t arg0, uint32_t arg1);"
 
 
 def test_from_op_missing_body():
@@ -52,7 +52,7 @@ def test_from_env():
 
 def test_from_snippet_general(index):
     func = Func.from_snippet(index.snippet["decode_0"], index)
-    assert func.declaration == "uint8_t decode_0(uint32_t a);"
+    assert func.declaration == "uint8_t decode_0(uint32_t arg0);"
     assert "return _t" in func.body
 
 
@@ -99,18 +99,20 @@ def test_from_snippet_custom_function(index):
     func = Func.from_snippet(snippet, index)
     assert func.name == "concat"
     assert func.ret == "uint32_t"
-    assert func.declaration == "uint32_t concat(uint32_t a, uint32_t b, uint32_t c);"
+    assert func.declaration == (
+        "uint32_t concat(uint32_t arg0, uint32_t arg1, uint32_t arg2);"
+    )
     assert func.definition == """
-uint32_t concat(uint32_t a, uint32_t b, uint32_t c)
+uint32_t concat(uint32_t arg0, uint32_t arg1, uint32_t arg2)
 {
-    uint32_t _t1{0};
-_t1 = a;
+uint32_t _t1{0};
+_t1 = arg0;
 
 uint32_t _t2{0};
-_t2 = b;
+_t2 = arg1;
 
 uint32_t _t3{0};
-_t3 = c;
+_t3 = arg2;
 
 uint32_t _t4 = 8;
 uint32_t _t5{0};
@@ -129,4 +131,4 @@ _t9 = orr_32(_t8, _t7);
 return _t9;
 }
 """
-    assert func(["a", "b", "c"]) == "concat(a, b, c)"
+    assert func(["arg0", "arg1", "arg2"]) == "concat(arg0, arg1, arg2)"

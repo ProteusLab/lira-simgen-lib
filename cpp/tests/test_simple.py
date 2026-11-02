@@ -21,18 +21,20 @@ def test_simple_snippet_demo(index):
     # NOTE: Generate C++ for the snippet.
     func = Func.from_snippet(snippet, index)
 
-    assert func.declaration == "uint32_t sum3(uint32_t a, uint32_t b, uint32_t c);"
+    assert func.declaration == (
+        "uint32_t sum3(uint32_t arg0, uint32_t arg1, uint32_t arg2);"
+    )
     assert func.definition == """
-uint32_t sum3(uint32_t a, uint32_t b, uint32_t c)
+uint32_t sum3(uint32_t arg0, uint32_t arg1, uint32_t arg2)
 {
-    uint32_t _t1{0};
-_t1 = a;
+uint32_t _t1{0};
+_t1 = arg0;
 
 uint32_t _t2{0};
-_t2 = b;
+_t2 = arg1;
 
 uint32_t _t3{0};
-_t3 = c;
+_t3 = arg2;
 
 uint32_t _t4{0};
 _t4 = add_32(_t1, _t2);

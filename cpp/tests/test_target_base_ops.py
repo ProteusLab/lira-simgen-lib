@@ -6,35 +6,35 @@ import cpp.Target.RISC_V.base_ops  # noqa: F401  (applies the RISC-V overrides)
 
 
 def test_shift_masks():
-    assert Lsl(32)._cpp_body() == """b &= 31;
-return a << b;
+    assert Lsl(32)._cpp_body() == """arg1 &= 31;
+return arg0 << arg1;
 """
 
-    assert Lsr(32)._cpp_body() == """b &= 31;
-return a >> b;
+    assert Lsr(32)._cpp_body() == """arg1 &= 31;
+return arg0 >> arg1;
 """
 
-    assert Lsl(64)._cpp_body() == """b &= 63;
-return a << b;
+    assert Lsl(64)._cpp_body() == """arg1 &= 63;
+return arg0 << arg1;
 """
 
 
 def test_asr():
-    assert Asr(32)._cpp_body() == """b &= 31;
-return (uint32_t)((int32_t)a >> b);
+    assert Asr(32)._cpp_body() == """arg1 &= 31;
+return (uint32_t)((int32_t)arg0 >> arg1);
 """
 
 
 def test_div_s_overflow_guard():
-    assert DivS(32)._cpp_body() == """if (b == 0) return c;
-if ((uint32_t)a == (uint32_t)1 << 31 && (int32_t)b == -1) return a;
-return (uint32_t)((int32_t)a / (int32_t)b);
+    assert DivS(32)._cpp_body() == """if (arg1 == 0) return arg2;
+if ((uint32_t)arg0 == (uint32_t)1 << 31 && (int32_t)arg1 == -1) return arg0;
+return (uint32_t)((int32_t)arg0 / (int32_t)arg1);
 """
 
 
 def test_rem_s_overflow_guard():
-    assert RemS(32)._cpp_body() == """if (b == 0) return a;
-if ((uint32_t)a == (uint32_t)1 << 31 && (int32_t)b == -1) return 0;
-int32_t res = (int32_t)a % (int32_t)b;
+    assert RemS(32)._cpp_body() == """if (arg1 == 0) return arg0;
+if ((uint32_t)arg0 == (uint32_t)1 << 31 && (int32_t)arg1 == -1) return 0;
+int32_t res = (int32_t)arg0 % (int32_t)arg1;
 return (uint32_t)res;
 """
