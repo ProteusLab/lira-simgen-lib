@@ -16,8 +16,8 @@ import cpp.nodes  # noqa: F401  (registers the node renderers)
 from cpp.types import OperandType
 
 
-def _letter_params(widths: List[int], offset: int = 0) -> List[Variable]:
-    return [Variable(chr(ord("a") + offset + i), w) for i, w in enumerate(widths)]
+def _arg_params(widths: List[int]) -> List[Variable]:
+    return [Variable(f"arg{i}", w) for i, w in enumerate(widths)]
 
 
 @dataclass
@@ -34,29 +34,33 @@ class Func:
             raise ValueError(f"No C++ body defined for operation {op.name}")
         name = op.semantic_func or op.name
         return cls(
-            name, OperandType.gen(op.outputs[0]), _letter_params(op.inputs), body_fn(op)
+            name, OperandType.gen(op.outputs[0]), _arg_params(op.inputs), body_fn(op)
         )
 
     @classmethod
     def from_env(cls, env) -> "Func":
         ret = OperandType.gen(env.outputs[0]) if env.outputs else "void"
-        return cls(env.name, ret, _letter_params(env.inputs), "")
+        return cls(env.name, ret, _arg_params(env.inputs), "")
 
     @classmethod
-    def _build_snippet(cls, snippet, index, prefix, named, param_names):
-        widths = [stmt.outputs_types[0] for stmt in named]
+    def _params(cls, snippet, param_names=None):
+        inputs = []
+        for stmt in snippet.seq.stmts:
+            if stmt.kind == StmtInput.kind:
+                inputs.append(stmt)
+        widths = [stmt.outputs_types[0] for stmt in inputs]
         if param_names is None:
-            params = prefix + _letter_params(widths)
-        else:
-            if len(param_names) != len(named):
-                raise ValueError(
-                    f"snippet '{snippet.name}' takes {len(named)} inputs, "
-                    f"expected {len(param_names)} operands"
-                )
-            params = prefix + [
-                Variable(name, width) for name, width in zip(param_names, widths)
-            ]
+            return _arg_params(widths)
 
+        if len(param_names) != len(inputs):
+            raise ValueError(
+                f"snippet '{snippet.name}' takes {len(inputs)} inputs, "
+                f"expected {len(param_names)} operands"
+            )
+        return [Variable(name, width) for name, width in zip(param_names, widths)]
+
+    @classmethod
+    def _build_snippet(cls, snippet, index, params):
         builder = CodeBuilder(index, params=params)
         nodes = builder.build(snippet.seq)
         body = render_nodes(nodes)
@@ -66,29 +70,23 @@ class Func:
 
     @classmethod
     def from_snippet(cls, snippet, index, param_names=None):
-        inputs = [stmt for stmt in snippet.seq.stmts if stmt.kind == StmtInput.kind]
-        return cls._build_snippet(snippet, index, [], inputs, param_names)
+        params = cls._params(snippet, param_names)
+        return cls._build_snippet(snippet, index, params)
 
     @classmethod
     def from_encode_snippet(cls, snippet, index, param_names=None):
-        inputs = [stmt for stmt in snippet.seq.stmts if stmt.kind == StmtInput.kind]
-        return cls._build_snippet(snippet, index, [], inputs, param_names)
+        params = cls._params(snippet, param_names)
+        return cls._build_snippet(snippet, index, params)
 
     @classmethod
-    def from_decode_snippet(cls, snippet, index, param_names=None):
-        inputs = [stmt for stmt in snippet.seq.stmts if stmt.kind == StmtInput.kind]
-        named = [stmt for stmt in inputs if int(stmt.specifier) != 0]
-        return cls._build_snippet(
-            snippet, index, [IConfig.mach_inst], named, param_names
-        )
+    def from_decode_snippet(cls, snippet, index):
+        params = cls._params(snippet, [IConfig.mach_inst.name])
+        return cls._build_snippet(snippet, index, params)
 
     @classmethod
-    def from_constraint_snippet(cls, snippet, index, param_names=None):
-        inputs = [stmt for stmt in snippet.seq.stmts if stmt.kind == StmtInput.kind]
-        named = [stmt for stmt in inputs if int(stmt.specifier) != 0]
-        return cls._build_snippet(
-            snippet, index, [IConfig.mach_inst], named, param_names
-        )
+    def from_constraint_snippet(cls, snippet, index):
+        params = cls._params(snippet, [IConfig.mach_inst.name])
+        return cls._build_snippet(snippet, index, params)
 
     def __call__(self, args: List[str]) -> str:
         return f"{self.name}({', '.join(args)})"
@@ -106,6 +104,6 @@ class Func:
         return f"""
 {self.ret} {self.name}({self.param_list})
 {{
-    {self.body}
+{self.body}
 }}
 """

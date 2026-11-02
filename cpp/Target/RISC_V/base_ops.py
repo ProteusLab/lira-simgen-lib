@@ -13,8 +13,8 @@ def _asr(op) -> str:
     t = OperandType.gen(op.inputs[0])
     ts = OperandType.gen(op.inputs[0], signed=True)
     return f"""\
-b &= {_mask(op)};
-return ({t})(({ts})a >> b);
+arg1 &= {_mask(op)};
+return ({t})(({ts})arg0 >> arg1);
 """
 
 
@@ -23,9 +23,9 @@ def _div_s(op) -> str:
     t = OperandType.gen(op.inputs[0])
     ts = OperandType.gen(op.inputs[0], signed=True)
     return f"""\
-if (b == 0) return c;
-if (({t})a == ({t})1 << {bits - 1} && ({ts})b == -1) return a;
-return ({t})(({ts})a / ({ts})b);
+if (arg1 == 0) return arg2;
+if (({t})arg0 == ({t})1 << {bits - 1} && ({ts})arg1 == -1) return arg0;
+return ({t})(({ts})arg0 / ({ts})arg1);
 """
 
 
@@ -34,20 +34,20 @@ def _rem_s(op) -> str:
     t = OperandType.gen(op.inputs[0])
     ts = OperandType.gen(op.inputs[0], signed=True)
     return f"""\
-if (b == 0) return a;
-if (({t})a == ({t})1 << {bits - 1} && ({ts})b == -1) return 0;
-{ts} res = ({ts})a % ({ts})b;
+if (arg1 == 0) return arg0;
+if (({t})arg0 == ({t})1 << {bits - 1} && ({ts})arg1 == -1) return 0;
+{ts} res = ({ts})arg0 % ({ts})arg1;
 return ({t})res;
 """
 
 
 Lsl._cpp_body = lambda self: f"""\
-b &= {_mask(self)};
-return a << b;
+arg1 &= {_mask(self)};
+return arg0 << arg1;
 """
 Lsr._cpp_body = lambda self: f"""\
-b &= {_mask(self)};
-return a >> b;
+arg1 &= {_mask(self)};
+return arg0 >> arg1;
 """
 
 Asr._cpp_body = _asr
