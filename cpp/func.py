@@ -10,7 +10,7 @@ from lib.builders import CodeBuilder
 from lib.nodes import render_nodes
 from lib.operand import Variable
 
-import cpp.nodes  # noqa: F401  (registers the node renderers)
+import cpp.nodes
 
 from cpp.types import OperandType
 

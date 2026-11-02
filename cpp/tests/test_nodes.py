@@ -6,7 +6,7 @@ from lira.arch import Snippet
 from lira.ir import StatementSeq
 from lira.ir_ops import Add
 
-import cpp.nodes  # noqa: F401  (registers the node renderers)
+import cpp.nodes
 
 from lib.nodes import (
     EnvExec,

@@ -14,8 +14,8 @@ from lira.ir import Shape, StatementSeq
 from lira.ir_builder import ArchBuilder, SnippetBuilder
 from lira.ir_ops import Add, And, Eq, ExtractLow, Lsl, Orr
 
-import cpp.base_ops  # noqa: F401  (registers the generic C++ operation bodies)
-import cpp.Target.RISC_V.base_ops  # noqa: F401  (applies the RISC-V overrides)
+import cpp.base_ops
+import cpp.Target.RISC_V.base_ops
 
 
 @pytest.fixture
