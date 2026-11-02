@@ -377,8 +377,6 @@ def build_encode_snippet(ctx, fields, operand_names, field_positions, operand_va
                 value = scope.seq.lsr(value, scope.seq.const(shift, 32))
             value = extend(scope, scope.seq.extract_low(value, width), 32, signed=False)
         else:
-            # Bits with neither a constant nor an operand are don't-care:
-            # they contribute nothing to the encoded word.
             continue
 
         value = scope.seq.lsl(value, scope.seq.const(lo, 32))
