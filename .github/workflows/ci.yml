@@ -19,7 +19,23 @@ jobs:
         run: pip install "black==26.10.1"
 
       - name: Check formatting
-        run: black --check lib
+        run: black --check lib cpp
+
+  test:
+    name: C++ codegen unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install "git+https://github.com/ProteusLab/LIRA@v0.1.1#subdirectory=python" jinja2 pytest pytest-cov
+
+      - name: Run tests with coverage
+        run: pytest --cov=cpp --cov-fail-under=90 --cov-report=term-missing cpp/tests
 
   convert:
     name: Protea IR -> LIRA IR conversion
