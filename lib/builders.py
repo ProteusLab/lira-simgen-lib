@@ -178,7 +178,7 @@ class SemanticBuilder(CodeBuilder):
             builder = self.builder
             producer = builder.producers[self.stmt.inputs[0]]
             reg = cast(Register, builder.resolve_var(producer.outputs[0]))
-            reg.rf = builder.reg_files[self.stmt.specifier]
+            reg.rf = builder.reg_files.get(self.stmt.specifier)
             if reg.src_pos is None:
                 reg.src_pos = builder._read_count
                 builder._read_count += 1
@@ -192,7 +192,7 @@ class SemanticBuilder(CodeBuilder):
             builder = self.builder
             producer = builder.producers[self.stmt.inputs[0]]
             reg = cast(Register, builder.resolve_var(producer.outputs[0]))
-            reg.rf = builder.reg_files[self.stmt.specifier]
+            reg.rf = builder.reg_files.get(self.stmt.specifier)
             if reg.dst_pos is None:
                 reg.dst_pos = builder._write_count
                 builder._write_count += 1

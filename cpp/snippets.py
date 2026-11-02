@@ -1,6 +1,6 @@
 # lira-simgen-lib/cpp/snippets.py
 
-import cpp.base_ops  # noqa: F401  (C++ bodies for LIRA operations)
+import cpp.base_ops
 
 from cpp import render as _render
 from cpp.func import Func

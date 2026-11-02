@@ -32,7 +32,10 @@ class RegFileRegistry:
         for rf in arch.register_files:
             model_cls = cls.registry.get(rf.name)
             if model_cls is None:
-                raise ValueError(f"no register-file model registered for '{rf.name}'")
+                logger.warning(
+                    "no register-file model registered for '%s'; skipping", rf.name
+                )
+                continue
             reg.reg_files[rf.name] = model_cls(rf)
 
         for name in cls.registry:

@@ -29,7 +29,7 @@ from lira.ir_ops import (
     Xor,
 )
 
-import cpp.base_ops  # noqa: F401  (bodies are registered at import time)
+import cpp.base_ops
 
 from cpp.base_ops import render_base_ops
 

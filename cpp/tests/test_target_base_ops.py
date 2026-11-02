@@ -2,7 +2,7 @@
 
 from lira.ir_ops import Asr, DivS, Lsl, Lsr, RemS
 
-import cpp.Target.RISC_V.base_ops  # noqa: F401  (applies the RISC-V overrides)
+import cpp.Target.RISC_V.base_ops
 
 
 def test_shift_masks():
