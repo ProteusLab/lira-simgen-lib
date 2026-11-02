@@ -68,7 +68,7 @@ jobs:
 
           arch = read_arch(Path("build/lira_ir/RISC_V.yaml"))
           assert len(arch.instructions) == 49
-          assert len(arch.snippets) == 226
+          assert len(arch.snippets) == 230
           assert len(arch.operations) == 53
           print(
               f"IR OK: {len(arch.instructions)} instructions, "
