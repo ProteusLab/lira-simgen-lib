@@ -8,11 +8,7 @@ using namespace prot::isa;
 {% for entry in funcs %}
 
 Word encode_{{ entry.inst.snake_name }}({{ entry.signature }}) {
-{% if entry.func %}
   return {{ entry.func(entry.func.params | map(attribute="name") | list) }};
-{% else %}
-  return {{ entry.const_part }};
-{% endif %}
 }
 {% endfor %}
 } // namespace prot::encoder
