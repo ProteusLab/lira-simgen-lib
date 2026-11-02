@@ -7,17 +7,12 @@ from lira.arch_utils import ArchIndex
 from lira.ir_std import StmtInput
 
 from lib.builders import CodeBuilder
-from lib.config import IConfig
 from lib.nodes import render_nodes
 from lib.operand import Variable
 
 import cpp.nodes  # noqa: F401  (registers the node renderers)
 
 from cpp.types import OperandType
-
-
-def _arg_params(widths: List[int]) -> List[Variable]:
-    return [Variable(f"arg{i}", w) for i, w in enumerate(widths)]
 
 
 @dataclass
@@ -27,6 +22,10 @@ class Func:
     params: List[Variable]
     body: str
 
+    @staticmethod
+    def _arg_params(widths: List[int]) -> List[Variable]:
+        return [Variable(f"arg{i}", w) for i, w in enumerate(widths)]
+
     @classmethod
     def from_op(cls, op) -> "Func":
         body_fn = getattr(type(op), "_cpp_body", None)
@@ -34,13 +33,16 @@ class Func:
             raise ValueError(f"No C++ body defined for operation {op.name}")
         name = op.semantic_func or op.name
         return cls(
-            name, OperandType.gen(op.outputs[0]), _arg_params(op.inputs), body_fn(op)
+            name,
+            OperandType.gen(op.outputs[0]),
+            cls._arg_params(op.inputs),
+            body_fn(op),
         )
 
     @classmethod
     def from_env(cls, env) -> "Func":
         ret = OperandType.gen(env.outputs[0]) if env.outputs else "void"
-        return cls(env.name, ret, _arg_params(env.inputs), "")
+        return cls(env.name, ret, cls._arg_params(env.inputs), "")
 
     @classmethod
     def _params(cls, snippet, param_names=None):
@@ -48,9 +50,10 @@ class Func:
         for stmt in snippet.seq.stmts:
             if stmt.kind == StmtInput.kind:
                 inputs.append(stmt)
+
         widths = [stmt.outputs_types[0] for stmt in inputs]
         if param_names is None:
-            return _arg_params(widths)
+            return cls._arg_params(widths)
 
         if len(param_names) != len(inputs):
             raise ValueError(
@@ -80,12 +83,12 @@ class Func:
 
     @classmethod
     def from_decode_snippet(cls, snippet, index):
-        params = cls._params(snippet, [IConfig.mach_inst.name])
+        params = cls._params(snippet)
         return cls._build_snippet(snippet, index, params)
 
     @classmethod
     def from_constraint_snippet(cls, snippet, index):
-        params = cls._params(snippet, [IConfig.mach_inst.name])
+        params = cls._params(snippet)
         return cls._build_snippet(snippet, index, params)
 
     def __call__(self, args: List[str]) -> str:

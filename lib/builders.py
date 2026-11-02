@@ -18,7 +18,6 @@ from lira.ir_std import (
     StmtWrite,
 )
 
-from lib.config import IConfig
 from lib.nodes import (
     EnvExec,
     Input,
@@ -144,7 +143,7 @@ class CodeBuilder(IBuilder, metaclass=BuilderMeta):
 
 class SemanticBuilder(CodeBuilder):
     def __init__(self, index: ArchIndex, insn: LiraInstruction, interfaces, reg_files):
-        super().__init__(index, params=[IConfig.mach_inst])
+        super().__init__(index, params=[Variable("arg0", 32)])
         self.insn: LiraInstruction = insn
         self.interfaces = interfaces
         self.reg_files = reg_files
