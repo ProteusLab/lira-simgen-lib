@@ -2,14 +2,10 @@
 
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import ClassVar, Dict
-
-from lib.operand import Variable
+from typing import Dict
 
 
 class IConfig(ABC):
-    mach_inst: ClassVar[Variable] = Variable(name="machInst", width=32)
-
     @abstractmethod
     def artifacts(self, driver) -> Dict[Path, str]:
         pass
