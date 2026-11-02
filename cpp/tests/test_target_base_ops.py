@@ -9,34 +9,31 @@ def test_shift_masks():
     assert Lsl(32)._cpp_body() == """b &= 31;
 return a << b;
 """
-    
+
     assert Lsr(32)._cpp_body() == """b &= 31;
 return a >> b;
 """
-    
+
     assert Lsl(64)._cpp_body() == """b &= 63;
 return a << b;
 """
 
 
 def test_asr():
-    assert Asr(32)._cpp_body() == """
-b &= 31;
+    assert Asr(32)._cpp_body() == """b &= 31;
 return (uint32_t)((int32_t)a >> b);
 """
 
 
 def test_div_s_overflow_guard():
-    assert DivS(32)._cpp_body() == """
-if (b == 0) return c;
+    assert DivS(32)._cpp_body() == """if (b == 0) return c;
 if ((uint32_t)a == (uint32_t)1 << 31 && (int32_t)b == -1) return a;
 return (uint32_t)((int32_t)a / (int32_t)b);
 """
 
 
 def test_rem_s_overflow_guard():
-    assert RemS(32)._cpp_body() == """
-if (b == 0) return a;
+    assert RemS(32)._cpp_body() == """if (b == 0) return a;
 if ((uint32_t)a == (uint32_t)1 << 31 && (int32_t)b == -1) return 0;
 int32_t res = (int32_t)a % (int32_t)b;
 return (uint32_t)res;

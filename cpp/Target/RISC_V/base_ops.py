@@ -49,6 +49,7 @@ Lsr._cpp_body = lambda self: f"""\
 b &= {_mask(self)};
 return a >> b;
 """
+
 Asr._cpp_body = _asr
 DivS._cpp_body = _div_s
 RemS._cpp_body = _rem_s
