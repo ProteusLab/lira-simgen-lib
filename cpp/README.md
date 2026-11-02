@@ -2,16 +2,6 @@
 
 Generators C++ sources from LIRA IR.
 
-## Getting the LIRA IR
-
-The LIRA IR is generated from the Protea ADL at build time (see
-[utils/protea2lira](../utils/protea2lira) for details):
-
-```bash
-cmake -B build -DARCH_TARGET=RISC_V -DARCH_SOURCE=Protea
-cmake --build build --target gen-ir
-```
-
 ## Base Operations codegen
 
 Generates `base_ops.hh` / `base_ops.cc` — reference C++ implementations of the LIRA base operations.
