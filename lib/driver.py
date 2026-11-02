@@ -31,7 +31,9 @@ class Driver:
     def process_attributes(self) -> Dict[str, object]:
         attributes: Dict[str, object] = {}
         for rf in self.arch.register_files:
-            model = self.reg_files[rf.name]
+            model = self.reg_files.get(rf.name)
+            if model is None:
+                continue
             for reg in rf.regs:
                 for attribute in reg.attributes:
                     if attribute:
