@@ -23,7 +23,7 @@ def main() -> None:
     ap.add_argument(
         "--arch-target",
         required=True,
-        help="Target architecture: interpreter/Target Python package name (e.g. RISC_V)",
+        help="Target architecture",
     )
     args = ap.parse_args()
 
