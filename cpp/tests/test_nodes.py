@@ -47,8 +47,8 @@ def test_constant():
 
 def test_input():
     var = Variable("_t1", 32)
-    source = Variable("machInst", 32)
-    assert render_nodes([Input(var, source)]) == "uint32_t _t1{0};\n_t1 = machInst;\n"
+    source = Variable("arg0", 32)
+    assert render_nodes([Input(var, source)]) == "uint32_t _t1{0};\n_t1 = arg0;\n"
 
 
 def test_op():

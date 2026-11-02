@@ -68,12 +68,12 @@ def test_from_encode_snippet_arity_mismatch(index):
 
 def test_from_decode_snippet(index):
     func = Func.from_decode_snippet(index.snippet["decode_0"], index)
-    assert func.declaration == "uint8_t decode_0(uint32_t machInst);"
+    assert func.declaration == "uint8_t decode_0(uint32_t arg0);"
 
 
 def test_from_constraint_snippet(index):
     func = Func.from_constraint_snippet(index.snippet["constraint_0"], index)
-    assert func.declaration == "bool constraint_0(uint32_t machInst);"
+    assert func.declaration == "bool constraint_0(uint32_t arg0);"
 
 
 def test_from_snippet_missing_output(index):
