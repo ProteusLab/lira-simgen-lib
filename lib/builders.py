@@ -18,8 +18,8 @@ from lira.ir_std import (
     StmtWrite,
 )
 
-from lib.config import IConfig
 from lib.nodes import (
+    DynConst,
     EnvExec,
     Input,
     Op,
@@ -75,17 +75,9 @@ class BuilderMeta(ABCMeta):
 class CodeBuilder(IBuilder, metaclass=BuilderMeta):
     handlers: Dict[str, type]
 
-    def __init__(
-        self,
-        index: ArchIndex,
-        mach_inst: Optional[Variable] = None,
-        params: Optional[List[Variable]] = None,
-    ):
+    def __init__(self, index: ArchIndex, params: List[Variable]):
         self.index: ArchIndex = index
-        self.mach_inst: Variable = (
-            mach_inst if mach_inst is not None else IConfig.mach_inst
-        )
-        self.params: List[Variable] = params if params is not None else [self.mach_inst]
+        self.params: List[Variable] = params
         self.nodes: List[object] = []
         self._vars: Dict[str, Variable] = {}
         self.ret: Optional[Variable] = None
@@ -152,7 +144,7 @@ class CodeBuilder(IBuilder, metaclass=BuilderMeta):
 
 class SemanticBuilder(CodeBuilder):
     def __init__(self, index: ArchIndex, insn: LiraInstruction, interfaces, reg_files):
-        super().__init__(index)
+        super().__init__(index, params=[Variable("arg0", 32)])
         self.insn: LiraInstruction = insn
         self.interfaces = interfaces
         self.reg_files = reg_files
@@ -187,7 +179,7 @@ class SemanticBuilder(CodeBuilder):
             builder = self.builder
             producer = builder.producers[self.stmt.inputs[0]]
             reg = cast(Register, builder.resolve_var(producer.outputs[0]))
-            reg.rf = builder.reg_files[self.stmt.specifier]
+            reg.rf = builder.reg_files.get(self.stmt.specifier)
             if reg.src_pos is None:
                 reg.src_pos = builder._read_count
                 builder._read_count += 1
@@ -201,7 +193,7 @@ class SemanticBuilder(CodeBuilder):
             builder = self.builder
             producer = builder.producers[self.stmt.inputs[0]]
             reg = cast(Register, builder.resolve_var(producer.outputs[0]))
-            reg.rf = builder.reg_files[self.stmt.specifier]
+            reg.rf = builder.reg_files.get(self.stmt.specifier)
             if reg.dst_pos is None:
                 reg.dst_pos = builder._write_count
                 builder._write_count += 1
@@ -237,4 +229,8 @@ class SemanticBuilder(CodeBuilder):
     @serves(StmtDynConst.kind)
     class DynConst(StmtHandler):
         def build(self) -> None:
-            raise NotImplementedError("'dyn_const' statement is not supported yet")
+            builder = self.builder
+            out = self.stmt.outputs[0]
+            var = builder.variable(out, self.stmt.outputs_types[0])
+            builder._vars[out] = var
+            builder.nodes.append(DynConst(var, var.width, self.stmt.specifier))

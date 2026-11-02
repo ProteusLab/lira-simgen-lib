@@ -10,8 +10,6 @@ from lib.interface import Interface
 
 
 class NodeImpl:
-    """Maps node data classes to the active backend renderer."""
-
     _impl: Dict[type, Callable] = {}
 
     @classmethod
@@ -76,3 +74,10 @@ class EnvExec:
 class Return:
     def __init__(self, value: Variable):
         self.value: Variable = value
+
+
+class DynConst:
+    def __init__(self, out: Variable, width: int, name: str):
+        self.out: Variable = out
+        self.width: int = width
+        self.name: str = name

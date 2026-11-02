@@ -13,7 +13,7 @@ from lib.regfile import RegFileRegistry
 
 
 class Driver:
-    def __init__(self, ir_path: Path, config):
+    def __init__(self, ir_path: Path):
         self.arch = read_arch(ir_path)
         self.index = build_arch_index(self.arch)
 
@@ -24,14 +24,14 @@ class Driver:
 
         self.interfaces = InterfacesRegistry.from_arch(self.arch, self.attributes)
 
-        self.config = config
-
         self.insts = self.process_instrs(self.arch.instructions)
 
     def process_attributes(self) -> Dict[str, object]:
         attributes: Dict[str, object] = {}
         for rf in self.arch.register_files:
-            model = self.reg_files[rf.name]
+            model = self.reg_files.get(rf.name)
+            if model is None:
+                continue
             for reg in rf.regs:
                 for attribute in reg.attributes:
                     if attribute:
@@ -45,3 +45,11 @@ class Driver:
             body = sem.build(insn.semantic)
             insts.append(Instruction(body, sem.regs, insn))
         return insts
+
+    @staticmethod
+    def write_artifacts(out_dir: Path, artifacts: Dict[Path, str]) -> None:
+        for path, content in artifacts.items():
+            out_path = out_dir / path
+            out_path.parent.mkdir(parents=True, exist_ok=True)
+            with out_path.open("w") as out:
+                print(content, file=out, end="")
