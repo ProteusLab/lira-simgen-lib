@@ -22,7 +22,7 @@ jobs:
         run: black --check lib cpp
 
   test:
-    name: cpp unit tests
+    name: C++ codegen unit tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -35,7 +35,7 @@ jobs:
         run: pip install "git+https://github.com/ProteusLab/LIRA@v0.1.1#subdirectory=python" jinja2 pytest pytest-cov
 
       - name: Run tests with coverage
-        run: pytest --cov=cpp --cov-fail-under=75 --cov-report=term-missing cpp/tests
+        run: pytest --cov=cpp --cov-fail-under=90 --cov-report=term-missing cpp/tests
 
   convert:
     name: Protea IR -> LIRA IR conversion
