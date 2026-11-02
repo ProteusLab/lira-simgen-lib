@@ -62,20 +62,6 @@ jobs:
 
       - name: Verify the generated IR
         run: python3 utils/protea2lira/check_ir.py --ir-path build/lira_ir/RISC_V.yaml
-        run: |
-          PYTHONPATH=$PWD:build/_deps/lira-src/python python3 - <<'PYEOF'
-          from pathlib import Path
-          from lira.arch_ser_yaml import read_arch
-
-          arch = read_arch(Path("build/lira_ir/RISC_V.yaml"))
-          assert len(arch.instructions) == 49
-          assert len(arch.snippets) == 226
-          assert len(arch.operations) == 53
-          print(
-              f"IR OK: {len(arch.instructions)} instructions, "
-              f"{len(arch.snippets)} snippets, {len(arch.operations)} ops"
-          )
-          PYEOF
 
   encoder:
     name: Encoder generation and build
