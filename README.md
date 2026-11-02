@@ -51,10 +51,10 @@ packaged as a static library usable on its own:
 
 | Target          | Produces                                             |
 | --------------- | ---------------------------------------------------- |
-| `base_ops`      | static library from `base_ops.cc`                    |
-| `snippets`      | static library from `snippets.cc` (links `base_ops`) |
-| `encoder`       | static library from `encoder.cc` (links `snippets`)  |
-| `build-encoder` | convenience target for the `encoder` library         |
+| `base_ops`      | static library from `base_ops.cc` |
+| `snippets`      | static library from `snippets.cc` |
+| `encoder`       | static library from `encoder.cc` |
+| `build-encoder` | convenience target for the `encoder` library |
 
 ## Python install
 
