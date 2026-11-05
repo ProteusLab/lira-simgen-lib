@@ -4,7 +4,7 @@ set(ENCODER_OUT_DIR "${CMAKE_BINARY_DIR}/encoder"
     CACHE PATH "Directory for the generated encoder sources")
 
 lira_add_generator(encoder ${CMAKE_CURRENT_LIST_DIR}/main.py ${ENCODER_OUT_DIR}
-  isa.hh encoder.hh encoder.cc
+  encoder.hh encoder.cc
 )
 
 add_library(encoder STATIC ${ENCODER_OUT_DIR}/encoder.cc)
