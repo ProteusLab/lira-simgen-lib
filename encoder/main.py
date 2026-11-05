@@ -8,7 +8,7 @@ from pathlib import Path
 from lib.driver import Driver
 from lib.target import import_target_modules
 
-from encoder.config import EncoderConfig
+from encoder.emitter import EncoderEmitter
 
 
 def main() -> None:
@@ -29,9 +29,22 @@ def main() -> None:
 
     import_target_modules(args.arch_target)
 
-    cfg = EncoderConfig(arch_target=args.arch_target)
-    driver = Driver(args.ir_path, cfg)
-    cfg.emit(driver, args.out_dir)
+    driver = Driver(args.ir_path)
+    emitter = EncoderEmitter()
+
+    entries = emitter.collect(driver.index, driver.insts)
+    isa_hh = emitter.emit_isa(driver.arch, driver.insts)
+    encoder_hh = emitter.emit_encoder_hh(entries)
+    encoder_cc = emitter.emit_encoder_cc(entries)
+
+    Driver.write_artifacts(
+        args.out_dir,
+        {
+            Path("isa.hh"): isa_hh,
+            Path("encoder.hh"): encoder_hh,
+            Path("encoder.cc"): encoder_cc,
+        },
+    )
 
 
 if __name__ == "__main__":

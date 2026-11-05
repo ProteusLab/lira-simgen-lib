@@ -3,13 +3,16 @@
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Tuple
+from typing import List
 
 from lib.instruction import Instruction
+from lib.templates import Templates
 
 import cpp.base_ops
 from cpp.func import Func
 from cpp.isa import addr_type_of, render_isa
+
+_templates = Templates(Path(__file__).parent / "templates")
 
 
 @dataclass
@@ -23,10 +26,8 @@ class EncodeEntry:
 
 
 class EncoderEmitter:
-    def __init__(self, config):
-        self.cfg = config
-
-    def _collect(self, index, insts: List[Instruction]) -> List[EncodeEntry]:
+    def collect(self, index, insts: List[Instruction]) -> List[EncodeEntry]:
+        """Build one entry per instruction from its encode snippet."""
         entries = []
         for inst in insts:
             if not inst.encode_snippet:
@@ -39,14 +40,11 @@ class EncoderEmitter:
             entries.append(EncodeEntry(inst, func=func))
         return entries
 
-    def emit(self, arch, index, insts: List[Instruction]) -> Tuple[str, str, str]:
-        entries = self._collect(index, insts)
-        isa_hh = render_isa(insts, addr_type_of(arch))
+    def emit_isa(self, arch, insts: List[Instruction]) -> str:
+        return render_isa(insts, addr_type_of(arch))
 
-        encoder_hh = self.cfg.templates.render(
-            Path(f"{self.cfg.encoder_hh}.jinja"), funcs=entries
-        )
-        encoder_cc = self.cfg.templates.render(
-            Path(f"{self.cfg.encoder_cc}.jinja"), funcs=entries
-        )
-        return isa_hh, encoder_hh, encoder_cc
+    def emit_encoder_hh(self, entries: List[EncodeEntry]) -> str:
+        return _templates.render(Path("encoder.hh.jinja"), funcs=entries)
+
+    def emit_encoder_cc(self, entries: List[EncodeEntry]) -> str:
+        return _templates.render(Path("encoder.cc.jinja"), funcs=entries)
