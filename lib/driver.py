@@ -48,10 +48,6 @@ class Driver:
 
     @staticmethod
     def write_artifacts(out_dir: Path, artifacts: Dict[Path, str]) -> None:
-        """Write generated artifacts to disk.
-
-        Each key is a path relative to `out_dir`; each value is the file content.
-        """
         for path, content in artifacts.items():
             out_path = out_dir / path
             out_path.parent.mkdir(parents=True, exist_ok=True)
