@@ -2,23 +2,22 @@
 # Code generation of the instruction decoder.
 
 from pathlib import Path
-from typing import List, Tuple
+from typing import List
 
 from lib.instruction import Instruction
+from lib.templates import Templates
 
 from cpp.isa import addr_type_of, render_isa
 
+_templates = Templates(Path(__file__).parent / "templates")
+
 
 class DecoderEmitter:
-    def __init__(self, config):
-        self.cfg = config
-
-    def isa(self, arch, insts: List[Instruction]) -> str:
+    def emit_isa(self, arch, insts: List[Instruction]) -> str:
         return render_isa(insts, addr_type_of(arch))
 
-    def decoder(self, insts: List[Instruction]) -> Tuple[str, str]:
-        dec_hh = self.cfg.templates.render(Path(f"{self.cfg.decoder_hh}.jinja"))
-        dec_cc = self.cfg.templates.render(
-            Path(f"{self.cfg.decoder_cc}.jinja"), insts=insts
-        )
-        return dec_hh, dec_cc
+    def emit_decoder_hh(self) -> str:
+        return _templates.render(Path("decoder.hh.jinja"))
+
+    def emit_decoder_cc(self, insts: List[Instruction]) -> str:
+        return _templates.render(Path("decoder.cc.jinja"), insts=insts)
