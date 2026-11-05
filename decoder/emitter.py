@@ -6,8 +6,6 @@ from typing import Dict
 
 from lib.templates import Templates
 
-from cpp.isa import addr_type_of, render_isa
-
 _templates = Templates(Path(__file__).parent / "templates")
 
 
@@ -18,13 +16,17 @@ class DecoderEmitter:
         self._driver = driver
 
     def artifacts(self) -> Dict[Path, str]:
-        isa_hh = render_isa(self._driver.insts, addr_type_of(self._driver.arch))
-        decoder_hh = _templates.render(Path("decoder.hh.jinja"))
+        num_operands = max((len(inst.regs) for inst in self._driver.insts), default=0)
+
+        decoder_hh = _templates.render(
+            Path("decoder.hh.jinja"),
+            insts=self._driver.insts,
+            num_operands=num_operands,
+        )
         decoder_cc = _templates.render(
             Path("decoder.cc.jinja"), insts=self._driver.insts
         )
         return {
-            Path("isa.hh"): isa_hh,
             Path("decoder.hh"): decoder_hh,
             Path("decoder.cc"): decoder_cc,
         }
