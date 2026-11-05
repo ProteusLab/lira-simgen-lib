@@ -3,11 +3,13 @@
 #ifndef GENERATED_LIRA_ENCODER_HH_INCLUDED
 #define GENERATED_LIRA_ENCODER_HH_INCLUDED
 
-#include "isa.hh"
+#include <cstdint>
 
 namespace prot::encoder {
+  using Word = uint32_t;
+
 {% for entry in funcs %}
-  prot::isa::Word encode_{{ entry.inst.snake_name }}({{ entry.signature }});
+  Word encode_{{ entry.inst.snake_name }}({{ entry.signature }});
 {% endfor %}
 } // namespace prot::encoder
 
