@@ -10,7 +10,6 @@ from lib.templates import Templates
 
 import cpp.base_ops
 from cpp.func import Func
-from cpp.isa import addr_type_of, render_isa
 
 _templates = Templates(Path(__file__).parent / "templates")
 
@@ -30,14 +29,12 @@ class EncoderEmitter:
         self._driver = driver
 
     def artifacts(self) -> Dict[Path, str]:
-        isa_hh = render_isa(self._driver.insts, addr_type_of(self._driver.arch))
         entries = self._collect()
 
         encoder_hh = _templates.render(Path("encoder.hh.jinja"), funcs=entries)
         encoder_cc = _templates.render(Path("encoder.cc.jinja"), funcs=entries)
 
         return {
-            Path("isa.hh"): isa_hh,
             Path("encoder.hh"): encoder_hh,
             Path("encoder.cc"): encoder_cc,
         }
