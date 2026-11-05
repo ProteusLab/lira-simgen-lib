@@ -30,21 +30,8 @@ def main() -> None:
     import_target_modules(args.arch_target)
 
     driver = Driver(args.ir_path)
-    emitter = EncoderEmitter()
 
-    entries = emitter.collect(driver.index, driver.insts)
-    isa_hh = emitter.emit_isa(driver.arch, driver.insts)
-    encoder_hh = emitter.emit_encoder_hh(entries)
-    encoder_cc = emitter.emit_encoder_cc(entries)
-
-    Driver.write_artifacts(
-        args.out_dir,
-        {
-            Path("isa.hh"): isa_hh,
-            Path("encoder.hh"): encoder_hh,
-            Path("encoder.cc"): encoder_cc,
-        },
-    )
+    Driver.write_artifacts(args.out_dir, EncoderEmitter(driver).artifacts())
 
 
 if __name__ == "__main__":
