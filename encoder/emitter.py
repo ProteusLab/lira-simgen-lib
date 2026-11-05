@@ -3,7 +3,7 @@
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List
+from typing import Dict, List
 
 from lib.instruction import Instruction
 from lib.templates import Templates
@@ -26,25 +26,32 @@ class EncodeEntry:
 
 
 class EncoderEmitter:
-    def collect(self, index, insts: List[Instruction]) -> List[EncodeEntry]:
+    """Renders the C++ instruction encoder sources for one IR."""
+
+    def __init__(self, driver):
+        self._driver = driver
+
+    def artifacts(self) -> Dict[Path, str]:
+        isa_hh = render_isa(self._driver.insts, addr_type_of(self._driver.arch))
+        entries = self._collect()
+        encoder_hh = _templates.render(Path("encoder.hh.jinja"), funcs=entries)
+        encoder_cc = _templates.render(Path("encoder.cc.jinja"), funcs=entries)
+        return {
+            Path("isa.hh"): isa_hh,
+            Path("encoder.hh"): encoder_hh,
+            Path("encoder.cc"): encoder_cc,
+        }
+
+    def _collect(self) -> List[EncodeEntry]:
         """Build one entry per instruction from its encode snippet."""
         entries = []
-        for inst in insts:
+        for inst in self._driver.insts:
             if not inst.encode_snippet:
                 raise ValueError(f"{inst.name}: instruction has no encode snippet")
             func = Func.from_encode_snippet(
-                index.snippet[inst.encode_snippet],
-                index,
+                self._driver.index.snippet[inst.encode_snippet],
+                self._driver.index,
                 inst.insn.operand_names,
             )
             entries.append(EncodeEntry(inst, func=func))
         return entries
-
-    def emit_isa(self, arch, insts: List[Instruction]) -> str:
-        return render_isa(insts, addr_type_of(arch))
-
-    def emit_encoder_hh(self, entries: List[EncodeEntry]) -> str:
-        return _templates.render(Path("encoder.hh.jinja"), funcs=entries)
-
-    def emit_encoder_cc(self, entries: List[EncodeEntry]) -> str:
-        return _templates.render(Path("encoder.cc.jinja"), funcs=entries)
