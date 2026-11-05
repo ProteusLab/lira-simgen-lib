@@ -8,7 +8,7 @@ from pathlib import Path
 from lib.driver import Driver
 from lib.target import import_target_modules
 
-from decoder.config import DecoderConfig
+from decoder.emitter import DecoderEmitter
 
 
 def main() -> None:
@@ -29,9 +29,17 @@ def main() -> None:
 
     import_target_modules(args.arch_target)
 
-    cfg = DecoderConfig(arch_target=args.arch_target)
-    driver = Driver(args.ir_path, cfg)
-    cfg.emit(driver, args.out_dir)
+    driver = Driver(args.ir_path)
+    emitter = DecoderEmitter()
+
+    Driver.write_artifacts(
+        args.out_dir,
+        {
+            Path("isa.hh"): emitter.emit_isa(driver.arch, driver.insts),
+            Path("decoder.hh"): emitter.emit_decoder_hh(),
+            Path("decoder.cc"): emitter.emit_decoder_cc(driver.insts),
+        },
+    )
 
 
 if __name__ == "__main__":
