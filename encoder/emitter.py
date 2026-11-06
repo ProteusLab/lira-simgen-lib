@@ -31,8 +31,8 @@ class EncoderEmitter:
     def artifacts(self) -> Dict[Path, str]:
         entries = self._collect()
 
-        encoder_hh = _templates.render(Path("encoder.hh.jinja"), funcs=entries)
-        encoder_cc = _templates.render(Path("encoder.cc.jinja"), funcs=entries)
+        encoder_hh = _templates.render(name=Path("encoder.hh.jinja"), funcs=entries)
+        encoder_cc = _templates.render(name=Path("encoder.cc.jinja"), funcs=entries)
 
         return {
             Path("encoder.hh"): encoder_hh,
@@ -47,11 +47,11 @@ class EncoderEmitter:
                 raise ValueError(f"{inst.name}: instruction has no encode snippet")
 
             func = Func.from_encode_snippet(
-                self._driver.index.snippet[inst.encode_snippet],
-                self._driver.index,
-                inst.insn.operand_names,
+                snippet=self._driver.index.snippet[inst.encode_snippet],
+                index=self._driver.index,
+                param_names=inst.insn.operand_names,
             )
 
-            entries.append(EncodeEntry(inst, func=func))
+            entries.append(EncodeEntry(inst=inst, func=func))
 
         return entries
