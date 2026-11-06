@@ -10,8 +10,8 @@ lira_add_generator(decoder ${CMAKE_CURRENT_LIST_DIR}/main.py ${DECODER_OUT_DIR}
 add_library(decoder STATIC ${DECODER_OUT_DIR}/decoder.cc)
 target_include_directories(decoder PUBLIC ${DECODER_OUT_DIR})
 target_compile_features(decoder PUBLIC cxx_std_20)
-target_link_libraries(decoder PUBLIC snippets)
+target_link_libraries(decoder PUBLIC base_ops)
 
-add_dependencies(decoder gen-decoder gen-snippets gen-ir)
+add_dependencies(decoder gen-decoder gen-base_ops gen-ir)
 
 add_custom_target(build-decoder DEPENDS decoder)
