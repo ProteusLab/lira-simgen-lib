@@ -8,7 +8,6 @@ from lira.arch import EnvironmentFunction, RegisterFile
 from lira.ir_builder import ArchBuilder, BaseBuilder
 from lira.ir_ser_txt import serialize_statement_seq
 
-from lib.attributes import PC_ATTRIBUTE
 from lib.snippet import SnippetKind
 
 
@@ -27,8 +26,6 @@ def is_unsigned(ir_type):
 
 @dataclass
 class Context:
-    """State shared by every snippet/semantic session of one architecture."""
-
     builder: ArchBuilder
     reg_files: Dict[str, RegisterFile]  # register-file name -> register file
     pc_regs: Set[str]  # register names marked with the PC attribute
