@@ -13,8 +13,8 @@ target_include_directories(encoder PUBLIC
   ${ENCODER_OUT_DIR}
 )
 target_compile_features(encoder PUBLIC cxx_std_20)
-target_link_libraries(encoder PUBLIC snippets)
+target_link_libraries(encoder PUBLIC base_ops)
 
-add_dependencies(encoder gen-encoder gen-snippets gen-ir)
+add_dependencies(encoder gen-encoder gen-base_ops gen-ir)
 
 add_custom_target(build-encoder DEPENDS encoder)
