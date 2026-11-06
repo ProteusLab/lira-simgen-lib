@@ -14,7 +14,7 @@ def main() -> None:
 
     arch = read_arch(args.ir_path)
     assert len(arch.instructions) == 49
-    assert len(arch.snippets) == 230
+    assert len(arch.snippets) == 107
     assert len(arch.operations) == 53
     print(
         f"IR OK: {len(arch.instructions)} instructions, "

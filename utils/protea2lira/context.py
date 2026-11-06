@@ -6,6 +6,7 @@ from typing import Dict, List, Optional, Set
 
 from lira.arch import EnvironmentFunction, RegisterFile
 from lira.ir_builder import ArchBuilder, BaseBuilder
+from lira.ir_ser_txt import serialize_statement_seq
 
 from lib.attributes import PC_ATTRIBUTE
 from lib.snippet import SnippetKind
@@ -38,12 +39,19 @@ class Context:
     counters: Dict[SnippetKind, int] = field(
         default_factory=lambda: dict((kind, 0) for kind in SnippetKind)
     )
+    snippet_cache: Dict[str, str] = field(default_factory=dict)  # body -> name
 
     def add_snippet(self, snippet, kind: SnippetKind) -> str:
+        key = serialize_statement_seq(snippet.seq)
+        cached = self.snippet_cache.get(key)
+        if cached is not None:
+            return cached
+
         number = self.counters[kind]
         self.counters[kind] = number + 1
         snippet.name = f"{kind.value}_{number}"
         self.builder.add_snippet(snippet)
+        self.snippet_cache[key] = snippet.name
         return snippet.name
 
 
