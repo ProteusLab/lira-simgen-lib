@@ -20,3 +20,29 @@ jobs:
 
       - name: Check formatting
         run: black --check lib
+
+  convert:
+    name: Protea IR -> LIRA IR conversion
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+
+      - name: Install converter dependencies
+        run: pip install "git+https://github.com/ProteusLab/LIRA@v0.1.1#subdirectory=python"
+
+      - name: Configure
+        run: cmake -B build -DARCH_TARGET=RISC_V -DARCH_SOURCE=Protea
+
+      - name: Generate the LIRA IR
+        run: cmake --build build --target gen-ir
+
+      - name: Verify the generated IR
+        run: python3 utils/protea2lira/check_ir.py --ir-path build/lira_ir/RISC_V.yaml
