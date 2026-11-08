@@ -480,7 +480,8 @@ def _svc(s: S, e: Encoding, F):
     s.env(s.ctx.env_svc, [F('imm16')])
 
 
-from . import insns_fp, insns_simd, insns_simd2, insns_v8  # noqa: F401 - register handlers
+from . import insns_fp, insns_simd, insns_simd2, insns_sve, insns_v8  # noqa: F401 - register handlers
 
 FILES = list(SEM)
-GROUPS = [FILES]
+GROUPS = [[f for f in FILES if f not in insns_sve.SVE_FILES],
+          [f for f in FILES if f in insns_sve.SVE_FILES]]
