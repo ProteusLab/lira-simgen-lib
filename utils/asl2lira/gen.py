@@ -23,12 +23,13 @@ def _decode_snippet(ctx: Ctx, f: xmlspec.Field) -> str:
 
 
 def _encode_snippet(ctx: Ctx, e: xmlspec.Encoding) -> str:
-    """`[operands] -> 32`: combine operand bits with the fixed encoding bits."""
-    name = f"encode_{e.name}"
+    """`[operands] -> 32`: `enc_base` is the encoding's const_encoding_part."""
+    sig = "_".join(f"{f.lo}w{f.width}" for f in e.operands) or "none"
+    name = f"encode_{sig}"
     if name not in ctx.snippets:
         sb = SnippetBuilder(name)
         s = S(ctx, sb)
-        acc = s.c(e.const_value, 32)
+        acc = sb.dyn_const("enc_base", 32)
         for i, f in enumerate(e.operands):
             v = s.zext(sb.input(i, f.width), 32)
             if f.lo:
@@ -205,14 +206,17 @@ def build_arch(xml_dir: Path) -> Arch:
     return Arch(
         name="AArch64",
         attributes=["isa.A64", "endianness.little"],
-        register_files=[ctx.rf_x, ctx.rf_nzcv],
+        register_files=[
+            ctx.rf_x, ctx.rf_nzcv, ctx.rf_v, ctx.rf_fpcr, ctx.rf_fpsr,
+            ctx.rf_z, ctx.rf_p, ctx.rf_ffr, ctx.rf_za, ctx.rf_svcr,
+        ],
         system_registers=[],
         environment_functions=list(ctx.envs.values()),
-        tables_int=[],
+        tables_int=list(ctx.tables.values()),
         operations=list(ctx.ops.values()),
         snippets=list(ctx.snippets.values()),
         instructions=instructions,
-        float_operations=[],
+        float_operations=list(ctx.fops.values()),
     )
 
 
