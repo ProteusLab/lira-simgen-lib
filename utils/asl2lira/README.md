@@ -44,5 +44,13 @@ The converter covers these groups from the AArch64 branch of LIRA:
 | [`insns_simd.py`](insns_simd.py), [`insns_simd2.py`](insns_simd2.py) | Advanced SIMD integer and crypto |
 | [`insns_v8.py`](insns_v8.py) | ARMv8.x general-purpose and system extensions |
 | [`insns_sve.py`](insns_sve.py) | SVE |
+| [`insns_sme.py`](insns_sme.py) | SME |
 
-`gen-ir` generates IR only; this directory does not generate a runnable simulator.
+With the 2026-06 XML release, it emits 4,138 instructions, 433 operations, 349
+snippets, 100 float operations, and 10 integer tables. The IR includes the X,
+NZCV, V, FPCR, FPSR, Z, P, FFR, ZA, and SVCR register files, plus environment
+functions for effects such as memory and exceptions.
+
+`gen-ir` generates IR only; this directory does not generate a runnable
+simulator. The C++ generator does not yet support all emitted operations,
+statement kinds, and scalable shapes.
