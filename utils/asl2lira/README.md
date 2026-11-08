@@ -2,8 +2,8 @@
 
 Converts selected A64 instruction encodings from the Arm machine-readable XML
 specification into LIRA IR. The XML supplies encoding fields and constraints;
-instruction semantics are implemented in [`insns_a64.py`](insns_a64.py). This is not a
-general ASL pseudocode translator.
+instruction semantics are implemented in the `insns_*.py` modules. This is not
+a general ASL pseudocode translator.
 
 ## CMake
 
@@ -35,9 +35,13 @@ PYTHONPATH=.:/path/to/LIRA/python python3 -m utils.asl2lira.main \
 
 ## Scope
 
-The converter currently covers the A64 base integer instructions registered
-in [`insns_a64.py`](insns_a64.py). It emits register files, environment functions,
-operations, snippets, and instruction semantics. The `gen-ir` target generates
-IR only; this directory does not generate a runnable simulator. A full CMake
-build currently requires C++ generator support for operations defined by LIRA
-snippets, such as `add_with_carry_32`.
+The converter covers these groups from the AArch64 branch of LIRA:
+
+| Module | Instruction group |
+| --- | --- |
+| [`insns_a64.py`](insns_a64.py) | Base integer instructions and shared registration |
+| [`insns_fp.py`](insns_fp.py) | Scalar floating point and SIMD/FP loads and stores |
+| [`insns_simd.py`](insns_simd.py), [`insns_simd2.py`](insns_simd2.py) | Advanced SIMD integer and crypto |
+| [`insns_v8.py`](insns_v8.py) | ARMv8.x general-purpose and system extensions |
+
+`gen-ir` generates IR only; this directory does not generate a runnable simulator.
