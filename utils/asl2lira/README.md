@@ -43,5 +43,6 @@ The converter covers these groups from the AArch64 branch of LIRA:
 | [`insns_fp.py`](insns_fp.py) | Scalar floating point and SIMD/FP loads and stores |
 | [`insns_simd.py`](insns_simd.py), [`insns_simd2.py`](insns_simd2.py) | Advanced SIMD integer and crypto |
 | [`insns_v8.py`](insns_v8.py) | ARMv8.x general-purpose and system extensions |
+| [`insns_sve.py`](insns_sve.py) | SVE |
 
 `gen-ir` generates IR only; this directory does not generate a runnable simulator.
