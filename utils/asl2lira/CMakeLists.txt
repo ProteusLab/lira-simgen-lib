@@ -1,0 +1,35 @@
+# Converts the AArch64 ASL XML specification into LIRA IR.
+
+set(ASL_XML_DIR "" CACHE PATH "Path to the AArch64 ASL XML specification")
+
+if(NOT IS_DIRECTORY "${ASL_XML_DIR}")
+  message(FATAL_ERROR "ASL_XML_DIR must point to the AArch64 ASL XML directory")
+endif()
+
+file(GLOB_RECURSE ASL_XML_DEPS CONFIGURE_DEPENDS
+  "${ASL_XML_DIR}/*.xml"
+)
+
+file(GLOB_RECURSE CONVERTER_DEPS CONFIGURE_DEPENDS
+  "${CMAKE_CURRENT_LIST_DIR}/*.py"
+)
+
+set(LIRA_IR_OUTPUT "${ARCH_TARGET}.yaml")
+set(LIRA_IR_FILE "${LIRA_IR_DIR}/${LIRA_IR_OUTPUT}")
+set(LIRA_IR_FILE "${LIRA_IR_FILE}" PARENT_SCOPE)
+
+add_custom_command(
+  OUTPUT ${LIRA_IR_FILE}
+  DEPENDS ${ASL_XML_DEPS} ${CONVERTER_DEPS}
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${LIRA_IR_DIR}
+  COMMAND ${GENERATOR_ENV}
+    ${Python3_EXECUTABLE}
+    ${CMAKE_CURRENT_LIST_DIR}/main.py
+    --xml ${ASL_XML_DIR}
+    --output ${LIRA_IR_FILE}
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  COMMENT "Converting AArch64 XML to LIRA IR (${LIRA_IR_OUTPUT})"
+  VERBATIM
+)
+
+add_custom_target(gen-ir DEPENDS ${LIRA_IR_FILE})
