@@ -4,10 +4,25 @@
 #include "base_ops.hh"
 
 namespace prot::encoder {
-{% for entry in funcs %}
+{% if ctx %}
+{{ ctx.declaration }}
+{% endif %}
+namespace {
+{% for func in snippets %}
 
-{{ entry.func.ret }} encode_{{ entry.inst.snake_name }}({{ entry.signature }}) {
-{{ entry.func.body }}
+{{ func.ret }} {{ func.name }}({{ func.param_list }}) {
+{{ func.body }}
 }
 {% endfor %}
+} // namespace
+
+prot::isa::Word encode(const prot::isa::Instruction& insn) {
+  switch (insn.m_opc) {
+{% for entry in funcs %}    case prot::isa::Opcode::k{{ entry.inst.name }}:
+      return {{ entry.inst.encode_snippet }}({{ entry.call_args }});
+{% endfor %}    default:
+      return 0;
+  }
+}
+
 } // namespace prot::encoder
