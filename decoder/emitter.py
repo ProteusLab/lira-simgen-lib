@@ -26,7 +26,7 @@ class DecoderEmitter:
             for name in enc.decode:
                 funcs.setdefault(
                     name,
-                    Func.from_decode_snippet(
+                    Func.from_snippet(
                         snippet=self._driver.index.snippet[name],
                         index=self._driver.index,
                     ),
@@ -34,7 +34,7 @@ class DecoderEmitter:
             if enc.constraint_decode:
                 funcs.setdefault(
                     enc.constraint_decode,
-                    Func.from_constraint_snippet(
+                    Func.from_snippet(
                         snippet=self._driver.index.snippet[enc.constraint_decode],
                         index=self._driver.index,
                     ),
