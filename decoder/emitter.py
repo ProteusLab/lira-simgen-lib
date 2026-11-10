@@ -20,12 +20,20 @@ _CONTEXT_NAME = "DecCtx"
 @dataclass
 class DecodeEntry:
     inst: Instruction
-    call_args: str
+    ctx: Optional[Context]
+
+    @property
+    def call_args(self) -> str:
+        if self.ctx is None:
+            return "machInst"
+        init = ", ".join(
+            f".{field.name} = {self.inst.const_value(field.name)}"
+            for field in self.ctx.fields
+        )
+        return f"{self.ctx.name}{{{init}}}, machInst"
 
 
 class DecoderEmitter:
-    """Renders the C++ instruction decoder sources for one IR."""
-
     def __init__(self, driver):
         self._driver = driver
 
@@ -39,38 +47,27 @@ class DecoderEmitter:
     ) -> Tuple[
         List[Tuple[Func, Optional[Context]]], Optional[Context], List[DecodeEntry]
     ]:
-        """Build one function per decode/constraint snippet the decoder calls."""
         funcs = {}
         ctxs = {}
-        for insn in self._driver.arch.instructions:
-            enc = insn.encoding
-            for name in enc.decode:
+        entries = []
+
+        for inst in self._driver.insts:
+            for reg in inst.regs:
+                name = reg.snippet.name
                 if name not in funcs:
                     funcs[name] = Func.from_snippet(
                         snippet=self._driver.index.snippet[name],
                         index=self._driver.index,
                     )
                     ctxs[name] = None
-            if enc.constraint_decode and enc.constraint_decode not in funcs:
-                snippet = self._driver.index.snippet[enc.constraint_decode]
-                funcs[enc.constraint_decode] = Func.from_snippet(
+            if inst.constraint_decode and inst.constraint_decode not in funcs:
+                snippet = self._driver.index.snippet[inst.constraint_decode]
+                funcs[inst.constraint_decode] = Func.from_snippet(
                     snippet=snippet,
                     index=self._driver.index,
                 )
-                ctxs[enc.constraint_decode] = self._snippet_ctx(snippet)
-
-        entries = []
-        for inst in self._driver.insts:
-            ctx = ctxs.get(inst.constraint_decode)
-            if ctx is None:
-                call_args = "machInst"
-            else:
-                init = ", ".join(
-                    f".{field.name} = {inst.const_value(field.name)}"
-                    for field in ctx.fields
-                )
-                call_args = f"{ctx.name}{{{init}}}, machInst"
-            entries.append(DecodeEntry(inst=inst, call_args=call_args))
+                ctxs[inst.constraint_decode] = self._snippet_ctx(snippet)
+            entries.append(DecodeEntry(inst=inst, ctx=ctxs.get(inst.constraint_decode)))
 
         return (
             [(funcs[name], ctxs[name]) for name in funcs],
