@@ -4,7 +4,7 @@ set(DECODER_OUT_DIR "${CMAKE_BINARY_DIR}/decoder"
     CACHE PATH "Directory for the generated decoder sources")
 
 lira_add_generator(decoder ${CMAKE_CURRENT_LIST_DIR}/main.py ${DECODER_OUT_DIR}
-  decoder.hh decoder.cc
+  isa.hh decoder.hh decoder.cc
 )
 
 add_library(decoder STATIC ${DECODER_OUT_DIR}/decoder.cc)
