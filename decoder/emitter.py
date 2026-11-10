@@ -34,20 +34,6 @@ class DecoderEmitter:
         fields = Func.dyn_fields(snippet)
         return Context(name=_CONTEXT_NAME, fields=fields) if fields else None
 
-    @staticmethod
-    def _union_ctx(ctxs) -> Optional[Context]:
-        name = None
-        fields = {}
-        for ctx in ctxs:
-            if ctx is None:
-                continue
-            name = name or ctx.name
-            for field in ctx.fields:
-                fields.setdefault(field.name, field)
-        return (
-            None if name is None else Context(name=name, fields=list(fields.values()))
-        )
-
     def _collect(
         self,
     ) -> Tuple[
@@ -88,7 +74,7 @@ class DecoderEmitter:
 
         return (
             [(funcs[name], ctxs[name]) for name in funcs],
-            self._union_ctx(ctxs.values()),
+            Context.union(ctxs.values()),
             entries,
         )
 
