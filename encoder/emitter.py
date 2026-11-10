@@ -3,15 +3,18 @@
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, Iterable, List, Optional, Tuple
 
 from lib.instruction import Instruction
 from lib.templates import Templates
 
 import cpp.base_ops
-from cpp.func import Context, Func
+from cpp.context import Context
+from cpp.func import Func
 
 _templates = Templates(Path(__file__).parent / "templates")
+
+_CONTEXT_NAME = "EncCtx"
 
 
 @dataclass
@@ -37,8 +40,7 @@ class EncoderEmitter:
         self._driver = driver
 
     def artifacts(self) -> Dict[Path, str]:
-        entries, snippets = self._collect()
-        ctx = self._union_ctx(snippets)
+        entries, snippets, ctx = self._collect()
         num_operands = max((len(inst.regs) for inst in self._driver.insts), default=0)
 
         isa_hh = _templates.render(
@@ -58,35 +60,45 @@ class EncoderEmitter:
             Path("encoder.cc"): encoder_cc,
         }
 
-    def _collect(self) -> Tuple[List[EncodeEntry], List[Func]]:
+    def _collect(self) -> Tuple[List[EncodeEntry], List[Func], Optional[Context]]:
         entries = []
         funcs = {}
+        ctxs = {}
 
         for inst in self._driver.insts:
             if not inst.encode_snippet:
                 raise ValueError(f"{inst.name}: instruction has no encode snippet")
 
-            if inst.encode_snippet not in funcs:
-                funcs[inst.encode_snippet] = Func.from_encode_snippet(
-                    snippet=self._driver.index.snippet[inst.encode_snippet],
-                    index=self._driver.index,
+            name = inst.encode_snippet
+            if name not in funcs:
+                snippet = self._driver.index.snippet[name]
+                funcs[name] = Func.from_snippet(
+                    snippet=snippet, index=self._driver.index
                 )
+                ctxs[name] = self._snippet_ctx(snippet)
 
-            entries.append(EncodeEntry(inst=inst, ctx=funcs[inst.encode_snippet].ctx))
+            entries.append(EncodeEntry(inst=inst, ctx=ctxs[name]))
 
-        return entries, list(funcs.values())
+        return entries, list(funcs.values()), self._union_ctx(ctxs.values())
 
     @staticmethod
-    def _union_ctx(snippets: List[Func]) -> Optional[Context]:
+    def _snippet_ctx(snippet) -> Optional[Context]:
+        fields = Func.dyn_fields(snippet)
+        if not fields:
+            return None
+        return Context(name=_CONTEXT_NAME, fields=fields)
+
+    @staticmethod
+    def _union_ctx(ctxs: Iterable[Optional[Context]]) -> Optional[Context]:
         name = None
         fields = {}
 
-        for func in snippets:
-            if func.ctx is None:
+        for ctx in ctxs:
+            if ctx is None:
                 continue
             if name is None:
-                name = func.ctx.name
-            for field in func.ctx.fields:
+                name = ctx.name
+            for field in ctx.fields:
                 fields.setdefault(field.name, field)
 
         if name is None:

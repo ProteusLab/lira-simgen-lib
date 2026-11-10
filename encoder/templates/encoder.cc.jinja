@@ -10,7 +10,7 @@ namespace prot::encoder {
 namespace {
 {% for func in snippets %}
 
-{{ func.ret }} {{ func.name }}({{ func.param_list }}) {
+{{ func.ret }} {{ func.name }}({{ func.param_list(ctx) }}) {
 {{ func.body }}
 }
 {% endfor %}
