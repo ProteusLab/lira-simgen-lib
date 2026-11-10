@@ -96,15 +96,17 @@ class DecoderEmitter:
         num_operands = max((len(inst.regs) for inst in self._driver.insts), default=0)
         funcs, ctx, entries = self._collect()
 
-        decoder_hh = _templates.render(
-            name=Path("decoder.hh.jinja"),
+        isa_hh = _templates.render(
+            name=Path("isa.hh.jinja"),
             insts=self._driver.insts,
             num_operands=num_operands,
         )
+        decoder_hh = _templates.render(name=Path("decoder.hh.jinja"))
         decoder_cc = _templates.render(
             name=Path("decoder.cc.jinja"), funcs=funcs, ctx=ctx, entries=entries
         )
         return {
+            Path("isa.hh"): isa_hh,
             Path("decoder.hh"): decoder_hh,
             Path("decoder.cc"): decoder_cc,
         }
