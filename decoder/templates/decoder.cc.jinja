@@ -5,11 +5,13 @@
 
 namespace prot::decoder {
 using namespace prot::isa;
-
+{% if ctx %}
+{{ ctx.declaration }}
+{% endif %}
 namespace {
-{% for func in funcs %}
+{% for func, fctx in funcs %}
 
-{{ func.ret }} {{ func.name }}({{ func.param_list() }}) {
+{{ func.ret }} {{ func.name }}({{ func.param_list(fctx) }}) {
 {{ func.body }}
 }
 {% endfor %}
@@ -17,11 +19,11 @@ namespace {
 
 std::optional<Instruction> decode(const Word machInst) {
   Instruction insn{};
-{%- for inst in insts %}{{ "\n" }}{%- if not loop.first %}{{ "\n" }}{%- endif %}  if ({{ inst.constraint_decode }}(machInst)) {
-{%- for operand in inst.regs %}
+{%- for entry in entries %}{{ "\n" }}{%- if not loop.first %}{{ "\n" }}{%- endif %}  if ({{ entry.inst.constraint_decode }}({{ entry.call_args }})) {
+{%- for operand in entry.inst.regs %}
     insn.operand{{ loop.index0 }} = {{ operand.snippet.name }}(machInst);
 {%- endfor %}
-    insn.m_opc = Opcode::k{{ inst.name }};
+    insn.m_opc = Opcode::k{{ entry.inst.name }};
     return insn;
   }{%- endfor %}
 
