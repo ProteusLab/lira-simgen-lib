@@ -9,7 +9,7 @@ using namespace prot::isa;
 namespace {
 {% for func in funcs %}
 
-{{ func.ret }} {{ func.name }}({{ func.param_list }}) {
+{{ func.ret }} {{ func.name }}({{ func.param_list() }}) {
 {{ func.body }}
 }
 {% endfor %}
