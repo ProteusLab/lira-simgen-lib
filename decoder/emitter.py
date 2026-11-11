@@ -4,32 +4,27 @@
 from pathlib import Path
 from typing import Dict, Optional
 
-from lib.templates import Templates
 from lib.operand import Variable
 
 import cpp.base_ops
 from cpp.context import Context
+from cpp.emitter import BaseEmitter
 from cpp.func import Func
-
-_templates = Templates(Path(__file__).parent / "templates")
+from cpp.isa import Isa, IsaEmitter
 
 _CONTEXT_NAME = "DecCtx"
 _MACH = Variable("machInst", 32)
 
 
-class DecoderEmitter:
+class DecoderEmitter(BaseEmitter):
     def __init__(self, driver):
-        self._driver = driver
+        super().__init__(driver, Path(__file__).parent / "templates")
+        self._isa = IsaEmitter(driver)
         self._decodes: Dict[str, Func] = {}
         self._constraints: Dict[str, Func] = {}
         self._constraint_ctxs: Dict[str, Optional[Context]] = {}
         self._decode_calls: Dict[str, str] = {}
         self._constraint_calls: Dict[str, str] = {}
-
-    @staticmethod
-    def _snippet_ctx(snippet) -> Optional[Context]:
-        fields = Func.dyn_fields(snippet)
-        return Context(name=_CONTEXT_NAME, fields=fields) if fields else None
 
     def _collect(self) -> None:
         for inst in self._driver.insts:
@@ -53,7 +48,9 @@ class DecoderEmitter:
                     snippet=snippet,
                     index=self._driver.index,
                 )
-                self._constraint_ctxs[constraint] = self._snippet_ctx(snippet)
+                self._constraint_ctxs[constraint] = self.snippet_ctx(
+                    snippet, _CONTEXT_NAME
+                )
 
             ctx = self._constraint_ctxs[constraint]
 
@@ -65,20 +62,12 @@ class DecoderEmitter:
                 )
 
     def artifacts(self) -> Dict[Path, str]:
-        num_operands = max(
-            (len(inst.operands) for inst in self._driver.insts), default=0
-        )
         self._collect()
 
-        isa_hh = _templates.render(
-            name=Path("isa.hh.jinja"),
-            insts=self._driver.insts,
-            num_operands=num_operands,
-        )
-
-        decoder_hh = _templates.render(name=Path("decoder.hh.jinja"))
-        decoder_cc = _templates.render(
+        decoder_hh = self._templates.render(name=Path("decoder.hh.jinja"))
+        decoder_cc = self._templates.render(
             name=Path("decoder.cc.jinja"),
+            isa=Isa,
             decodes=self._decodes,
             constraints=self._constraints,
             constraint_ctxs=self._constraint_ctxs,
@@ -89,7 +78,7 @@ class DecoderEmitter:
         )
 
         return {
-            Path("isa.hh"): isa_hh,
+            **self._isa.artifacts(),
             Path("decoder.hh"): decoder_hh,
             Path("decoder.cc"): decoder_cc,
         }

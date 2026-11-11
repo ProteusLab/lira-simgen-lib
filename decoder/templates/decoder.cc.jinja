@@ -32,7 +32,7 @@ std::optional<Instruction> decode(const Word machInst) {
 {% endif %}
   if ({{ constraint_calls[inst.name] }}) {
 {%- for operand in inst.operands %}
-    insn.operand{{ loop.index0 }} = {{ decode_calls[operand.snippet.name] }};
+    {{ isa.operand(loop.index0) }} = {{ decode_calls[operand.snippet.name] }};
 {%- endfor %}
     insn.m_opc = Opcode::k{{ inst.name }};
     return insn;
