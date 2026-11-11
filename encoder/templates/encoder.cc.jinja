@@ -8,9 +8,10 @@ namespace prot::encoder {
 {{ ctx.declaration }}
 {% endif %}
 namespace {
-{% for func in snippets %}
+{% for name, func in encodes.items() %}
+{%- set fctx = encode_ctxs[name] %}
 
-{{ func.ret }} {{ func.name }}({{ func.param_list(ctx) }}) {
+{{ func.ret }} {{ func.name }}({{ fctx.param if fctx }}{% if fctx and func.params %}, {% endif %}{{ func.param_list }}) {
 {{ func.body }}
 }
 {% endfor %}
@@ -18,8 +19,8 @@ namespace {
 
 prot::isa::Word encode(const prot::isa::Instruction& insn) {
   switch (insn.m_opc) {
-{% for entry in funcs %}    case prot::isa::Opcode::k{{ entry.inst.name }}:
-      return {{ entry.inst.encode_snippet }}({{ entry.call_args }});
+{% for inst in insts %}    case prot::isa::Opcode::k{{ inst.name }}:
+      return {{ encode_calls[inst.name] }};
 {% endfor %}    default:
       return 0;
   }
