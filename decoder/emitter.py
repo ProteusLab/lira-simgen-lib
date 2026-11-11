@@ -1,12 +1,11 @@
 # lira-simgen-lib/decoder/emitter.py
 # Code generation of the instruction decoder.
 
-from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, Optional
 
-from lib.instruction import Instruction
 from lib.templates import Templates
+from lib.operand import Variable
 
 import cpp.base_ops
 from cpp.context import Context
@@ -15,79 +14,80 @@ from cpp.func import Func
 _templates = Templates(Path(__file__).parent / "templates")
 
 _CONTEXT_NAME = "DecCtx"
-
-
-@dataclass
-class DecodeEntry:
-    inst: Instruction
-    ctx: Optional[Context]
-
-    @property
-    def call_args(self) -> str:
-        if self.ctx is None:
-            return "machInst"
-        init = ", ".join(
-            f".{field.name} = {self.inst.const_value(field.name)}"
-            for field in self.ctx.fields
-        )
-        return f"{self.ctx.name}{{{init}}}, machInst"
+_MACH = Variable("machInst", 32)
 
 
 class DecoderEmitter:
     def __init__(self, driver):
         self._driver = driver
+        self._decodes: Dict[str, Func] = {}
+        self._constraints: Dict[str, Func] = {}
+        self._constraint_ctxs: Dict[str, Optional[Context]] = {}
+        self._decode_calls: Dict[str, str] = {}
+        self._constraint_calls: Dict[str, str] = {}
 
     @staticmethod
     def _snippet_ctx(snippet) -> Optional[Context]:
         fields = Func.dyn_fields(snippet)
         return Context(name=_CONTEXT_NAME, fields=fields) if fields else None
 
-    def _collect(
-        self,
-    ) -> Tuple[
-        List[Tuple[Func, Optional[Context]]], Optional[Context], List[DecodeEntry]
-    ]:
-        funcs = {}
-        ctxs = {}
-        entries = []
-
+    def _collect(self) -> None:
         for inst in self._driver.insts:
-            for reg in inst.regs:
-                name = reg.snippet.name
-                if name not in funcs:
-                    funcs[name] = Func.from_snippet(
+            for operand in inst.operands:
+                name = operand.snippet.name
+                if name not in self._decodes:
+                    self._decodes[name] = Func.from_snippet(
                         snippet=self._driver.index.snippet[name],
                         index=self._driver.index,
                     )
-                    ctxs[name] = None
-            if inst.constraint_decode and inst.constraint_decode not in funcs:
-                snippet = self._driver.index.snippet[inst.constraint_decode]
-                funcs[inst.constraint_decode] = Func.from_snippet(
+                    self._decode_calls[name] = self._decodes[name](_MACH)
+
+            constraint = inst.constraint_decode
+
+            if not constraint:
+                raise ValueError(f"{inst.name}: instruction has no constraint snippet")
+
+            if constraint not in self._constraints:
+                snippet = self._driver.index.snippet[constraint]
+                self._constraints[constraint] = Func.from_snippet(
                     snippet=snippet,
                     index=self._driver.index,
                 )
-                ctxs[inst.constraint_decode] = self._snippet_ctx(snippet)
-            entries.append(DecodeEntry(inst=inst, ctx=ctxs.get(inst.constraint_decode)))
+                self._constraint_ctxs[constraint] = self._snippet_ctx(snippet)
 
-        return (
-            [(funcs[name], ctxs[name]) for name in funcs],
-            Context.union(ctxs.values()),
-            entries,
-        )
+            ctx = self._constraint_ctxs[constraint]
+
+            if ctx is None:
+                self._constraint_calls[inst.name] = self._constraints[constraint](_MACH)
+            else:
+                self._constraint_calls[inst.name] = self._constraints[constraint](
+                    ctx.initializer(inst.const_value), _MACH
+                )
 
     def artifacts(self) -> Dict[Path, str]:
-        num_operands = max((len(inst.regs) for inst in self._driver.insts), default=0)
-        funcs, ctx, entries = self._collect()
+        num_operands = max(
+            (len(inst.operands) for inst in self._driver.insts), default=0
+        )
+        self._collect()
 
         isa_hh = _templates.render(
             name=Path("isa.hh.jinja"),
             insts=self._driver.insts,
             num_operands=num_operands,
         )
+
         decoder_hh = _templates.render(name=Path("decoder.hh.jinja"))
         decoder_cc = _templates.render(
-            name=Path("decoder.cc.jinja"), funcs=funcs, ctx=ctx, entries=entries
+            name=Path("decoder.cc.jinja"),
+            decodes=self._decodes,
+            constraints=self._constraints,
+            constraint_ctxs=self._constraint_ctxs,
+            ctx=Context.union(self._constraint_ctxs.values()),
+            insts=self._driver.insts,
+            decode_calls=self._decode_calls,
+            constraint_calls=self._constraint_calls,
         )
+
         return {
             Path("isa.hh"): isa_hh,
             Path("decoder.hh"): decoder_hh,

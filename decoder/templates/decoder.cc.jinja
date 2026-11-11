@@ -9,9 +9,16 @@ using namespace prot::isa;
 {{ ctx.declaration }}
 {% endif %}
 namespace {
-{% for func, fctx in funcs %}
+{% for func in decodes.values() %}
 
-{{ func.ret }} {{ func.name }}({{ func.param_list(fctx) }}) {
+{{ func.ret }} {{ func.name }}({{ func.param_list }}) {
+{{ func.body }}
+}
+{% endfor %}
+{% for name, func in constraints.items() %}
+{%- set fctx = constraint_ctxs[name] %}
+
+{{ func.ret }} {{ func.name }}({{ fctx.param if fctx }}{% if fctx and func.params %}, {% endif %}{{ func.param_list }}) {
 {{ func.body }}
 }
 {% endfor %}
@@ -19,13 +26,18 @@ namespace {
 
 std::optional<Instruction> decode(const Word machInst) {
   Instruction insn{};
-{%- for entry in entries %}{{ "\n" }}{%- if not loop.first %}{{ "\n" }}{%- endif %}  if ({{ entry.inst.constraint_decode }}({{ entry.call_args }})) {
-{%- for operand in entry.inst.regs %}
-    insn.operand{{ loop.index0 }} = {{ operand.snippet.name }}(machInst);
+{% for inst in insts %}
+{% if not loop.first %}
+
+{% endif %}
+  if ({{ constraint_calls[inst.name] }}) {
+{%- for operand in inst.operands %}
+    insn.operand{{ loop.index0 }} = {{ decode_calls[operand.snippet.name] }};
 {%- endfor %}
-    insn.m_opc = Opcode::k{{ entry.inst.name }};
+    insn.m_opc = Opcode::k{{ inst.name }};
     return insn;
-  }{%- endfor %}
+  }
+{% endfor %}
 
   return std::nullopt;
 }
