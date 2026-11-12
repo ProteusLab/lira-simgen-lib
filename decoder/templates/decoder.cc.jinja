@@ -5,9 +5,13 @@
 
 namespace prot::decoder {
 using namespace prot::isa;
-{% if ctx %}
-{{ ctx.declaration }}
-{% endif %}
+
+struct DecCtx {
+uint32_t const_mask;
+uint32_t const_encoding_part;
+};
+
+
 namespace {
 {% for func in decodes.values() %}
 
@@ -15,10 +19,9 @@ namespace {
 {{ func.body }}
 }
 {% endfor %}
-{% for name, func in constraints.items() %}
-{%- set fctx = constraint_ctxs[name] %}
+{% for func in constraints.values() %}
 
-{{ func.ret }} {{ func.name }}({{ fctx.param if fctx }}{% if fctx and func.params %}, {% endif %}{{ func.param_list }}) {
+{{ func.ret }} {{ func.name }}(const DecCtx& ctx, {{ func.param_list }}) {
 {{ func.body }}
 }
 {% endfor %}
@@ -30,9 +33,9 @@ std::optional<Instruction> decode(const Word machInst) {
 {% if not loop.first %}
 
 {% endif %}
-  if ({{ constraint_calls[inst.name] }}) {
-{%- for operand in inst.operands %}
-    {{ isa.operand(loop.index0) }} = {{ decode_calls[operand.snippet.name] }};
+{% set encoding = inst.insn.encoding %}  if ({{ constraints[inst.constraint_decode].name }}(DecCtx{.const_mask = {{ encoding.const_mask }}, .const_encoding_part = {{ encoding.const_encoding_part }}}, machInst)) {
+{%- for name in encoding.decode %}
+    {{ isa.operand(loop.index0) }} = {{ decodes[name]('machInst') }};
 {%- endfor %}
     insn.m_opc = Opcode::k{{ inst.name }};
     return insn;
