@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  format:
+    name: Python formatting (black)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install black
+        run: pip install "black==26.10.1"
+      - name: Check formatting
+        run: black --check shared encoder decoder format
+
+  build:
+    name: Generate and build scaffolds
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check out LIRA
+        uses: actions/checkout@v4
+        with:
+          repository: ProteusLab/LIRA
+          ref: 0a6d8b1882997f19cbb01f74c94a22a8e055a1d6 # outline_instruction_semantics
+          path: build/lira
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install generator dependencies
+        run: pip install jinja2 ./build/lira/python
+      - name: Configure
+        run: cmake --preset Default-Release -DLIRA_IR_FILE=build/lira/tests/integration/reference.yaml
+      - name: Generate and compile
+        run: cmake --build --preset Default-Release
