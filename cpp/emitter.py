@@ -7,6 +7,8 @@ from typing import Callable, Dict, Iterable, Mapping, Optional, Union
 
 from cpp.context import Context
 from cpp.func import Func
+from lib.builders import CodeBuilder
+from lib.nodes import render_nodes
 from lib.templates import Templates
 
 
@@ -21,6 +23,22 @@ def emit_function_dict(
             f"{func.ret} {func.name}({params}) {{\n{func.body}\n}}"
         )
     return "\n\n".join(definitions)
+
+
+class StatementEmitter(CodeBuilder):
+    """Render snippet statements in order, with optional emit_<kind> methods."""
+
+    def render(self, seq) -> str:
+        lines = []
+        for stmt in seq.stmts:
+            emit = getattr(self, f"emit_{stmt.kind}", None)
+            if emit is None:
+                first = len(self.nodes)
+                self._dispatch(stmt)
+                lines.append(render_nodes(self.nodes[first:]))
+            else:
+                lines.append(emit(stmt))
+        return "\n".join(lines)
 
 
 class BaseEmitter(ABC):
