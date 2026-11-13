@@ -7,7 +7,8 @@ function(lira_add_generator name module)
   file(GLOB_RECURSE sources CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/*.py"
     "${CMAKE_CURRENT_SOURCE_DIR}/*.jinja"
-    "${PROJECT_SOURCE_DIR}/shared/*.py")
+    "${PROJECT_SOURCE_DIR}/shared/*.py"
+    "${PROJECT_SOURCE_DIR}/shared/*.jinja")
   set(ir_args)
   if(LIRA_IR_FILE)
     list(APPEND ir_args --ir-path "${LIRA_IR_FILE}")

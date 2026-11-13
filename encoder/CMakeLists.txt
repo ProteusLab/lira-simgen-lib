@@ -1,4 +1,5 @@
-lira_add_generator(encoder encoder.main encoder.cc)
+lira_add_generator(encoder encoder.main isa.hh encoder.hh encoder.cc)
 add_library(encoder STATIC encoder.cc)
 add_dependencies(encoder gen-encoder)
 target_compile_features(encoder PUBLIC cxx_std_20)
+target_include_directories(encoder PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")

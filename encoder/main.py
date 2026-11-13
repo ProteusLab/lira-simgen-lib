@@ -1,21 +1,25 @@
-import argparse
-from pathlib import Path
+from lira.ir import Statement
 
-from shared.templates import render
+from shared.cli import default_parser
+from shared.emitter import ContextBase, Emitter, context, emit
+
+
+@context(name="EncodeContext")
+class EncoderContext(ContextBase):
+    const_encoding_part = "uint32_t"
+
+    @emit("dyn_const", "const_encoding_part")
+    def read_encoding_part(self, ctx, stmt: Statement) -> str:
+        return self.init_with(stmt, ctx.const_encoding_part)
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Generate the encoder scaffold")
-    parser.add_argument("--ir-path", type=Path)
-    parser.add_argument("--arch-target", required=True)
-    parser.add_argument("--out-dir", required=True, type=Path)
+    parser = default_parser(__file__)
     args = parser.parse_args()
-
-    source = render(
-        Path(__file__).parent, "encoder.cc.jinja", arch_target=args.arch_target
-    )
-    args.out_dir.mkdir(parents=True, exist_ok=True)
-    (args.out_dir / "encoder.cc").write_text(source, encoding="utf-8")
+    emitter = Emitter.from_args(args, emit_isa=True, ctx=EncoderContext())
+    snippet_names = emitter.collect_snippet_names(lambda instr: (instr.encoding.encode,))
+    emitter.args.snippet_functions = emitter.compile_snippets(snippet_names)
+    emitter.emit()
 
 
 if __name__ == "__main__":
