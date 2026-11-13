@@ -6,7 +6,7 @@ from typing import Dict
 
 import cpp.base_ops
 from cpp.context import Context
-from cpp.emitter import BaseEmitter
+from cpp.emitter import BaseEmitter, emit_function_dict
 from cpp.isa import Isa, IsaEmitter
 
 _CONTEXT_NAME = "EncCtx"
@@ -33,6 +33,9 @@ class EncoderEmitter(BaseEmitter):
             name=Path("encoder.cc.jinja"),
             isa=Isa,
             encodes=encodes,
+            encode_definitions=emit_function_dict(
+                encodes, {name: ctx.param for name, ctx in contexts.items() if ctx}
+            ),
             contexts=contexts,
             ctx=Context.union(contexts.values()),
             insts=self._driver.insts,

@@ -8,13 +8,7 @@ namespace prot::encoder {
 {{ ctx.declaration }}
 {% endif %}
 namespace {
-{% for name, func in encodes.items() %}
-{%- set fctx = contexts[name] %}
-
-{{ func.ret }} {{ func.name }}({{ fctx.param if fctx }}{% if fctx and func.params %}, {% endif %}{{ func.param_list }}) {
-{{ func.body }}
-}
-{% endfor %}
+{{ encode_definitions }}
 } // namespace
 
 prot::isa::Word encode(const prot::isa::Instruction& insn) {
@@ -24,8 +18,8 @@ prot::isa::Word encode(const prot::isa::Instruction& insn) {
 {% set fctx = contexts[name] %}
     case prot::isa::Opcode::k{{ inst.name }}:
       return {{ encodes[name].name }}(
-        {%- if fctx %}{{ fctx.initializer(inst.const_value) }}{% if inst.operand_names %}, {% endif %}{% endif -%}
-        {%- for operand in inst.operand_names %}{{ isa.operand(loop.index0) }}{% if not loop.last %}, {% endif %}{% endfor -%}
+        {%- if fctx %}{{ fctx.initializer(inst.const_value) }}{% endif -%}
+        {{- isa.operand_args(inst.operand_names|length, has_prefix=fctx is not none) -}}
       );
 {% endfor %}    default:
       return 0;

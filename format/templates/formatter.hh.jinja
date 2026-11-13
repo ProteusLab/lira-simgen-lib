@@ -8,7 +8,9 @@
 #include <string>
 
 namespace prot::formatter {
-  std::optional<std::string> format(const prot::isa::Instruction& insn);
+  struct FmtConfig {};
+
+  std::optional<std::string> format(const FmtConfig& cfg, const prot::isa::Instruction& insn);
 } // namespace prot::formatter
 
 #endif // GENERATED_LIRA_FORMATTER_HH_INCLUDED

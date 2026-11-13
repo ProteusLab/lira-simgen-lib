@@ -14,6 +14,11 @@ class Isa:
     def operand(index: int) -> str:
         return f"{Isa.M_INSN}.operand{index}"
 
+    @staticmethod
+    def operand_args(count: int, *, has_prefix: bool = False) -> str:
+        args = ", ".join(Isa.operand(index) for index in range(count))
+        return f", {args}" if args and has_prefix else args
+
 
 class IsaEmitter(BaseEmitter):
     def __init__(self, driver):
