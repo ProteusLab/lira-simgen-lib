@@ -9,17 +9,12 @@ function(lira_add_generator name module)
     "${CMAKE_CURRENT_SOURCE_DIR}/*.jinja"
     "${PROJECT_SOURCE_DIR}/shared/*.py"
     "${PROJECT_SOURCE_DIR}/shared/*.jinja")
-  set(ir_args)
-  if(LIRA_IR_FILE)
-    list(APPEND ir_args --ir-path "${LIRA_IR_FILE}")
-  endif()
-
   add_custom_command(
     OUTPUT ${outputs}
     COMMAND "${Python3_EXECUTABLE}" -B -m "${module}"
       --arch-target "${ARCH_TARGET}"
       --out-dir "${CMAKE_CURRENT_BINARY_DIR}"
-      ${ir_args}
+      --ir-path "${LIRA_IR_FILE}"
     DEPENDS ${sources} ${LIRA_IR_FILE}
     WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
     VERBATIM)

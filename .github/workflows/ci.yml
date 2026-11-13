@@ -19,7 +19,7 @@ jobs:
         run: black --check shared encoder decoder format
 
   build:
-    name: Generate and build scaffolds
+    name: Generate and build tools
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

@@ -38,7 +38,7 @@ class FormatterContext(ContextBase):
 def main() -> None:
     parser = default_parser(__file__)
     args = parser.parse_args()
-    emitter = Emitter.from_args(args, emit_isa=True, ctx=FormatterContext())
+    emitter = Emitter.from_args(args, ctx=FormatterContext())
     snippet_names = emitter.collect_snippet_names(
         lambda instr: [syntax.condition for syntax in instr.syntaxes],
         lambda instr: [syntax.syntax for syntax in instr.syntaxes],

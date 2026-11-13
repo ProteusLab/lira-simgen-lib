@@ -44,6 +44,7 @@ from lira.ir_ops import (
     Xor,
 )
 
+from shared.snippet import integer_literal
 from shared.templates import render
 from shared.types import OperandType
 
@@ -62,7 +63,7 @@ def render_base_ops(operations) -> tuple[str, str]:
         signature = f"{OperandType.gen(op.outputs[0])} {name}({params})"
         declarations.append(f"{signature};")
         definitions.append(f"{signature}\n{{\n{body(op)}\n}}\n")
-    directory = Path(__file__).parent
+    directory = Path(__file__).with_name("templates")
     return (
         render(directory, "base_ops.hh.jinja", decls="\n".join(declarations)),
         render(directory, "base_ops.cc.jinja", defs="\n".join(definitions)),
@@ -101,9 +102,29 @@ def _extend_zero(op: Operation) -> str:
 
 
 def _extract_low(op: Operation) -> str:
-    ow = op.outputs[0]
-    t = _in_type(op)
-    return f"return arg0 & ((({t})1 << {ow}) - 1);\n"
+    mask = integer_literal((1 << op.outputs[0]) - 1)
+    return f"return arg0 & {mask};\n"
+
+
+def _shift(op: Operation, operator: str) -> str:
+    width = op.inputs[0]
+    if isinstance(op, Asr):
+        value = _signed_value(op, "arg0")
+        return (
+            f"return arg1 >= {width} ? ({value} < 0 ? -1 : 0) : "
+            f"({value} >> arg1);\n"
+        )
+    return f"return arg1 >= {width} ? 0 : arg0 {operator} arg1;\n"
+
+
+def _signed_value(op: Operation, arg: str) -> str:
+    width = op.inputs[0]
+    signed = _signed(op)
+    if width == OperandType.bits(width) and width != 1:
+        return f"static_cast<{signed}>({arg})"
+    sign = integer_literal(1 << (width - 1))
+    signed = "int" if width == 1 else signed
+    return f"(static_cast<{signed}>({arg} ^ {sign}) - static_cast<{signed}>({sign}))"
 
 
 def _clz(op: Operation) -> str:
@@ -223,33 +244,37 @@ for _cls in (
     _include(_cls)
 
 
-Not._cpp_body = lambda self: "return ~arg0;\n"
+Not._cpp_body = lambda self: (
+    "return !arg0;\n" if self.inputs[0] == 1 else "return ~arg0;\n"
+)
 Neg._cpp_body = lambda self: "return -arg0;\n"
-Add._cpp_body = lambda self: "return arg0 + arg1;\n"
-Sub._cpp_body = lambda self: "return arg0 - arg1;\n"
-Mul._cpp_body = lambda self: "return arg0 * arg1;\n"
+Add._cpp_body = lambda self: (
+    "return arg0 != arg1;\n" if self.inputs[0] == 1 else "return arg0 + arg1;\n"
+)
+Sub._cpp_body = lambda self: (
+    "return arg0 != arg1;\n" if self.inputs[0] == 1 else "return arg0 - arg1;\n"
+)
+Mul._cpp_body = lambda self: "return static_cast<decltype(+arg0 + 0U)>(arg0) * arg1;\n"
 And._cpp_body = lambda self: "return arg0 & arg1;\n"
 Orr._cpp_body = lambda self: "return arg0 | arg1;\n"
 Xor._cpp_body = lambda self: "return arg0 ^ arg1;\n"
 
-Lsl._cpp_body = lambda self: "return arg0 << arg1;\n"
-Lsr._cpp_body = lambda self: "return arg0 >> arg1;\n"
-Asr._cpp_body = (
-    lambda self: f"return ({_in_type(self)})(({_signed(self)})arg0 >> arg1);\n"
-)
+Lsl._cpp_body = lambda self: _shift(self, "<<")
+Lsr._cpp_body = lambda self: _shift(self, ">>")
+Asr._cpp_body = lambda self: _shift(self, ">>")
 Eq._cpp_body = lambda self: "return (arg0 == arg1) ? 1 : 0;\n"
 Ne._cpp_body = lambda self: "return (arg0 != arg1) ? 1 : 0;\n"
 Slt._cpp_body = (
-    lambda self: f"return (({_signed(self)})arg0 < ({_signed(self)})arg1) ? 1 : 0;\n"
+    lambda self: f"return {_signed_value(self, 'arg0')} < {_signed_value(self, 'arg1')};\n"
 )
 Sle._cpp_body = (
-    lambda self: f"return (({_signed(self)})arg0 <= ({_signed(self)})arg1) ? 1 : 0;\n"
+    lambda self: f"return {_signed_value(self, 'arg0')} <= {_signed_value(self, 'arg1')};\n"
 )
 Sgt._cpp_body = (
-    lambda self: f"return (({_signed(self)})arg0 > ({_signed(self)})arg1) ? 1 : 0;\n"
+    lambda self: f"return {_signed_value(self, 'arg0')} > {_signed_value(self, 'arg1')};\n"
 )
 Sge._cpp_body = (
-    lambda self: f"return (({_signed(self)})arg0 >= ({_signed(self)})arg1) ? 1 : 0;\n"
+    lambda self: f"return {_signed_value(self, 'arg0')} >= {_signed_value(self, 'arg1')};\n"
 )
 Ult._cpp_body = lambda self: "return (arg0 < arg1) ? 1 : 0;\n"
 Ule._cpp_body = lambda self: "return (arg0 <= arg1) ? 1 : 0;\n"

@@ -31,7 +31,7 @@ std::optional<std::string> format(const FmtConfig& cfg, const prot::isa::Instruc
   switch ({{ instruction_arg }}.m_opc) {
 {% for instruction in instructions if instruction.syntaxes %}
 {% set operands = operand_args(instruction_arg, instruction.operand_names|length) %}
-    case prot::isa::Opcode::k{{ instruction.name }}: {
+    case prot::isa::Opcode::{{ opcode_name(instruction) }}: {
 {% for syntax in instruction.syntaxes %}
       {
         {{ ctx.name }} ctx{.cfg = cfg, .output = {}, .mnemonic = {{ string_literal(syntax.mnemonic) }}};

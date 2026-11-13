@@ -18,7 +18,7 @@ prot::isa::Word encode(const prot::isa::Instruction& {{ instruction_arg }}) {
 {% for instruction in instructions %}
 {% set encoding = instruction.encoding %}
 {% set operands = operand_args(instruction_arg, instruction.operand_names|length) %}
-    case prot::isa::Opcode::k{{ instruction.name }}: {
+    case prot::isa::Opcode::{{ opcode_name(instruction) }}: {
       const auto ctx = {{ ctx.initializer(encoding) }};
       return {{ snippet_functions[encoding.encode]("ctx", operands) }};
     }

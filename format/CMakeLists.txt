@@ -1,5 +1,7 @@
-lira_add_generator(formatter format.main isa.hh formatter.hh formatter.cc)
+lira_add_generator(formatter format.main formatter.hh formatter.cc)
 add_library(formatter STATIC formatter.cc)
 add_dependencies(formatter gen-formatter)
 target_compile_features(formatter PUBLIC cxx_std_20)
 target_include_directories(formatter PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
+target_link_libraries(formatter PUBLIC base_ops)
+add_custom_target(build-formatter DEPENDS formatter)

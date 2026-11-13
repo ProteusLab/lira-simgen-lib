@@ -8,7 +8,10 @@ project(lira-simgen-lib
 find_package(Python3 REQUIRED COMPONENTS Interpreter)
 
 set(ARCH_TARGET "RISC_V" CACHE STRING "Target architecture")
-set(LIRA_IR_FILE "" CACHE FILEPATH "LIRA architecture YAML for base operations")
+set(LIRA_IR_FILE "" CACHE FILEPATH "LIRA architecture YAML")
+if(NOT EXISTS "${LIRA_IR_FILE}")
+  message(FATAL_ERROR "Set LIRA_IR_FILE to a LIRA architecture YAML file")
+endif()
 
 include(cmake/LiraGenerator.cmake)
 

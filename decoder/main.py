@@ -9,6 +9,12 @@ class DecoderContext(ContextBase):
     const_mask = "uint32_t"
     const_encoding_part = "uint32_t"
 
+    def initializer(self, encoding) -> str:
+        return super().initializer(
+            const_mask=encoding.const_mask,
+            const_encoding_part=encoding.const_encoding_part,
+        )
+
     @emit("dyn_const", "const_mask")
     def read_mask(self, ctx, stmt: Statement) -> str:
         return self.init_with(stmt, ctx.const_mask)
@@ -21,7 +27,7 @@ class DecoderContext(ContextBase):
 def main() -> None:
     parser = default_parser(__file__)
     args = parser.parse_args()
-    emitter = Emitter.from_args(args, emit_isa=True, ctx=DecoderContext())
+    emitter = Emitter.from_args(args, ctx=DecoderContext())
     snippet_names = emitter.collect_snippet_names(
         lambda instr: (instr.encoding.constraint_decode,),
         lambda instr: instr.encoding.decode,
