@@ -1,12 +1,13 @@
 from lira.ir import Statement
 
 from shared.cli import default_parser
-from shared.emitter import ContextBase, Emitter, context, emit
+from shared.context import BaseContext, context, emit
+from shared.emitter import Emitter
 from shared.types import OperandType
 
 
 @context(name="FormatContext")
-class FormatterContext(ContextBase):
+class FormatterContext(BaseContext):
     cfg = "const FmtConfig&"
     output = "std::string"
     mnemonic = "std::string_view"
@@ -31,7 +32,8 @@ class FormatterContext(ContextBase):
     @emit("format", "dec")
     def append_decimal(self, ctx, stmt: Statement) -> str:
         value = self.resolve_var(stmt.inputs[0])
-        signed_type = OperandType.gen(value.width, signed=True)
+        width, _ = self.value_type(stmt.inputs[0])
+        signed_type = OperandType.gen(width, signed=True)
         return f"{ctx.output} += std::to_string(static_cast<{signed_type}>({value}));"
 
 
@@ -43,7 +45,9 @@ def main() -> None:
         lambda instr: [syntax.condition for syntax in instr.syntaxes],
         lambda instr: [syntax.syntax for syntax in instr.syntaxes],
     )
-    emitter.args.snippet_functions = emitter.compile_snippets(snippet_names)
+    emitter.args.snippet_functions = emitter.compile_snippets(
+        snippet_names, context_type=f"{emitter.ctx.struct.name}&"
+    )
     emitter.args.string_tables = emitter.arch.tables_str
     emitter.args.string_literal = string_literal
     emitter.emit()

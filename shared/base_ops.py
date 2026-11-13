@@ -44,7 +44,7 @@ from lira.ir_ops import (
     Xor,
 )
 
-from shared.snippet import integer_literal
+from shared.cpp import integer_literal
 from shared.templates import render
 from shared.types import OperandType
 

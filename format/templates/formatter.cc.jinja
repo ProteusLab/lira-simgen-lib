@@ -11,7 +11,7 @@ namespace prot::formatter {
 
 namespace {
 
-{{ ctx.declaration }}
+{{ ctx.struct.definition() }}
 
 namespace string_tables {
 {% for table in string_tables %}
@@ -23,7 +23,7 @@ constexpr std::array<std::string_view, {{ table.values|length }}> {{ table.name 
 {% endfor %}
 } // namespace string_tables
 
-{{ emit_functions(snippet_functions, ctx.name ~ "&") }}
+{{ emit_functions(snippet_functions) }}
 } // namespace
 
 {% set instruction_arg = "insn" %}
@@ -34,9 +34,9 @@ std::optional<std::string> format(const FmtConfig& cfg, const prot::isa::Instruc
     case prot::isa::Opcode::{{ opcode_name(instruction) }}: {
 {% for syntax in instruction.syntaxes %}
       {
-        {{ ctx.name }} ctx{.cfg = cfg, .output = {}, .mnemonic = {{ string_literal(syntax.mnemonic) }}};
-        if ({{ snippet_functions[syntax.condition]("ctx", operands) }}) {
-          {{ snippet_functions[syntax.syntax]("ctx", operands) }};
+        {{ ctx.struct.name }} ctx{.cfg = cfg, .output = {}, .mnemonic = {{ string_literal(syntax.mnemonic) }}};
+        if ({{ snippet_functions[syntax.condition].call(operands, ctx="ctx") }}) {
+          {{ snippet_functions[syntax.syntax].call(operands, ctx="ctx") }};
           return std::move(ctx.output);
         }
       }

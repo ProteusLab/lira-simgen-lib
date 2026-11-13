@@ -1,89 +1,10 @@
-from copy import copy
 from types import SimpleNamespace
 
 from lira.arch_ser_yaml import read_arch
 
+from shared._compile import CompiledSnippet, compile_snippet
 from shared.isa import opcode_name
-from shared.snippet import compile_snippet, initialize_outputs
 from shared.templates import render
-
-
-def emit(kind, specifier=None):
-    def decorate(method):
-        method.statement_key = kind, specifier
-        return method
-
-    return decorate
-
-
-def context(name):
-    def decorate(cls):
-        cls.fields = {
-            key: value
-            for key, value in vars(cls).items()
-            if not key.startswith("_") and isinstance(value, str)
-        }
-        cls.handlers = {
-            method.statement_key: method.__name__
-            for method in vars(cls).values()
-            if hasattr(method, "statement_key")
-        }
-        cls.name = name
-        return cls
-
-    return decorate
-
-
-class ContextBinding:
-    def __init__(self, name: str, fields: dict[str, str]):
-        self._name = name
-        self._fields = fields
-
-    def __getattr__(self, field: str) -> str:
-        if field not in self._fields:
-            raise AttributeError(field)
-        return f"{self._name}.{field}"
-
-
-class ContextBase:
-    parameter_name = "ctx"
-
-    @property
-    def declaration(self) -> str:
-        fields = "\n".join(f"  {ty} {name};" for name, ty in self.fields.items())
-        return f"struct {self.name} {{\n{fields}\n}};"
-
-    def initializer(self, **values) -> str:
-        fields = ", ".join(
-            f".{field} = {values[field]}" for field in self.fields if field in values
-        )
-        unknown = values.keys() - self.fields.keys()
-        if unknown:
-            names = ", ".join(sorted(unknown))
-            raise ValueError(f"Unknown {self.name} fields: {names}")
-        return f"{self.name}{{{fields}}}"
-
-    def for_snippet(self, values):
-        context = copy(self)
-        context._values = values
-        return context
-
-    def resolve_var(self, name):
-        return self._values[name]
-
-    def init_with(self, stmt, *expressions) -> str:
-        outputs = [self.resolve_var(name) for name in stmt.outputs]
-        return initialize_outputs(outputs, expressions)
-
-    def emit_statement(self, stmt):
-        binding = ContextBinding(self.parameter_name, self.fields)
-        exact = self.handlers.get((stmt.kind, stmt.specifier))
-        if exact is not None:
-            return getattr(self, exact)(binding, stmt)
-        general = self.handlers.get((stmt.kind, None))
-        if general is not None:
-            return getattr(self, general)(binding, stmt, stmt.specifier)
-        return None
 
 
 class Emitter:
@@ -114,9 +35,16 @@ class Emitter:
         )
         return list(dict.fromkeys(names))
 
-    def compile_snippets(self, names):
+    def compile_snippets(self, names, *, context_type=None) -> dict[str, CompiledSnippet]:
+        """Compile each named snippet once for this emitter's usage.
+
+        If the usage has a context struct, its parameter defaults to a const
+        reference. context_type can supply the full C++ parameter type.
+        """
         return {
-            name: compile_snippet(self.snippets[name], self.operations, self.ctx)
+            name: compile_snippet(
+                self.snippets[name], self.operations, self.ctx, context_type=context_type
+            )
             for name in dict.fromkeys(names)
         }
 
@@ -136,9 +64,9 @@ class Emitter:
             (self.out_dir / template.stem).write_text(content, encoding="utf-8")
 
 
-def emit_functions(functions, context_type=None) -> str:
+def emit_functions(functions) -> str:
     return "\n\n".join(
-        function.definition(context_type) for function in functions.values()
+        snippet.function.definition() for snippet in functions.values()
     )
 
 

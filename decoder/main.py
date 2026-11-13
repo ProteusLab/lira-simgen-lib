@@ -1,11 +1,13 @@
 from lira.ir import Statement
 
+from shared import cpp
 from shared.cli import default_parser
-from shared.emitter import ContextBase, Emitter, context, emit
+from shared.context import BaseContext, context, emit
+from shared.emitter import Emitter
 
 
 @context(name="DecodeContext")
-class DecoderContext(ContextBase):
+class DecoderContext(BaseContext):
     const_mask = "uint32_t"
     const_encoding_part = "uint32_t"
 
@@ -16,11 +18,11 @@ class DecoderContext(ContextBase):
         )
 
     @emit("dyn_const", "const_mask")
-    def read_mask(self, ctx, stmt: Statement) -> str:
+    def read_mask(self, ctx, stmt: Statement) -> cpp.Statement:
         return self.init_with(stmt, ctx.const_mask)
 
     @emit("dyn_const", "const_encoding_part")
-    def read_encoding_part(self, ctx, stmt: Statement) -> str:
+    def read_encoding_part(self, ctx, stmt: Statement) -> cpp.Statement:
         return self.init_with(stmt, ctx.const_encoding_part)
 
 

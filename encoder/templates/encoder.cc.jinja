@@ -7,7 +7,7 @@ namespace prot::encoder {
 
 namespace {
 
-{{ ctx.declaration }}
+{{ ctx.struct.definition() }}
 
 {{ emit_functions(snippet_functions) }}
 } // namespace
@@ -20,7 +20,7 @@ prot::isa::Word encode(const prot::isa::Instruction& {{ instruction_arg }}) {
 {% set operands = operand_args(instruction_arg, instruction.operand_names|length) %}
     case prot::isa::Opcode::{{ opcode_name(instruction) }}: {
       const auto ctx = {{ ctx.initializer(encoding) }};
-      return {{ snippet_functions[encoding.encode]("ctx", operands) }};
+      return {{ snippet_functions[encoding.encode].call(operands, ctx="ctx") }};
     }
 {% endfor %}
     default:

@@ -1,18 +1,20 @@
 from lira.ir import Statement
 
+from shared import cpp
 from shared.cli import default_parser
-from shared.emitter import ContextBase, Emitter, context, emit
+from shared.context import BaseContext, context, emit
+from shared.emitter import Emitter
 
 
 @context(name="EncodeContext")
-class EncoderContext(ContextBase):
+class EncoderContext(BaseContext):
     const_encoding_part = "uint32_t"
 
     def initializer(self, encoding) -> str:
         return super().initializer(const_encoding_part=encoding.const_encoding_part)
 
     @emit("dyn_const", "const_encoding_part")
-    def read_encoding_part(self, ctx, stmt: Statement) -> str:
+    def read_encoding_part(self, ctx, stmt: Statement) -> cpp.Statement:
         return self.init_with(stmt, ctx.const_encoding_part)
 
 
