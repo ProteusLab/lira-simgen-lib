@@ -13,32 +13,20 @@ uint32_t const_encoding_part;
 
 
 namespace {
-{% for func in decodes.values() %}
+{{ decode_definitions }}
 
-{{ func.ret }} {{ func.name }}({{ func.param_list }}) {
-{{ func.body }}
-}
-{% endfor %}
-{% for func in constraints.values() %}
-
-{{ func.ret }} {{ func.name }}(const DecCtx& ctx, {{ func.param_list }}) {
-{{ func.body }}
-}
-{% endfor %}
+{{ constraint_definitions }}
 } // namespace
 
 std::optional<Instruction> decode(const Word machInst) {
-  Instruction insn{};
 {% for inst in insts %}
 {% if not loop.first %}
 
 {% endif %}
 {% set encoding = inst.insn.encoding %}  if ({{ constraints[inst.constraint_decode].name }}(DecCtx{.const_mask = {{ encoding.const_mask }}, .const_encoding_part = {{ encoding.const_encoding_part }}}, machInst)) {
-{%- for name in encoding.decode %}
-    {{ isa.operand(loop.index0) }} = {{ decodes[name]('machInst') }};
-{%- endfor %}
-    insn.m_opc = Opcode::k{{ inst.name }};
-    return insn;
+    return Instruction{Opcode::k{{ inst.name }}
+      {%- for name in encoding.decode %}, {{ decodes[name]('machInst') }}{% endfor -%}
+    };
   }
 {% endfor %}
 

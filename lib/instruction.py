@@ -42,6 +42,10 @@ class Instruction:
     def operand_sizes(self) -> List[int]:
         return self.insn.operand_sizes
 
+    @property
+    def syntaxes(self):
+        return getattr(self.insn, "syntaxes", ())
+
     def const_value(self, name: str) -> int:
         return getattr(self.insn.encoding, name)
 

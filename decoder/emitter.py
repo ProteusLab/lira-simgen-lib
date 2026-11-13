@@ -5,9 +5,9 @@ from pathlib import Path
 from typing import Dict
 
 import cpp.base_ops
-from cpp.emitter import BaseEmitter
+from cpp.emitter import BaseEmitter, emit_function_dict
 from cpp.func import Func
-from cpp.isa import Isa, IsaEmitter
+from cpp.isa import IsaEmitter
 
 
 class DecoderEmitter(BaseEmitter):
@@ -31,9 +31,12 @@ class DecoderEmitter(BaseEmitter):
         decoder_hh = self._templates.render(name=Path("decoder.hh.jinja"))
         decoder_cc = self._templates.render(
             name=Path("decoder.cc.jinja"),
-            isa=Isa,
             decodes=self._decodes,
             constraints=self._constraints,
+            decode_definitions=emit_function_dict(self._decodes),
+            constraint_definitions=emit_function_dict(
+                self._constraints, "const DecCtx& ctx"
+            ),
             insts=self._driver.insts,
         )
 
