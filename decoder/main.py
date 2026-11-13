@@ -1,5 +1,6 @@
 from lira.ir import Statement
 
+from decoder.tree import MaskValue, build_tree
 from shared import cpp
 from shared.cli import default_parser
 from shared.context import BaseContext, context, emit
@@ -28,6 +29,10 @@ class DecoderContext(BaseContext):
 
 def main() -> None:
     parser = default_parser(__file__)
+    parser.add_argument(
+        "--dispatch", choices=("table", "switch"), default="table",
+        help="How to traverse the generated decoder tree (default: table)",
+    )
     args = parser.parse_args()
     emitter = Emitter.from_args(args, ctx=DecoderContext())
     snippet_names = emitter.collect_snippet_names(
@@ -35,6 +40,16 @@ def main() -> None:
         lambda instr: instr.encoding.decode,
     )
     emitter.args.snippet_functions = emitter.compile_snippets(snippet_names)
+    emitter.args.dispatch = args.dispatch
+    emitter.args.tree = build_tree([
+        MaskValue(instr.encoding.const_mask, instr.encoding.const_encoding_part)
+        for instr in emitter.arch.instructions
+    ])
+    emitter.args.node = cpp.Struct("Node", (
+        cpp.NamedValue("shift", "unsigned"),
+        cpp.NamedValue("mask", "prot::isa::Word"),
+        cpp.NamedValue("offset", "std::size_t"),
+    ))
     emitter.emit()
 
 

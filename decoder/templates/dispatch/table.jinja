@@ -1,0 +1,34 @@
+namespace {
+
+{{ node.definition() }}
+
+constexpr {{ node.name }} nodes[] = {
+{%- for node in tree.nodes %}
+  { {{ node.shift }}, {{ node.mask }}, {{ node.offset }} },
+{%- endfor %}
+};
+
+constexpr std::array<std::size_t, {{ tree.children|length }}> children = {
+{%- for child in tree.children %}
+  {{ child }},
+{%- endfor %}
+};
+
+using LeafFunction = std::optional<prot::isa::Instruction> (*)(prot::isa::Word);
+
+constexpr LeafFunction leaves[] = {
+{%- for candidates in tree.leaf_candidates %}
+  decode_leaf_{{ loop.index0 }},
+{%- endfor %}
+};
+
+} // namespace
+
+std::optional<prot::isa::Instruction> decode(const prot::isa::Word {{ word_arg }}) {
+  auto index = std::size_t{ {{ tree.root_index }} };
+  while (nodes[index].mask != 0) {
+    const auto& node = nodes[index];
+    index = children[node.offset + (({{ word_arg }} >> node.shift) & node.mask)];
+  }
+  return leaves[nodes[index].offset]({{ word_arg }});
+}

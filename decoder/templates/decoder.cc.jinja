@@ -3,6 +3,8 @@
 #include "decoder.hh"
 #include "base_ops.hh"
 
+#include <array>
+
 namespace prot::decoder {
 
 namespace {
@@ -10,25 +12,29 @@ namespace {
 {{ ctx.struct.definition() }}
 
 {{ emit_functions(snippet_functions) }}
-} // namespace
 
-{% set word_arg = "machine_word" %}
-std::optional<prot::isa::Instruction> decode(const prot::isa::Word {{ word_arg }}) {
-  // TODO: decode tree
+{%- set word_arg = "machine_word" %}
+{%- for candidates in tree.leaf_candidates %}
 
-{% for instruction in instructions %}
-{% set encoding = instruction.encoding %}
+std::optional<prot::isa::Instruction> decode_leaf_{{ loop.index0 }}(prot::isa::Word{% if candidates %} {{ word_arg }}{% endif %}) {
+{%- for index in candidates %}
+{%- set instruction = instructions[index] %}
+{%- set encoding = instruction.encoding %}
   if (const auto ctx = {{ ctx.initializer(encoding) }};
       {{ snippet_functions[encoding.constraint_decode].call([word_arg], ctx="ctx") }}) {
     return prot::isa::Instruction{
       prot::isa::Opcode::{{ opcode_name(instruction) }},
-{% for decode_name in encoding.decode %}
+{%- for decode_name in encoding.decode %}
       {{ snippet_functions[decode_name].call([word_arg], ctx="ctx") }},
-{% endfor %}
+{%- endfor %}
     };
   }
-{% endfor %}
+{%- endfor %}
   return std::nullopt;
 }
+{%- endfor %}
 
+} // namespace
+
+{% include "dispatch/" ~ dispatch ~ ".jinja" %}
 } // namespace prot::decoder

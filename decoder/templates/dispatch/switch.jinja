@@ -1,0 +1,23 @@
+{% macro jump(index) -%}
+{% set target = tree.nodes[index] -%}
+{% if target.mask -%}
+goto node_{{ index }};
+{%- else -%}
+return decode_leaf_{{ target.offset }}({{ word_arg }});
+{%- endif %}
+{%- endmacro %}
+std::optional<prot::isa::Instruction> decode(const prot::isa::Word {{ word_arg }}) {
+  {{ jump(tree.root_index) }}
+{%- for branch in tree.nodes %}
+{%- if branch.mask %}
+node_{{ loop.index0 }}:
+  switch (({{ word_arg }} >> {{ branch.shift }}) & {{ branch.mask }}) {
+{%- for entry in range(branch.mask + 1) %}
+    case {{ entry }}: {{ jump(tree.children[branch.offset + entry]) }}
+{%- endfor %}
+  }
+  return std::nullopt;
+{%- endif %}
+{%- endfor %}
+
+}
