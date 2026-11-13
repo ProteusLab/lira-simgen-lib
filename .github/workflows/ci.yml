@@ -63,8 +63,8 @@ jobs:
       - name: Verify the generated IR
         run: python3 utils/protea2lira/check_ir.py --ir-path build/lira_ir/RISC_V.yaml
 
-  decoder:
-    name: Decoder generation and build
+  codec:
+    name: Encoder and decoder generation and build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -83,8 +83,8 @@ jobs:
       - name: Configure
         run: cmake -B build -DARCH_TARGET=RISC_V -DARCH_SOURCE=Protea
 
-      - name: Generate decoder sources
-        run: cmake --build build --target gen-decoder
+      - name: Generate encoder and decoder sources
+        run: cmake --build build --target gen-encoder gen-decoder
 
-      - name: Build decoder
-        run: cmake --build build --target build-decoder
+      - name: Build encoder and decoder
+        run: cmake --build build --target build-encoder build-decoder
