@@ -27,8 +27,9 @@ def analyze_snippet(snippet: Snippet) -> SnippetInfo:
     outputs = {}
     for stmt in snippet.seq.stmts:
         args = [values[name] for name in stmt.inputs]
+        shape = Shape(1, None) if stmt.kind == "fold" else stmt.shape
         results = [
-            Value(name, width, stmt.shape)
+            Value(name, width, shape)
             for name, width in zip(stmt.outputs, stmt.outputs_types, strict=True)
         ]
         for value in results:

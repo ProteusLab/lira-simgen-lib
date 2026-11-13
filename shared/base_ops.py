@@ -29,6 +29,8 @@ from lira.ir_ops import (
     RemS,
     RemU,
     Reverse,
+    Rol,
+    Ror,
     Select,
     Sge,
     Sgt,
@@ -44,29 +46,68 @@ from lira.ir_ops import (
     Xor,
 )
 
+from shared import cpp
+from shared._compile import compile_snippet
+from shared._values import normalize
 from shared.cpp import integer_literal
 from shared.templates import render
 from shared.types import OperandType
 
 
-def render_base_ops(operations) -> tuple[str, str]:
+def render_base_ops(operations, snippets=(), tables=()) -> tuple[str, str]:
     declarations = []
     definitions = []
-    for op in operations:
-        body = getattr(type(op), "_cpp_body", None)
-        if body is None:
-            raise ValueError(f"No C++ body defined for operation {op.name}")
-        params = ", ".join(
-            f"{OperandType.gen(width)} arg{i}" for i, width in enumerate(op.inputs)
-        )
-        name = op.semantic_func or op.name
-        signature = f"{OperandType.gen(op.outputs[0])} {name}({params})"
-        declarations.append(f"{signature};")
-        definitions.append(f"{signature}\n{{\n{body(op)}\n}}\n")
+    operations = {op.name: op for op in operations}
+    snippets = {snippet.name: snippet for snippet in snippets}
+    tables = {table.name: table.values for table in tables}
+    emitted = set()
+    for op in operations.values():
+        if op.semantic_func:
+            name = op.semantic_func
+            if name in emitted:
+                continue
+            compiled = compile_snippet(snippets[name], operations)
+            function = compiled.function
+        else:
+            params = tuple(
+                cpp.NamedValue(f"arg{i}", OperandType.gen(width))
+                for i, width in enumerate(op.inputs)
+            )
+            (width,) = op.outputs
+            ty = OperandType.gen(width)
+            if op.semantic_table:
+                values = tables[op.semantic_table]
+                entries = ", ".join(
+                    integer_literal(value % (1 << width)) for value in values
+                )
+                body = (
+                    f"static constexpr std::array<{ty}, {len(values)}> table{{{entries}}};\n"
+                    f"return arg0 < table.size() ? table[arg0] : {ty}{{}};"
+                )
+            else:
+                emit_body = getattr(type(op), "_cpp_body", None)
+                if emit_body is None:
+                    raise ValueError(f"No C++ body defined for operation {op.name}")
+                body = emit_body(op).strip()
+                if 1 < width < OperandType.bits(width):
+                    expression = f"([&]() -> {ty} {{\n{cpp.Statement(body).render(indent=2)}\n}})()"
+                    body = f"return {normalize(width, expression)};"
+            function = cpp.Function(op.name, ty, params, [cpp.Statement(body)])
+        emitted.add(function.name)
+        declarations.append(function.declaration())
+        definitions.append(function.definition())
     directory = Path(__file__).with_name("templates")
+    wide_values = any(
+        width > 128 for op in operations.values() for width in (*op.inputs, *op.outputs)
+    )
     return (
-        render(directory, "base_ops.hh.jinja", decls="\n".join(declarations)),
-        render(directory, "base_ops.cc.jinja", defs="\n".join(definitions)),
+        render(
+            directory,
+            "base_ops.hh.jinja",
+            decls="\n".join(declarations),
+            wide_values=wide_values,
+        ),
+        render(directory, "base_ops.cc.jinja", defs="\n\n".join(definitions)),
     )
 
 
@@ -85,6 +126,8 @@ def _out_type(op: Operation) -> str:
 def _extend_sign(op: Operation) -> str:
     iw = op.inputs[0]
     t = _out_type(op)
+    if iw == op.outputs[0]:
+        return "return arg0;"
     return f"""
 {t} val = arg0 & ((({t})1 << {iw}) - 1);
 {t} sign = (val >> ({iw} - 1)) & 1;
@@ -98,16 +141,21 @@ else
 def _extend_zero(op: Operation) -> str:
     iw = op.inputs[0]
     t = _out_type(op)
-    return f"return arg0 & ((({t})1 << {iw}) - 1);\n"
+    if iw >= op.outputs[0] or op.outputs[0] > 128:
+        return f"return static_cast<{t}>(arg0);"
+    return f"return arg0 & {integer_literal((1 << iw) - 1)};"
 
 
 def _extract_low(op: Operation) -> str:
     mask = integer_literal((1 << op.outputs[0]) - 1)
-    return f"return arg0 & {mask};\n"
+    arg = "arg0.lo" if op.inputs[0] > 128 and op.outputs[0] <= 128 else "arg0"
+    return f"return {arg} & {mask};\n"
 
 
 def _shift(op: Operation, operator: str) -> str:
     width = op.inputs[0]
+    if width > 128:
+        return f"return arg0 {operator} arg1;"
     if isinstance(op, Asr):
         value = _signed_value(op, "arg0")
         return (
@@ -115,6 +163,15 @@ def _shift(op: Operation, operator: str) -> str:
             f"({value} >> arg1);\n"
         )
     return f"return arg1 >= {width} ? 0 : arg0 {operator} arg1;\n"
+
+
+def _rotate(op: Operation, left: str, right: str) -> str:
+    width = op.inputs[0]
+    value = "static_cast<decltype(+arg0 + 0U)>(arg0)"
+    return f"""\
+arg1 %= {width};
+return arg1 == 0 ? arg0 : ({value} {left} arg1) | ({value} {right} ({width} - arg1));
+"""
 
 
 def _signed_value(op: Operation, arg: str) -> str:
@@ -262,6 +319,8 @@ Xor._cpp_body = lambda self: "return arg0 ^ arg1;\n"
 Lsl._cpp_body = lambda self: _shift(self, "<<")
 Lsr._cpp_body = lambda self: _shift(self, ">>")
 Asr._cpp_body = lambda self: _shift(self, ">>")
+Rol._cpp_body = lambda self: _rotate(self, "<<", ">>")
+Ror._cpp_body = lambda self: _rotate(self, ">>", "<<")
 Eq._cpp_body = lambda self: "return (arg0 == arg1) ? 1 : 0;\n"
 Ne._cpp_body = lambda self: "return (arg0 != arg1) ? 1 : 0;\n"
 Slt._cpp_body = (
@@ -283,13 +342,18 @@ Uge._cpp_body = lambda self: "return (arg0 >= arg1) ? 1 : 0;\n"
 DivU._cpp_body = lambda self: "return (arg1 == 0) ? arg2 : arg0 / arg1;\n"
 
 DivS._cpp_body = (
-    lambda self: f"return (arg1 == 0) ? arg2 : ({_in_type(self)})(({_signed(self)})arg0 / ({_signed(self)})arg1);\n"
+    lambda self: f"""\
+if (arg1 == 0) return arg2;
+if (({_signed(self)})arg1 == -1) return ({_in_type(self)})(0 - arg0);
+return ({_in_type(self)})(({_signed(self)})arg0 / ({_signed(self)})arg1);
+"""
 )
 
 RemU._cpp_body = lambda self: "if (arg1 == 0) return arg0;\nreturn arg0 % arg1;\n"
 
 RemS._cpp_body = lambda self: f"""\
 if (arg1 == 0) return arg0;
+if (({_signed(self)})arg1 == -1) return 0;
 {_signed(self)} res = ({_signed(self)})arg0 % ({_signed(self)})arg1;
 return ({_in_type(self)})res;
 """
@@ -364,7 +428,8 @@ def main() -> None:
     if args.arch_target == "RISC_V":
         _use_risc_v_bodies()
 
-    header, source = render_base_ops(read_arch(args.ir_path).operations)
+    arch = read_arch(args.ir_path)
+    header, source = render_base_ops(arch.operations, arch.snippets, arch.tables_int)
     args.out_dir.mkdir(parents=True, exist_ok=True)
     (args.out_dir / "base_ops.hh").write_text(header, encoding="utf-8")
     (args.out_dir / "base_ops.cc").write_text(source, encoding="utf-8")

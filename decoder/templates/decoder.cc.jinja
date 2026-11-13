@@ -21,7 +21,10 @@ std::optional<prot::isa::Instruction> decode_leaf_{{ loop.index0 }}(prot::isa::W
 {%- set instruction = instructions[index] %}
 {%- set encoding = instruction.encoding %}
   if (const auto ctx = {{ ctx.initializer(encoding) }};
-      {{ snippet_functions[encoding.constraint_decode].call([word_arg], ctx="ctx") }}) {
+      ({{ word_arg }} & ctx.const_mask) == ctx.const_encoding_part
+{%- if encoding.constraint_decode %}
+      && {{ snippet_functions[encoding.constraint_decode].call([word_arg], ctx="ctx") }}
+{%- endif %}) {
     return prot::isa::Instruction{
       prot::isa::Opcode::{{ opcode_name(instruction) }},
 {%- for decode_name in encoding.decode %}

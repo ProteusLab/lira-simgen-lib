@@ -17,7 +17,7 @@ class OperandType:
     U128 = "uint128_t"
     I128 = "int128_t"
 
-    _STANDARD_WIDTHS = [1, 8, 16, 32, 64, 128]
+    _STANDARD_WIDTHS = [1, 8, 16, 32, 64, 128, 256]
     _WIDTH_TYPES = {
         1: (BOOL, BOOL),
         8: (U8, I8),
@@ -25,11 +25,15 @@ class OperandType:
         32: (U32, I32),
         64: (U64, I64),
         128: (U128, I128),
+        256: ("uint256_t", None),
     }
 
     @classmethod
     def gen(cls, width: int, signed: bool = False) -> str:
-        return cls._WIDTH_TYPES[cls.bits(width)][1 if signed else 0]
+        result = cls._WIDTH_TYPES[cls.bits(width)][signed]
+        if result is None:
+            raise ValueError(f"No signed C++ type for {width} bits")
+        return result
 
     @classmethod
     def bits(cls, width: int) -> int:

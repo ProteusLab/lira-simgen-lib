@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from lira.arch import Operation, Snippet
 
 from shared import cpp
-from shared._values import cpp_value, initialize_outputs
+from shared._values import cpp_value, initialize_outputs, is_vector
 from shared.context import BaseContext
 from shared.snippet import analyze_snippet
 
@@ -44,9 +44,6 @@ def compile_snippet(
     emit_statement = _statement_emitter(usage, values) if usage is not None else None
     body = []
     for stmt in snippet.seq.stmts:
-        if stmt.shape.lanes_base != 1 or stmt.shape.lanes_mult is not None:
-            raise ValueError(f"{snippet.name}: unsupported shape for {stmt.kind}")
-
         args = [values[name] for name in stmt.inputs]
         results = [info.values[name] for name in stmt.outputs]
         values.update((value.name, value) for value in results)
@@ -87,6 +84,8 @@ def compile_snippet(
 
 
 def _emit_scalar(snippet_name, stmt, args, results, operations):
+    if is_vector(stmt.shape):
+        raise ValueError(f"{snippet_name}: unsupported shape for {stmt.kind}")
     if stmt.kind == "const":
         (out,) = results
         value = int(stmt.specifier, 0) % (1 << out.width)

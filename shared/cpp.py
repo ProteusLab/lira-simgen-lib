@@ -80,4 +80,7 @@ def integer_literal(value: int) -> str:
     if 0 <= value <= 0xFFFFFFFFFFFFFFFF:
         return f"{value}ULL"
     upper, lower = divmod(value, 1 << 64)
+    if upper >= 1 << 64:
+        upper, lower = divmod(value, 1 << 128)
+        return f"uint256_t{{{integer_literal(upper)}, {integer_literal(lower)}}}"
     return f"((uint128_t{{{upper}ULL}} << 64) | {lower}ULL)"

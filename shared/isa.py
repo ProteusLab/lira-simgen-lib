@@ -19,6 +19,7 @@ def main() -> None:
         instructions=instructions,
         opcode_name=opcode_name,
         num_operands=num_operands,
+        addr_type="uint64_t" if args.arch_target == "AArch64" else "uint32_t",
     )
     args.out_dir.mkdir(parents=True, exist_ok=True)
     (args.out_dir / "isa.hh").write_text(header, encoding="utf-8")

@@ -36,7 +36,7 @@ def main() -> None:
     args = parser.parse_args()
     emitter = Emitter.from_args(args, ctx=DecoderContext())
     snippet_names = emitter.collect_snippet_names(
-        lambda instr: (instr.encoding.constraint_decode,),
+        lambda instr: filter(None, (instr.encoding.constraint_decode,)),
         lambda instr: instr.encoding.decode,
     )
     emitter.args.snippet_functions = emitter.compile_snippets(snippet_names)
