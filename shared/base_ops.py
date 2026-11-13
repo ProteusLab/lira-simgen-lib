@@ -47,9 +47,10 @@ from lira.ir_ops import (
 )
 
 from shared import cpp
-from shared._compile import compile_snippet
+from shared._compile import compile_snippet, uses_vector_runtime
 from shared._values import normalize
 from shared.cpp import integer_literal
+from shared.tables import compile_table
 from shared.templates import render
 from shared.types import OperandType
 
@@ -59,14 +60,17 @@ def render_base_ops(operations, snippets=(), tables=()) -> tuple[str, str]:
     definitions = []
     operations = {op.name: op for op in operations}
     snippets = {snippet.name: snippet for snippet in snippets}
-    tables = {table.name: table.values for table in tables}
+    tables = {table.name: table for table in tables}
     emitted = set()
+    uses_vectors = False
     for op in operations.values():
         if op.semantic_func:
             name = op.semantic_func
             if name in emitted:
                 continue
-            compiled = compile_snippet(snippets[name], operations)
+            snippet = snippets[name]
+            uses_vectors |= uses_vector_runtime(snippet)
+            compiled = compile_snippet(snippet, operations)
             function = compiled.function
         else:
             params = tuple(
@@ -76,12 +80,11 @@ def render_base_ops(operations, snippets=(), tables=()) -> tuple[str, str]:
             (width,) = op.outputs
             ty = OperandType.gen(width)
             if op.semantic_table:
-                values = tables[op.semantic_table]
-                entries = ", ".join(
-                    integer_literal(value % (1 << width)) for value in values
+                table = compile_table(
+                    tables[op.semantic_table], name="table", width=width, static=True
                 )
                 body = (
-                    f"static constexpr std::array<{ty}, {len(values)}> table{{{entries}}};\n"
+                    f"{table}\n"
                     f"return arg0 < table.size() ? table[arg0] : {ty}{{}};"
                 )
             else:
@@ -107,7 +110,12 @@ def render_base_ops(operations, snippets=(), tables=()) -> tuple[str, str]:
             decls="\n".join(declarations),
             wide_values=wide_values,
         ),
-        render(directory, "base_ops.cc.jinja", defs="\n\n".join(definitions)),
+        render(
+            directory,
+            "base_ops.cc.jinja",
+            defs="\n\n".join(definitions),
+            uses_vectors=uses_vectors,
+        ),
     )
 
 

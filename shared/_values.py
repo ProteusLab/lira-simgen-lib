@@ -1,4 +1,4 @@
-"""Scalar C++ value lowering used by the snippet compiler and handlers."""
+"""C++ value lowering used by the snippet compiler and handlers."""
 
 from shared import cpp
 from shared.snippet import Value
@@ -15,6 +15,7 @@ def cpp_value(value: Value) -> cpp.NamedValue:
 
 
 def is_vector(shape) -> bool:
+    """Whether this shape needs a vector representation in C++."""
     return shape.lanes_base != 1 or shape.lanes_mult is not None
 
 

@@ -1,8 +1,10 @@
 from lira.ir import Statement
 
+from shared import cpp
 from shared.cli import default_parser
 from shared.context import BaseContext, context, emit
 from shared.emitter import Emitter
+from shared.tables import compile_table
 from shared.types import OperandType
 
 
@@ -14,7 +16,7 @@ class FormatterContext(BaseContext):
 
     @emit("string")
     def append_string(self, ctx, stmt: Statement, specifier: str) -> str:
-        return f"{ctx.output} += {string_literal(specifier)};"
+        return f"{ctx.output} += {cpp.string_view_literal(specifier)};"
 
     @emit("dyn_string", "mnemonic")
     def append_mnemonic(self, ctx, stmt: Statement) -> str:
@@ -48,18 +50,9 @@ def main() -> None:
     emitter.args.snippet_functions = emitter.compile_snippets(
         snippet_names, context_type=f"{emitter.ctx.struct.name}&"
     )
-    emitter.args.string_tables = emitter.arch.tables_str
-    emitter.args.string_literal = string_literal
+    emitter.args.string_tables = "\n\n".join(map(compile_table, emitter.arch.tables_str))
+    emitter.args.string_literal = cpp.string_view_literal
     emitter.emit()
-
-
-def string_literal(text: str) -> str:
-    value = text.encode("utf-8")
-    literal = "".join(
-        chr(byte) if 32 <= byte < 127 and byte not in (34, 92) else f"\\{byte:03o}"
-        for byte in value
-    )
-    return f'std::string_view{{"{literal}", {len(value)}}}'
 
 
 if __name__ == "__main__":

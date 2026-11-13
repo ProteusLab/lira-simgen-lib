@@ -20,7 +20,6 @@ add_library(interp-core STATIC
 add_dependencies(interp-core gen-interp)
 target_include_directories(interp-core PUBLIC
   "${CMAKE_CURRENT_BINARY_DIR}"
-  "${PROJECT_SOURCE_DIR}/shared/runtime"
   "${runtime}"
   "${target_runtime}")
 target_link_libraries(interp-core PUBLIC decoder PRIVATE fmt::fmt-header-only)

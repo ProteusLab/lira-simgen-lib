@@ -6,7 +6,7 @@ from dataclasses import dataclass
 
 from lira.arch import Operation, Snippet
 
-from shared import cpp
+from shared import _vectors, cpp
 from shared._values import cpp_value, initialize_outputs, is_vector
 from shared.context import BaseContext
 from shared.snippet import analyze_snippet
@@ -38,11 +38,25 @@ def compile_snippet(
     *,
     context_type: str | None = None,
 ) -> CompiledSnippet:
-    """Compile a snippet using the supplied statement handlers and context."""
+    """Compile a snippet using the supplied statement handlers and context.
+
+    Generated vector code uses lira_vec.hh. Scalable results borrow storage
+    from the caller, whose ArenaScope must outlive all uses of those results.
+    """
     info = analyze_snippet(snippet)
-    values = {}
-    emit_statement = _statement_emitter(usage, values) if usage is not None else None
+    usage = copy(usage) if usage is not None else BaseContext()
+    usage._values = {}
+    values = usage._values
+    ctx = _ContextBinding(usage.parameter_name, usage.struct) if usage.struct else None
+    emit_statement = _statement_emitter(usage, ctx)
     body = []
+    # Scalable results borrow the caller's arena. Releasing our own mark would
+    # invalidate those results before the caller could use them.
+    if (
+        any(stmt.shape.lanes_mult is not None for stmt in snippet.seq.stmts)
+        and all(value.shape.lanes_mult is None for value in info.outputs.values())
+    ):
+        body.append(cpp.Statement("prot::vec::ArenaScope arena_scope;"))
     for stmt in snippet.seq.stmts:
         args = [values[name] for name in stmt.inputs]
         results = [info.values[name] for name in stmt.outputs]
@@ -52,13 +66,15 @@ def compile_snippet(
         elif stmt.kind == "output":
             continue
         else:
-            code = emit_statement(stmt) if emit_statement is not None else None
+            code = emit_statement(stmt)
             if code is None:
-                code = _emit_scalar(snippet.name, stmt, args, results, operations)
+                code = _emit_default(
+                    snippet.name, usage, ctx, stmt, args, results, operations
+                )
         body.append(cpp.Statement(code) if isinstance(code, str) else code)
 
     params = []
-    has_context = usage is not None and usage.struct is not None
+    has_context = ctx is not None
     if has_context:
         ty = context_type or f"const {usage.struct.name}&"
         params.append(cpp.NamedValue(usage.parameter_name, ty))
@@ -83,27 +99,56 @@ def compile_snippet(
     return CompiledSnippet(function, tuple(info.inputs), has_context)
 
 
-def _emit_scalar(snippet_name, stmt, args, results, operations):
-    if is_vector(stmt.shape):
-        raise ValueError(f"{snippet_name}: unsupported shape for {stmt.kind}")
+_VECTOR_HELPERS = {
+    "index": "iota",
+    "replicate": "splat",
+    "gather": "gather",
+    "extract_first": "resize",
+    "extend_zero": "resize",
+}
+
+
+def _emit_default(snippet_name, usage, ctx, stmt, args, results, operations):
     if stmt.kind == "const":
         (out,) = results
-        value = int(stmt.specifier, 0) % (1 << out.width)
-        return initialize_outputs(results, [cpp.integer_literal(value)])
-    if stmt.kind == "op":
+        literal = cpp.integer_literal(int(stmt.specifier, 0) % (1 << out.width))
+        if is_vector(stmt.shape):
+            return _vectors.vector_call(usage, ctx, stmt, "splat", [literal])
+        return initialize_outputs(results, [literal])
+    if helper := _VECTOR_HELPERS.get(stmt.kind):
+        return _vectors.vector_call(usage, ctx, stmt, helper, map(cpp_value, args))
+    if stmt.kind in ("op", "fold"):
         op = operations[stmt.specifier]
-        if (
+        name = op.semantic_func or op.name
+
+        def call(arguments):
+            return f"{name}({', '.join(map(str, arguments))})"
+
+        if stmt.kind == "fold":
+            outputs = list(map(cpp_value, results))
+            states = list(map(cpp_value, args[: len(outputs)]))
+            lanes = _vectors.lane_inputs(usage, stmt.inputs[len(outputs) :])
+            step = _vectors.assign(
+                outputs, stmt.outputs_types, call([*outputs, *lanes])
+            )
+            init = initialize_outputs(results, states)
+            loop = _vectors.loop(usage, ctx, stmt.shape, step)
+            return cpp.Statement(f"{init.text}\n{loop}")
+        if usage.validate_operation_widths and (
             [arg.width for arg in args] != op.inputs
             or [out.width for out in results] != op.outputs
         ):
             raise ValueError(f"{snippet_name}: invalid types for {op.name}")
-        name = op.semantic_func or op.name
-        expression = f"{name}({', '.join(str(cpp_value(arg)) for arg in args)})"
-        if results:
-            return initialize_outputs(results, [expression])
-        return cpp.Statement(f"{expression};")
+        return _vectors.lanewise(usage, ctx, stmt, call)
     raise ValueError(
         f"{snippet_name}: unsupported statement {stmt.kind} {stmt.specifier}"
+    )
+
+
+def uses_vector_runtime(snippet: Snippet) -> bool:
+    return any(
+        is_vector(stmt.shape) or stmt.kind in _VECTOR_HELPERS or stmt.kind == "fold"
+        for stmt in snippet.seq.stmts
     )
 
 
@@ -118,13 +163,7 @@ class _ContextBinding:
         return f"{self._name}.{field}"
 
 
-def _statement_emitter(usage, values):
-    usage = copy(usage)
-    usage._values = values
-    binding = None
-    if usage.struct is not None:
-        binding = _ContextBinding(usage.parameter_name, usage.struct)
-
+def _statement_emitter(usage, ctx):
     handlers = {}
     for base in reversed(type(usage).__mro__):
         for method in vars(base).values():
@@ -136,10 +175,10 @@ def _statement_emitter(usage, values):
         if stmt.specifier is not None:
             exact = handlers.get((stmt.kind, stmt.specifier))
             if exact is not None:
-                return exact(usage, binding, stmt)
+                return exact(usage, ctx, stmt)
         general = handlers.get((stmt.kind, None))
         if general is not None:
-            return general(usage, binding, stmt, stmt.specifier)
+            return general(usage, ctx, stmt, stmt.specifier)
         return None
 
     return emit_statement

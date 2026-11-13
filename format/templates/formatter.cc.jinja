@@ -14,13 +14,7 @@ namespace {
 {{ ctx.struct.definition() }}
 
 namespace string_tables {
-{% for table in string_tables %}
-constexpr std::array<std::string_view, {{ table.values|length }}> {{ table.name }} = {
-{% for value in table.values %}
-  {{ string_literal(value) }},
-{% endfor %}
-};
-{% endfor %}
+{{ string_tables }}
 } // namespace string_tables
 
 {{ emit_functions(snippet_functions) }}

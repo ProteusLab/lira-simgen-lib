@@ -1,5 +1,6 @@
 """C++ code objects and rendering helpers."""
 
+from collections.abc import Iterable
 from dataclasses import dataclass
 
 
@@ -84,3 +85,23 @@ def integer_literal(value: int) -> str:
         upper, lower = divmod(value, 1 << 128)
         return f"uint256_t{{{integer_literal(upper)}, {integer_literal(lower)}}}"
     return f"((uint128_t{{{upper}ULL}} << 64) | {lower}ULL)"
+
+
+def string_view_literal(text: str) -> str:
+    value = text.encode("utf-8")
+    literal = "".join(
+        chr(byte) if 32 <= byte < 127 and byte not in (34, 92) else f"\\{byte:03o}"
+        for byte in value
+    )
+    return f'std::string_view{{"{literal}", {len(value)}}}'
+
+
+def constexpr_array(
+    name: str, element_type: str, entries: Iterable[str], *, static: bool = False
+) -> str:
+    """Define a C++ array from already rendered element expressions."""
+    entries = tuple(entries)
+    storage = "static " if static else ""
+    body = "".join(f"  {entry},\n" for entry in entries)
+    declaration = f"{storage}constexpr std::array<{element_type}, {len(entries)}> {name}"
+    return f"{declaration} = {{\n{body}}};"

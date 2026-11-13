@@ -56,8 +56,6 @@ class State:
                 self.environment[name] = CpuInterface(function)
 
     def lane_count(self, shape, cpu):
-        if shape.lanes_mult is None:
-            return str(shape.lanes_base)
         expression, _ = self.lane_multipliers[shape.lanes_mult]
         return f"({shape.lanes_base} * {expression.format(cpu=cpu)})"
 

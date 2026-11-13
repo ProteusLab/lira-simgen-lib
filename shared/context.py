@@ -7,7 +7,7 @@ decorator registers a statement handler.
 
 from lira.ir import Shape, Statement
 
-from shared import cpp
+from shared import _vectors, cpp
 from shared._values import cpp_value, initialize_outputs
 
 
@@ -20,6 +20,7 @@ class BaseContext:
 
     struct: cpp.Struct | None = None
     parameter_name = "ctx"
+    validate_operation_widths = True
 
     def initializer(self, **values: str) -> str:
         """Build a context initializer from C++ expressions keyed by field name.
@@ -52,6 +53,18 @@ class BaseContext:
         decomposes into as many elements as there are outputs.
         """
         return initialize_outputs([self._values[name] for name in stmt.outputs], expressions)
+
+    def scalable_lane_count(self, ctx, shape: Shape) -> str:
+        """Return a C++ expression for the full lane count of a scalable shape."""
+        raise ValueError(f"No lane count supplied for scalable shape {shape}")
+
+    def declare_output(self, ctx, name: str) -> cpp.Statement:
+        """Declare an output with zero-initialized fixed storage or arena storage."""
+        return cpp.Statement(_vectors.declare_output(self, ctx, name))
+
+    def lanewise(self, ctx, stmt: Statement, call) -> cpp.Statement:
+        """Emit a scalar call per lane, passing the lane expressions to call."""
+        return _vectors.lanewise(self, ctx, stmt, call)
 
 
 def context(name: str):
@@ -88,7 +101,7 @@ def emit(kind: str, specifier: str | None = None):
     Return arbitrary C++ text or a cpp.Statement. Subclasses inherit
     handlers and can override them by registering the same key.
     The compiler handles input and output statements directly and supplies
-    default lowering for const and op.
+    default lowering for constants, operations, and pure vector statements.
     """
     def decorate(method):
         method._statement_key = kind, specifier
