@@ -23,7 +23,7 @@ where = ["."]
 include = ["lib*", "cpp*", "interpreter*", "encoder*", "decoder*", "utils*"]
 
 [tool.pytest.ini_options]
-testpaths = ["cpp/tests"]
+testpaths = ["cpp/tests", "interpreter/tests"]
 pythonpath = ["."]
 
 [tool.setuptools.package-data]
