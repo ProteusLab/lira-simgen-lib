@@ -8,6 +8,7 @@
 
 namespace prot::isa {
   using Word = uint32_t;
+  using Addr = {{ addr_type }};
 
   enum class Opcode : uint32_t {
 {%- for inst in insts %}

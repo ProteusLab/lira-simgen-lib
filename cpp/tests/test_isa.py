@@ -22,7 +22,15 @@ def test_isa_emitter_init():
 
 def test_isa_emitter_artifacts():
     driver = SimpleNamespace(
-        insts=[SimpleNamespace(name="ADD", ilen=4, operands=[0, 0])]
+        arch=SimpleNamespace(
+            register_files=[
+                SimpleNamespace(
+                    reg_size=SimpleNamespace(lanes_base=32),
+                    regs=[SimpleNamespace(attributes=["pc"])],
+                )
+            ]
+        ),
+        insts=[SimpleNamespace(name="ADD", ilen=4, operands=[0, 0])],
     )
     out = IsaEmitter(driver).artifacts()
     assert set(out) == {Path("isa.hh")}
@@ -30,6 +38,32 @@ def test_isa_emitter_artifacts():
     assert "GENERATED_LIRA_ISA_HH_INCLUDED" in text
     assert "enum class Opcode" in text
     assert "kADD," in text
+    assert "using Addr = uint32_t;" in text
     assert "uint32_t operand0;" in text
     assert "uint32_t operand1;" in text
     assert "case Opcode::kADD: return 4;" in text
+
+
+def test_isa_emitter_addr64():
+    driver = SimpleNamespace(
+        arch=SimpleNamespace(
+            register_files=[
+                SimpleNamespace(
+                    reg_size=SimpleNamespace(lanes_base=64),
+                    regs=[SimpleNamespace(attributes=["pc"])],
+                )
+            ]
+        ),
+        insts=[SimpleNamespace(name="ADD", ilen=4, operands=[0, 0])],
+    )
+    text = IsaEmitter(driver).artifacts()[Path("isa.hh")]
+    assert "using Addr = uint64_t;" in text
+
+
+def test_isa_emitter_default_addr():
+    driver = SimpleNamespace(
+        arch=SimpleNamespace(register_files=[]),
+        insts=[SimpleNamespace(name="ADD", ilen=4, operands=[0, 0])],
+    )
+    text = IsaEmitter(driver).artifacts()[Path("isa.hh")]
+    assert "using Addr = uint32_t;" in text

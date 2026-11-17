@@ -8,7 +8,9 @@ from pathlib import Path
 from lib.driver import Driver
 from lib.target import import_target_modules
 
-from interpreter.config import SimpleInterpConfig
+from interpreter.emitter import InterpEmitter
+
+import interpreter.Target.RISC_V
 
 
 def main() -> None:
@@ -28,10 +30,10 @@ def main() -> None:
     args = ap.parse_args()
 
     import_target_modules(args.arch_target)
+    import interpreter.Target.RISC_V
 
-    cfg = SimpleInterpConfig(arch_target=args.arch_target)
-    driver = Driver(args.ir_path, cfg)
-    cfg.emit(driver, args.out_dir)
+    driver = Driver(args.ir_path)
+    Driver.write_artifacts(args.out_dir, InterpEmitter(driver).artifacts())
 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 # lira-simgen-lib/lib/nodes.py
 # Data-flow nodes produced by the semantic builder
 
-from typing import Callable, Dict, List
+from typing import Callable, Dict, List, Optional
 
 from lira.arch import Operation
 
@@ -58,17 +58,16 @@ class WriteReg:
         self.value: Variable = value
 
 
-class ReadMem:
-    def __init__(self, var: Variable, inputs: List[Variable], interface: Interface):
-        self.var: Variable = var
+class EnvCall:
+    def __init__(
+        self,
+        inputs: List[Variable],
+        interface: Interface,
+        out: Optional[Variable] = None,
+    ):
         self.inputs: List[Variable] = inputs
         self.interface: Interface = interface
-
-
-class EnvExec:
-    def __init__(self, inputs: List[Variable], interface: Interface):
-        self.inputs: List[Variable] = inputs
-        self.interface: Interface = interface
+        self.out: Optional[Variable] = out
 
 
 class Return:

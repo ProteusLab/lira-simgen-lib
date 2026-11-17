@@ -2,11 +2,10 @@
 
 from lib.nodes import (
     DynConst,
-    EnvExec,
+    EnvCall,
     Input,
     NodeImpl,
     Op,
-    ReadMem,
     ReadReg,
     Return,
     WriteReg,
@@ -21,7 +20,7 @@ def _cpp_type(var: Variable) -> str:
     return OperandType.gen(var.width)
 
 
-def _decl(var: Variable) -> str:
+def decl(var: Variable) -> str:
     return f"{_cpp_type(var)} {var.name}{{0}};"
 
 
@@ -32,14 +31,14 @@ def _constant(node: Constant) -> str:
 
 @NodeImpl.serves(DynConst)
 def _dyn_const(node: DynConst) -> str:
-    return f"""{_decl(node.out)}
+    return f"""{decl(node.out)}
 {node.out} = {Context.M_CTX}.{node.name};
 """
 
 
 @NodeImpl.serves(Input)
 def _input(node: Input) -> str:
-    return f"""{_decl(node.var)}
+    return f"""{decl(node.var)}
 {node.var} = {node.source};
 """
 
@@ -48,14 +47,14 @@ def _input(node: Input) -> str:
 def _op(node: Op) -> str:
     from cpp.func import Func
 
-    return f"""{_decl(node.out)}
+    return f"""{decl(node.out)}
 {node.out} = {Func.from_op(node.op)(*node.args)};
 """
 
 
 @NodeImpl.serves(ReadReg)
 def _read_reg(node: ReadReg) -> str:
-    return f"""{_decl(node.var)}
+    return f"""{decl(node.var)}
 {node.reg.rf.read(node.reg, node.var)}
 """
 
@@ -65,16 +64,13 @@ def _write_reg(node: WriteReg) -> str:
     return node.reg.rf.write(node.reg, node.value)
 
 
-@NodeImpl.serves(ReadMem)
-def _read_mem(node: ReadMem) -> str:
-    return f"""{_decl(node.var)}
-{node.interface(node.inputs, node.var)}
+@NodeImpl.serves(EnvCall)
+def _env_call(node: EnvCall) -> str:
+    if node.out is None:
+        return node.interface(node.inputs, None)
+    return f"""{decl(node.out)}
+{node.interface(node.inputs, node.out)}
 """
-
-
-@NodeImpl.serves(EnvExec)
-def _env_exec(node: EnvExec) -> str:
-    return node.interface(node.inputs, None)
 
 
 @NodeImpl.serves(Return)

@@ -43,7 +43,21 @@ class Instruction:
         return self.insn.operand_sizes
 
     def const_value(self, name: str) -> int:
-        return getattr(self.insn.encoding, name)
+        try:
+            return getattr(self.insn.encoding, name)
+        except AttributeError as exc:
+            raise ValueError(
+                f"{self.name}: unknown dynamic constant '{name}' "
+                "— incomplete LIRA IR"
+            ) from exc
+
+    @property
+    def const_mask(self) -> int:
+        return self.insn.encoding.const_mask
+
+    @property
+    def const_encoding_part(self) -> int:
+        return self.insn.encoding.const_encoding_part
 
     @property
     def ilen(self) -> int:

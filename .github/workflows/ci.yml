@@ -88,3 +88,29 @@ jobs:
 
       - name: Build decoder
         run: cmake --build build --target build-decoder
+
+  interpreter:
+    name: Interpreter generation and build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+
+      - name: Install Python dependencies
+        run: pip install ruamel.yaml jinja2
+
+      - name: Configure
+        run: cmake -B build -DARCH_TARGET=RISC_V -DARCH_SOURCE=Protea
+
+      - name: Generate interpreter sources
+        run: cmake --build build --target gen-interp
+
+      - name: Build interpreter
+        run: cmake --build build --target build-interp

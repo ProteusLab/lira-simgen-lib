@@ -4,7 +4,10 @@
 from pathlib import Path
 from typing import Dict
 
+from lib.attributes import PC_ATTRIBUTE
+
 from cpp.emitter import BaseEmitter
+from cpp.types import OperandType
 
 
 class Isa:
@@ -19,6 +22,14 @@ class IsaEmitter(BaseEmitter):
     def __init__(self, driver):
         super().__init__(driver, Path(__file__).parent / "templates")
 
+    @property
+    def addr_type(self) -> str:
+        for rf in self._driver.arch.register_files:
+            for reg in rf.regs:
+                if PC_ATTRIBUTE in reg.attributes:
+                    return OperandType.gen(rf.reg_size.lanes_base)
+        return OperandType.gen(32)
+
     def artifacts(self) -> Dict[Path, str]:
         num_operands = max(
             (len(inst.operands) for inst in self._driver.insts), default=0
@@ -28,5 +39,6 @@ class IsaEmitter(BaseEmitter):
                 name=Path("isa.hh.jinja"),
                 insts=self._driver.insts,
                 num_operands=num_operands,
+                addr_type=self.addr_type,
             )
         }

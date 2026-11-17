@@ -3,10 +3,8 @@
 
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict
 
-from cpp.context import Context
-from cpp.func import Func
 from lib.templates import Templates
 
 
@@ -17,8 +15,3 @@ class BaseEmitter(ABC):
 
     @abstractmethod
     def artifacts(self) -> Dict[Path, str]: ...
-
-    @staticmethod
-    def snippet_ctx(snippet, name: str) -> Optional[Context]:
-        fields = Func.dyn_fields(snippet)
-        return Context(name=name, fields=fields) if fields else None

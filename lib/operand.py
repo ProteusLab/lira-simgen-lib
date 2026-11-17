@@ -1,7 +1,7 @@
 # lira-simgen-lib/lib/operand.py
 # Operand model for LIRA IR
 
-from typing import Optional
+from typing import Any, Optional
 
 from lira.arch import Snippet
 
@@ -9,9 +9,10 @@ from lib.regfile import IRegFile
 
 
 class Variable:
-    def __init__(self, name: str, width: int):
+    def __init__(self, name: str, width: Optional[int] = None, _type: Any = None):
         self.name: str = name
-        self.width: int = width
+        self.width: Optional[int] = width
+        self._type: Any = _type
 
     def __str__(self) -> str:
         return self.name

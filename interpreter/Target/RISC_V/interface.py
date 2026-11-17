@@ -1,6 +1,6 @@
 # lira-simgen-lib/interpreter/Target/RISC_V/interface.py
 
-from lib.interface import serves
+from cpp.context import serves
 
 from interpreter.interface import (
     GetPC,
@@ -8,15 +8,18 @@ from interpreter.interface import (
     SetPC,
     SysCall,
     WriteMem,
+    m_cpu,
+    m_mem,
 )
 
 # Protea ADL bindings
-serves("readMem8")(ReadMem)
-serves("readMem16")(ReadMem)
-serves("readMem32")(ReadMem)
-serves("writeMem8")(WriteMem)
-serves("writeMem16")(WriteMem)
-serves("writeMem32")(WriteMem)
-serves("getPC")(GetPC)
-serves("setPC")(SetPC)
-serves("sysCall")(SysCall)
+serves(m_mem)("readMem8", ReadMem)
+serves(m_mem)("readMem16", ReadMem)
+serves(m_mem)("readMem32", ReadMem)
+serves(m_mem)("writeMem8", WriteMem)
+serves(m_mem)("writeMem16", WriteMem)
+serves(m_mem)("writeMem32", WriteMem)
+
+serves(m_cpu)("getPC", GetPC)
+serves(m_cpu)("setPC", SetPC)
+serves(m_cpu)("sysCall", SysCall)

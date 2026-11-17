@@ -4,17 +4,17 @@ from lib.attributes import ZERO_ATTRIBUTE
 from lib.operand import PC
 from lib.regfile import serves
 
-from interpreter import config
+from interpreter.interface import m_cpu
 from interpreter.regfile import RegFile
 
 
 @serves("XRegs")
 class XRegs(RegFile):
     def read(self, reg, var) -> str:
-        return f"{var} = {config.SimpleInterpConfig.M_CPU}.getXRegs<uint32_t>({reg});"
+        return f"{var} = {m_cpu.name}.getXRegs<uint32_t>({reg});"
 
     def write(self, reg, value) -> str:
-        return f"{config.SimpleInterpConfig.M_CPU}.setXRegs({reg}, {value});"
+        return f"{m_cpu.name}.setXRegs({reg}, {value});"
 
     @property
     def set_guard(self) -> str:

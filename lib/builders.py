@@ -20,10 +20,10 @@ from lira.ir_std import (
 
 from lib.nodes import (
     DynConst,
-    EnvExec,
+    EnvCall,
     Input,
     Op,
-    ReadMem,
+    EnvCall,
     ReadReg,
     Return,
     WriteReg,
@@ -222,13 +222,10 @@ class SemanticBuilder(CodeBuilder):
                 )
 
             inputs = [builder.resolve_var(a) for a in self.stmt.inputs]
+            out = None
             if self.stmt.outputs:
-                out = self.stmt.outputs[0]
-                width = self.stmt.outputs_types[0]
-                data = builder.variable(out, width)
-                builder.nodes.append(ReadMem(data, inputs, interface))
-            else:
-                builder.nodes.append(EnvExec(inputs, interface))
+                out = builder.variable(self.stmt.outputs[0], self.stmt.outputs_types[0])
+            builder.nodes.append(EnvCall(inputs, interface, out))
 
     @serves(CondEnv.kind)
     class CondEnv(StmtHandler):

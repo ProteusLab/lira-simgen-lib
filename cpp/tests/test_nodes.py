@@ -9,11 +9,10 @@ from lira.ir_ops import Add
 import cpp.nodes
 
 from lib.nodes import (
-    EnvExec,
+    EnvCall,
     Input,
     NodeImpl,
     Op,
-    ReadMem,
     ReadReg,
     Return,
     WriteReg,
@@ -79,7 +78,7 @@ def test_write_reg():
 def test_read_mem():
     var = Variable("_t1", 32)
     addr = Variable("a", 32)
-    assert render_nodes([ReadMem(var, [addr], SimpleInterface())]) == """\
+    assert render_nodes([EnvCall([addr], SimpleInterface(), var)]) == """\
 uint32_t _t1{0};
 _t1 = mem.read(a);
 """
@@ -88,7 +87,7 @@ _t1 = mem.read(a);
 def test_env_exec():
     a = Variable("a", 32)
     b = Variable("b", 32)
-    assert render_nodes([EnvExec([a, b], SimpleInterface())]) == "mem.write(a, b);"
+    assert render_nodes([EnvCall([a, b], SimpleInterface())]) == "mem.write(a, b);"
 
 
 def test_return():

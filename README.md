@@ -5,7 +5,7 @@ LIRA-driven simulator generator framework
 **Layout:**
 
 - [lib](lib) — the generator library (shared drivers and IR plumbing)
-- [cpp](cpp) — shared C++ renderers and code generators (`base_ops.hh/cc`, `snippets.hh/cc`)
+- [cpp](cpp) — shared C++ renderers and code generators (`base_ops.hh/cc`)
 - [decoder](decoder) — instruction decoder code generation (`isa.hh`, `decoder.hh/cc`)
 - [encoder](encoder) — instruction encoder code generation (`isa.hh`, `encoder.hh/cc`)
 - [interpreter](interpreter) — C++ interpreter consumer (`execute.hh/cc`, `cpu_state.hh/cc`) and its [runtime](interpreter/runtime) support library
@@ -42,7 +42,6 @@ the LIRA IR produced by the converter:
 | --------------- | -------------------------------------------------- |
 | `gen-ir`        | the LIRA IR                           |
 | `gen-base_ops`  | `base_ops.hh/cc`                                   |
-| `gen-snippets`  | `snippets.hh/cc`                                   |
 | `gen-decoder`   | `isa.hh`, `decoder.hh/cc`                          |
 | `gen-encoder`   | `isa.hh`, `encoder.hh/cc`                          |
 | `gen-interp`    | `execute.hh/cc`, `cpu_state.hh/cc`                 |
@@ -60,9 +59,8 @@ decoder/encoder are packaged as static libraries usable on their own:
 | Target          | Produces                                                 |
 | --------------- | -------------------------------------------------------- |
 | `base_ops`      | static library from `base_ops.cc`                        |
-| `snippets`      | static library from `snippets.cc` (links `base_ops`)     |
-| `decoder`       | static library from `decoder.cc` (links `snippets`)      |
-| `encoder`       | static library from `encoder.cc` (links `snippets`)      |
+| `decoder`       | static library from `decoder.cc` (links `base_ops`)     |
+| `encoder`       | static library from `encoder.cc` (links `base_ops`)     |
 | `runtime`       | static runtime library (engine, ELF loader, CPU state extensions) |
 | `build-decoder` | convenience target for the `decoder` library             |
 | `build-encoder` | convenience target for the `encoder` library             |

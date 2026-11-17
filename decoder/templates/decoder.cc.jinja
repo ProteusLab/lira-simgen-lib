@@ -16,9 +16,8 @@ namespace {
 }
 {% endfor %}
 {% for name, func in constraints.items() %}
-{%- set fctx = constraint_ctxs[name] %}
 
-{{ func.ret }} {{ func.name }}({{ fctx.param if fctx }}{% if fctx and func.params %}, {% endif %}{{ func.param_list }}) {
+{{ func.ret }} {{ func.name }}({{ ctx.param }}{% if func.params %}, {% endif %}{{ func.param_list }}) {
 {{ func.body }}
 }
 {% endfor %}
