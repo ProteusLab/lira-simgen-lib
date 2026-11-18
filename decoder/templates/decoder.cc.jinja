@@ -6,12 +6,7 @@
 namespace prot::decoder {
 using namespace prot::isa;
 
-struct DecCtx {
-uint32_t const_mask;
-uint32_t const_encoding_part;
-};
-
-
+{{ ctx.declaration }}
 namespace {
 {% for func in decodes.values() %}
 
@@ -21,7 +16,7 @@ namespace {
 {% endfor %}
 {% for func in constraints.values() %}
 
-{{ func.ret }} {{ func.name }}(const DecCtx& ctx, {{ func.param_list }}) {
+{{ func.ret }} {{ func.name }}({{ ctx.param }}, {{ func.param_list }}) {
 {{ func.body }}
 }
 {% endfor %}
@@ -33,7 +28,10 @@ std::optional<Instruction> decode(const Word machInst) {
 {% if not loop.first %}
 
 {% endif %}
-{% set encoding = inst.insn.encoding %}  if ({{ constraints[inst.constraint_decode].name }}(DecCtx{.const_mask = {{ encoding.const_mask }}, .const_encoding_part = {{ encoding.const_encoding_part }}}, machInst)) {
+{% set encoding = inst.insn.encoding %}
+{% set init = ctx.initializer(encoding) %}
+{% set cond = constraints[inst.constraint_decode].name ~ "(" ~ init ~ ", machInst)" %}
+  if ({{ cond }}) {
 {%- for name in encoding.decode %}
     {{ isa.operand(loop.index0) }} = {{ decodes[name]('machInst') }};
 {%- endfor %}
