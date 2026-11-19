@@ -6,13 +6,16 @@ import argparse
 from pathlib import Path
 
 import cpp.base_ops
-from cpp.context import BaseContext, context
+from cpp.context import BaseContext, context, emit
 from cpp.func import snippet_funcs
 from cpp.isa import Isa, IsaEmitter
 from lib.driver import Driver
 from lib.operand import Variable
 from lib.target import import_target_modules
 from lib.templates import Templates
+
+MACH = Variable(name="machInst", width=32)
+from lira.ir_std import StmtKind
 
 
 @context(name="DecCtx")
@@ -25,6 +28,14 @@ class DecoderContext(BaseContext):
             const_mask=encoding.const_mask,
             const_encoding_part=encoding.const_encoding_part,
         )
+
+    @emit(StmtKind.DYN_CONST, "const_mask")
+    def read_mask(self, node):
+        return self.assign(node, self.const_mask)
+
+    @emit(StmtKind.DYN_CONST, "const_encoding_part")
+    def read_encoding_part(self, node):
+        return self.assign(node, self.const_encoding_part)
 
 
 def main() -> None:
@@ -47,16 +58,17 @@ def main() -> None:
 
     driver = Driver(args.ir_path)
     templates = Templates(Path(__file__).parent / "templates")
+    ctx = DecoderContext()
 
     decodes = snippet_funcs(
         driver.index,
         (name for inst in driver.insts for name in inst.insn.encoding.decode),
     )
     constraints = snippet_funcs(
-        driver.index, (inst.constraint_decode for inst in driver.insts)
+        driver.index, (inst.constraint_decode for inst in driver.insts), ctx=ctx
     )
 
-    ctx = DecoderContext()
+    funcs = {**decodes, **constraints}
 
     artifacts = {
         **IsaEmitter(driver).artifacts(),
@@ -66,8 +78,10 @@ def main() -> None:
             isa=Isa,
             decodes=decodes,
             constraints=constraints,
+            funcs=funcs,
             insts=driver.insts,
             ctx=ctx,
+            mach=MACH,
         ),
     }
 

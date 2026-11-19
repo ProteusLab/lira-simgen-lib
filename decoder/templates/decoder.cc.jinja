@@ -8,17 +8,8 @@ using namespace prot::isa;
 
 {{ ctx.declaration }}
 namespace {
-{% for func in decodes.values() %}
-
-{{ func.ret }} {{ func.name }}({{ func.param_list }}) {
-{{ func.body }}
-}
-{% endfor %}
-{% for func in constraints.values() %}
-
-{{ func.ret }} {{ func.name }}({{ ctx.param }}, {{ func.param_list }}) {
-{{ func.body }}
-}
+{% for func in funcs.values() %}
+{{ func.definition }}
 {% endfor %}
 } // namespace
 
@@ -29,11 +20,9 @@ std::optional<Instruction> decode(const Word machInst) {
 
 {% endif %}
 {% set encoding = inst.insn.encoding %}
-{% set init = ctx.initializer(encoding) %}
-{% set cond = constraints[inst.constraint_decode].name ~ "(" ~ init ~ ", machInst)" %}
-  if ({{ cond }}) {
-{%- for name in encoding.decode %}
-    {{ isa.operand(loop.index0) }} = {{ decodes[name]('machInst') }};
+  if ({{ constraints[inst.constraint_decode](ctx.initializer(encoding), mach) }}) {
+{%- for name in inst.insn.encoding.decode %}
+    {{ isa.operand(loop.index0) }} = {{ decodes[name](mach) }};
 {%- endfor %}
     insn.m_opc = Opcode::k{{ inst.name }};
     return insn;
