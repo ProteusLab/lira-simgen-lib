@@ -59,8 +59,11 @@ file(GLOB_RECURSE GENERATOR_DEPS CONFIGURE_DEPENDS
   "${CMAKE_SOURCE_DIR}/cpp/*.jinja"
   "${CMAKE_SOURCE_DIR}/interpreter/*.py"
   "${CMAKE_SOURCE_DIR}/interpreter/*.jinja"
+  "${CMAKE_SOURCE_DIR}/encoder/*.py"
+  "${CMAKE_SOURCE_DIR}/encoder/*.jinja"
 )
 
 include(cmake/LiraGenerator.cmake)
 
 add_subdirectory(cpp)
+add_subdirectory(encoder)
