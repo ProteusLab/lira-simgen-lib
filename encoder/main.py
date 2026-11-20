@@ -59,14 +59,6 @@ def main() -> None:
         ctx=ctx,
     )
 
-    encode_calls = {
-        inst.name: encodes[inst.encode_snippet](
-            ctx.initializer(inst.insn.encoding),
-            *(Isa.operand(i) for i in range(len(inst.operand_names))),
-        )
-        for inst in driver.insts
-    }
-
     artifacts = {
         **IsaEmitter(driver).artifacts(),
         Path("encoder.hh"): templates.render(name=Path("encoder.hh.jinja")),
@@ -76,7 +68,6 @@ def main() -> None:
             encodes=encodes,
             insts=driver.insts,
             ctx=ctx,
-            encode_calls=encode_calls,
         ),
     }
 
