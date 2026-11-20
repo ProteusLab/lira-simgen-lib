@@ -4,24 +4,22 @@
 #include "base_ops.hh"
 
 namespace prot::encoder {
-{% if ctx %}
-{{ ctx.declaration }}
-{% endif %}
-namespace {
-{% for name, func in encodes.items() %}
-{%- set fctx = encode_ctxs[name] %}
+using namespace prot::isa;
 
-{{ func.ret }} {{ func.name }}({{ fctx.param if fctx }}{% if fctx and func.params %}, {% endif %}{{ func.param_list }}) {
-{{ func.body }}
-}
+{{ ctx.declaration }}
+namespace {
+{% for func in encodes.values() %}
+{{ func.definition }}
 {% endfor %}
 } // namespace
 
 prot::isa::Word encode(const prot::isa::Instruction& insn) {
   switch (insn.m_opc) {
-{% for inst in insts %}    case prot::isa::Opcode::k{{ inst.name }}:
+{% for inst in insts %}
+    case prot::isa::Opcode::k{{ inst.name }}:
       return {{ encode_calls[inst.name] }};
-{% endfor %}    default:
+{% endfor %}
+    default:
       return 0;
   }
 }
